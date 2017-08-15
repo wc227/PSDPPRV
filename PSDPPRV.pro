@@ -36,7 +36,9 @@ HEADERS += \
     MainWidget.h \
 #    MapWidget.h \
     CfgMgr.h \
-    FileMgrBase.h
+    FileMgrBase.h \
+    FormWebMap.h \
+    FormLanView.h
 
 SOURCES += \
     main.cpp \
@@ -52,4 +54,6 @@ SOURCES += \
     MainWidget.cpp \
 #    MapWidget.cpp \
     CfgMgr.cpp \
-    FileMgrBase.cpp
+    FileMgrBase.cpp \
+    FormWebMap.cpp \
+    FormLanView.cpp
