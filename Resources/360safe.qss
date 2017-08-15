@@ -206,8 +206,8 @@ QTabBar::tab{
 	color:white;
 	min-width:30ex;
 	min-height:10ex;
-        width:120px;
-        height:40px;
+        /*width:120px;
+        height:40px;*/
 }
 QTabBar::tab:hover{
 	background:rgb(255, 255, 255, 100);

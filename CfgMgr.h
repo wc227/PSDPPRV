@@ -4,25 +4,29 @@
 #include <QString>
 #include <QMap>
 #include <QXmlStreamReader>
+#include "FileMgrBase.h"
 
 ///*****
 /// 配置文件管理
-class CfgMgr
+class CfgMgr : public FileMgrBase
 {
 public:
     CfgMgr(QString sFile = "");
     ~CfgMgr();
 
-    virtual int readFile();
-    void readLanMonitor(QXmlStreamReader &xmlReader);
-    void skipUnknowElement(QXmlStreamReader &xmlReader);
+    //清空所有数据
+    virtual void releaseAll();
 
-    void setFile(QString sFile);
+    //打开数据文件
+    virtual int openFile();
+
+    void readFileCfg(QXmlStreamReader &xmlReader);
+
+    void skipUnknowElement(QXmlStreamReader &xmlReader);
 
     bool getValue(QString sKey,QString &sValue);
 
 protected:
-    QString m_sFile;//配置文件名
     QMap<QString,QString> m_mapCfg;//所有的配置信息
 };
 

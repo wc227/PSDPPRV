@@ -6,31 +6,28 @@
 
 
 CfgMgr::CfgMgr(QString sFile)
-    :m_sFile(sFile)
+    :FileMgrBase(sFile)
 {
 }
 
 CfgMgr::~CfgMgr()
 {
+    releaseAll();
+}
+
+void CfgMgr::releaseAll()
+{
     m_mapCfg.clear();
 }
 
-void CfgMgr::setFile(QString sFile)
+int CfgMgr::openFile()
 {
-    if(0 == m_sFile.compare(sFile,Qt::CaseInsensitive))
-        return;
-    m_sFile = sFile;
-    readFile();
-}
+    releaseAll();
 
-int CfgMgr::readFile()
-{
-    m_mapCfg.clear();
-
-    QFile file(m_sFile);
+    QFile file(m_sFileName);
     if (!file.open(QFile::ReadOnly | QFile::Text))
     {
-        QMessageBox::critical(NULL, QStringLiteral("错误"),QStringLiteral("无法打开文件——%1").arg(m_sFile));
+        QMessageBox::critical(NULL, QStringLiteral("错误"),QStringLiteral("无法打开文件——%1").arg(m_sFileName));
 //        qDebug() << "Cannot read file " << m_sFile << "\n";
         return 0;
     }
@@ -42,9 +39,9 @@ int CfgMgr::readFile()
     {
         if (xmlReader.isStartElement())
         {
-            if (xmlReader.name() == "LanMonitor")
+            if (xmlReader.name() == "PSDPPRV")
             {
-                readLanMonitor(xmlReader);
+                readFileCfg(xmlReader);
             }
             else
             {
@@ -60,21 +57,21 @@ int CfgMgr::readFile()
     file.close();
     if (xmlReader.hasError())
     {
-        QMessageBox::critical(NULL,QStringLiteral("错误"),QStringLiteral("文件——%1 解析失败").arg(m_sFile));
-        qDebug() << "Failed to parse file " << m_sFile << "\n";
+        QMessageBox::critical(NULL,QStringLiteral("错误"),QStringLiteral("文件——%1 解析失败").arg(m_sFileName));
+//        qDebug() << "Failed to parse file " << m_sFileName << "\n";
         return 0;
     }
     else if (file.error() != QFile::NoError)
     {
-        QMessageBox::critical(NULL, QStringLiteral("错误"),QStringLiteral("无法读取文件——%1").arg(m_sFile));
-        qDebug() << "Cannot read file " << m_sFile << "\n";
+        QMessageBox::critical(NULL, QStringLiteral("错误"),QStringLiteral("无法读取文件——%1").arg(m_sFileName));
+//        qDebug() << "Cannot read file " << m_sFileName << "\n";
         return 0;
     }
     return 1;
 }
 
 
-void CfgMgr::readLanMonitor(QXmlStreamReader &xmlReader)
+void CfgMgr::readFileCfg(QXmlStreamReader &xmlReader)
 {
     xmlReader.readNext();
     while (!xmlReader.atEnd())
@@ -87,23 +84,14 @@ void CfgMgr::readLanMonitor(QXmlStreamReader &xmlReader)
 
         if (xmlReader.isStartElement())
         {
-            if(xmlReader.name() == "LanMonitor")
+            if(xmlReader.name() == "PSDPPRV")
             {
-                readLanMonitor(xmlReader);
+                readFileCfg(xmlReader);
             }
             else if(xmlReader.name() == "FileCfg")
             {
                 QString sKey = xmlReader.attributes().value("key").toString();
-                QString sValue = xmlReader.attributes().value("filename").toString();
-                m_mapCfg.insert(sKey,sValue);
-                QString sText = xmlReader.readElementText();
-                if(xmlReader.isEndElement())
-                    xmlReader.readNext();
-            }
-            else if(xmlReader.name() == "UrlCfg")
-            {
-                QString sKey = xmlReader.attributes().value("key").toString();
-                QString sValue = xmlReader.attributes().value("url").toString();
+                QString sValue = xmlReader.attributes().value("value").toString();
                 m_mapCfg.insert(sKey,sValue);
                 QString sText = xmlReader.readElementText();
                 if(xmlReader.isEndElement())

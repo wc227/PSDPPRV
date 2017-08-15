@@ -2,7 +2,7 @@
 #include "DlgSetting.h"
 #include <QTimer>
 #include <QInputDialog>
-
+#include <QTextStream>
 
 int MainWidget::s_nGap =40;//边距
 int MainWidget::s_nMax = 8;//每行的最大个数
@@ -18,7 +18,7 @@ MainWidget::MainWidget(QWidget *parent)
     m_bWndMaxmized = true;
 
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
-    m_cfgMgr.setFile(sFileCfg);
+    m_cfgMgr.setFileName(sFileCfg);
 
     InitActions();
     InitUI();
@@ -28,8 +28,9 @@ MainWidget::MainWidget(QWidget *parent)
     m_timerUpdate = new QTimer(this);
     connect(m_timerUpdate, SIGNAL(timeout()), this, SLOT(UpdateLan()));
     m_timerUpdate->start(s_nTimeUpdate * 1000);
-    QTimer::singleShot(0, this, SLOT(UpdateLan()));//界面显示后立即更新一次
-    QTimer::singleShot(0, this, SLOT(loadUrl()));//界面显示后立即更新一次
+
+//    QTimer::singleShot(0, this, SLOT(UpdateLan()));//界面显示后立即更新一次
+//    QTimer::singleShot(0, this, SLOT(loadUrl()));//界面显示后立即更新一次
 
 //    QTimer::singleShot(0, this, SLOT(StartHttpServer()));
     //    connect(&m_proHttpServer,SIGNAL(started()),this,SLOT(loadUrl()));
@@ -112,28 +113,60 @@ void MainWidget::InitUI()
     m_viewLan->setScene(m_scene);
     m_viewLan->setRenderHints(QPainter::Antialiasing | QPainter::TextAntialiasing);
 
-    m_webWidget = new WebAxWidget();
-    m_webWidget->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
-    m_webWidget->setObjectName(QStringLiteral("m_webWidget"));
-    m_webWidget->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
-    /*
-    m_webWidget->setControl(QString::fromUtf8("{8856F961-340A-11D0-A96B-00C04FD705A2}"));//设置插件为IE
-    m_webWidget->setObjectName(QString::fromUtf8("m_webWidget"));//设置控件名字
-    m_webWidget->setFocusPolicy(Qt::StrongFocus);//
-*/
-    m_webWidget->setProperty("DisplayAlerts",false);//不显示任何警告信息。
-    m_webWidget->setProperty("DisplayScrollBars",false);// 显示滚动条
+    m_webWidget1 = new WebAxWidget();
+    m_webWidget1->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
+    m_webWidget1->setObjectName(QStringLiteral("m_webWidget1"));
+    m_webWidget1->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
+    m_webWidget1->setProperty("DisplayAlerts",false);//不显示任何警告信息。
+    m_webWidget1->setProperty("DisplayScrollBars",false);// 显示滚动条
+
+    m_webWidget2 = new WebAxWidget();
+    m_webWidget2->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
+    m_webWidget2->setObjectName(QStringLiteral("m_webWidget2"));
+    m_webWidget2->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
+    m_webWidget2->setProperty("DisplayAlerts",false);//不显示任何警告信息。
+    m_webWidget2->setProperty("DisplayScrollBars",false);// 显示滚动条
+
+    m_webWidget3 = new WebAxWidget();
+    m_webWidget3->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
+    m_webWidget3->setObjectName(QStringLiteral("m_webWidget3"));
+    m_webWidget3->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
+    m_webWidget3->setProperty("DisplayAlerts",false);//不显示任何警告信息。
+    m_webWidget3->setProperty("DisplayScrollBars",false);// 显示滚动条
+
+    m_webWidget4 = new WebAxWidget();
+    m_webWidget4->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
+    m_webWidget4->setObjectName(QStringLiteral("m_webWidget4"));
+    m_webWidget4->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
+    m_webWidget4->setProperty("DisplayAlerts",false);//不显示任何警告信息。
+    m_webWidget4->setProperty("DisplayScrollBars",false);// 显示滚动条
+
+    m_webWidget5 = new WebAxWidget();
+    m_webWidget5->setControl(QStringLiteral("{8856f961-340a-11d0-a96b-00c04fd705a2}"));
+    m_webWidget5->setObjectName(QStringLiteral("m_webWidget5"));
+    m_webWidget5->setProperty("focusPolicy", QVariant::fromValue(Qt::StrongFocus));
+    m_webWidget5->setProperty("DisplayAlerts",false);//不显示任何警告信息。
+    m_webWidget5->setProperty("DisplayScrollBars",false);// 显示滚动条
 
     m_tabWidget = new QTabWidget();
     m_tabWidget->setObjectName(QStringLiteral("m_tabWidget"));
-//    m_tabWidget->setIconSize(QSize(24,24));
+    m_tabWidget->setIconSize(QSize(24,24));
 //    m_tabWidget->setTabIcon(0,QIcon(":/toolWidget/tiJian"));
 //    m_tabWidget->setTabIcon(1,QIcon(":/toolWidget/gongNeng"));
     m_tabWidget->setStyleSheet("QTabWidget::tab-bar{left: 530px;}");//距离左侧530px,正好给m_pAfterTabLabel留有余地
 
-    m_tabWidget->addTab(m_viewLan,QStringLiteral("局域网"));
-    m_tabWidget->addTab(m_webWidget, QStringLiteral("地图"));
-    m_tabWidget->setCurrentIndex(1);
+    m_tabWidget->addTab(m_viewLan,QIcon(":/toolWidget/tiJian"),QStringLiteral("局域网工作状态"));
+    m_tabWidget->addTab(m_webWidget1,QIcon(":/toolWidget/muMa"), QStringLiteral("预想故障分布图"));
+    m_tabWidget->addTab(m_webWidget2,QIcon(":/toolWidget/jiaSu"), QStringLiteral("正常潮流安全分析图"));
+    m_tabWidget->addTab(m_webWidget3,QIcon(":/toolWidget/repair"), QStringLiteral("匹配项全景感知分析关联图"));
+    m_tabWidget->addTab(m_webWidget4,QIcon(":/toolWidget/gongNeng"), QStringLiteral("录波站点分布图"));
+    m_tabWidget->addTab(m_webWidget5,QIcon(":/toolWidget/qingLi"), QStringLiteral("潮流状态比较图"));
+    m_tabWidget->setCurrentIndex(0);
+    connect(m_tabWidget,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
+
+    m_vecTabInit.resize(6);
+    for(int i = 0 ; i < 6; ++i)
+        m_vecTabInit.append(false);
 
     m_mainLayout = new QGridLayout();
     m_mainLayout->setSpacing(0);
@@ -177,31 +210,94 @@ void MainWidget::InitActions()
     addAction(m_pActionRefresh);
 }
 
+//激活标签页窗口
+void MainWidget::activeTab(int nTab)
+{
+    if(nTab < 0 || nTab >= m_tabWidget->count())
+        return;
+
+    if(!m_vecTabInit[nTab])
+    {
+        Refresh();
+        m_vecTabInit[nTab] = true;
+    }
+
+//    /*权宜之计：生成一个文本文件c:\BpaMCon.BpaM，其内容如下：
+//     * 1 预想故障分布图
+//     * 2 正常潮流安全分析图
+//     * 3 匹配项全影感知分析关联图
+//     * 4 录波站点分布图
+//    */
+//    QFile file("c:/BpaMCon.BpaM");
+//    if (!file.open(QFile::WriteOnly | QFile::Text))
+//    {
+////        qDebug() << "Cannot read file " << m_sFile << "\n";
+//        return;
+//    }
+//    QTextStream ts;
+//    ts.setDevice(&file);
+//    ts << nTab;//写入信号标记
+//    file.close();
+}
+
 //刷新
 void MainWidget::Refresh()
 {
     if(0 == m_tabWidget->currentIndex())
         UpdateLan();
-    else if (1 == m_tabWidget->currentIndex())
-        loadUrl();
+    else
+        loadUrl(m_tabWidget->currentIndex());
+}
+
+//打开网址
+void MainWidget::loadUrl(int nTab)
+{
+    if(m_webWidget1 && 1 == nTab)
+    {
+//        QString sUrl = "http://www.baidu.com";
+        QString sUrl("");
+        m_cfgMgr.getValue("url_map",sUrl);
+        m_webWidget1->dynamicCall("Navigate(const QString&)",sUrl);
+    }
+    if(m_webWidget2 && 2 == nTab)
+    {
+//        QString sUrl = "http://www.baidu.com";
+        QString sUrl("");
+        m_cfgMgr.getValue("url_map",sUrl);
+        m_webWidget2->dynamicCall("Navigate(const QString&)",sUrl);
+    }
+    if(m_webWidget3 && 3 == nTab)
+    {
+//        QString sUrl = "http://www.baidu.com";
+        QString sUrl("");
+        m_cfgMgr.getValue("url_map",sUrl);
+        m_webWidget3->dynamicCall("Navigate(const QString&)",sUrl);
+    }
+    if(m_webWidget4 && 4 == nTab)
+    {
+//        QString sUrl = "http://www.baidu.com";
+        QString sUrl("");
+        m_cfgMgr.getValue("url_map",sUrl);
+        m_webWidget4->dynamicCall("Navigate(const QString&)",sUrl);
+    }
+    if(m_webWidget5 && 5 == nTab)
+    {
+//        QString sUrl = "http://www.baidu.com";
+        QString sUrl("");
+        m_cfgMgr.getValue("url_map",sUrl);
+        m_webWidget5->dynamicCall("Navigate(const QString&)",sUrl);
+    }
 }
 
 //打开网址
 void MainWidget::loadUrl()
 {
-//    QString sUrl = "http://127.0.0.1:8091/BpaMap/BpaMapTestPage.aspx";
-//    m_webWidget->dynamicCall("Navigate(const QString&)",sUrl);
-
-    if(m_webWidget)
-    {
-//        QString sUrl = "http://127.0.0.1:8091/BpaMap/BpaMapTestPage.aspx";
-////        QString sUrl = "http://www.baidu.com";
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-        m_webWidget->dynamicCall("Navigate(const QString&)",sUrl);
-    }
+    loadUrl(1);
+    loadUrl(2);
+    loadUrl(3);
+    loadUrl(4);
+    loadUrl(5);
 }
-
 
 //最大化或还原
 void MainWidget::showMaxOrNormal()
@@ -209,17 +305,17 @@ void MainWidget::showMaxOrNormal()
     if(m_bWndMaxmized)
     {
         showNormal();
-        //        m_btnMax->setStyleSheet("border-image: url(:/sysButton/max);"
-        //                                  "border-image: url(:/sysButton/max_hover);"
-        //                                  "border-image: url(:/sysButton/max_pressed);}");
+                m_btnMax->setStyleSheet("border-image: url(:/sysButton/max);"
+                                          "border-image: url(:/sysButton/max_hover);"
+                                          "border-image: url(:/sysButton/max_pressed);}");
         m_btnMax->setToolTip(QStringLiteral("最大化"));
     }
     else
     {
         showMaximized();
-        //        m_btnMax->setStyleSheet("border-image: url(:/sysButton/normal);"
-        //                                  "border-image: url(:/sysButton/normal_hover);"
-        //                                  "border-image: url(:/sysButton/normal_pressed);}");
+                m_btnMax->setStyleSheet("border-image: url(:/sysButton/normal);"
+                                          "border-image: url(:/sysButton/normal_hover);"
+                                          "border-image: url(:/sysButton/normal_pressed);}");
         m_btnMax->setToolTip(QStringLiteral("向下还原"));
     }
     m_bWndMaxmized = !m_bWndMaxmized;
@@ -229,13 +325,12 @@ void MainWidget::showMaxOrNormal()
 //启动HttpServer
 void MainWidget::StartHttpServer()
 {
-    QString sExe = QApplication::applicationDirPath() + "/HttpServer.exe";
-    //    QString sExe = "D:/DKY/04_OtherPeople/ZhiZhi/Release/HttpServer.exe";
+//    QString sExe = QApplication::applicationDirPath() + "/HttpServer.exe";
+    QString sExe = "D:/DKY/04_OtherPeople/ZhiZhi/Release/HttpServer.exe";
 
     m_proHttpServer.setProgram("cmd.exe");
     m_proHttpServer.setArguments(QStringList() << sExe);
     m_proHttpServer.start();
-    //m_proHttpServer.waitForStarted();//等待进程启动，可能导致主线程假死
 
     //    QProcess::startDetached(sExe);
 

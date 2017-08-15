@@ -35,7 +35,8 @@ HEADERS += \
     DlgSetting.h \
     MainWidget.h \
 #    MapWidget.h \
-    CfgMgr.h
+    CfgMgr.h \
+    FileMgrBase.h
 
 SOURCES += \
     main.cpp \
@@ -50,4 +51,5 @@ SOURCES += \
     DlgSetting.cpp \
     MainWidget.cpp \
 #    MapWidget.cpp \
-    CfgMgr.cpp
+    CfgMgr.cpp \
+    FileMgrBase.cpp

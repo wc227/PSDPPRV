@@ -25,6 +25,7 @@
 #include <QProcess>
 #include <QAction>
 #include <QLabel>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QGraphicsScene;
@@ -92,8 +93,14 @@ private slots:
     //更新设置
     void UpdateSetting();
 
+    //激活标签页窗口
+    void activeTab(int nTab);
+
     //刷新
     void Refresh();
+
+    //打开网址
+    void loadUrl(int nTab);
 
     //打开网址
     void loadUrl();
@@ -109,7 +116,14 @@ private:
     QTabWidget *m_tabWidget;
     QGraphicsView *m_viewLan;
     QGraphicsScene *m_scene;
-    WebAxWidget *m_webWidget;
+    WebAxWidget *m_webWidget1;
+    WebAxWidget *m_webWidget2;
+    WebAxWidget *m_webWidget3;
+    WebAxWidget *m_webWidget4;
+    WebAxWidget *m_webWidget5;
+
+    QVector<bool> m_vecTabInit;//标签页面是否初始化
+
     QLabel *m_lblTitleZone;//用来显示标题区域
 
     bool m_bWndMaxmized;//窗口是否最大化
