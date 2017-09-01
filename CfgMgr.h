@@ -20,6 +20,8 @@ public:
     //打开数据文件
     virtual int openFile();
 
+    void readPSDPPRV(QXmlStreamReader &xmlReader);
+
     void readFileCfg(QXmlStreamReader &xmlReader);
 
     void skipUnknowElement(QXmlStreamReader &xmlReader);

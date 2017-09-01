@@ -5,13 +5,13 @@
 
 class WebAxWidget;
 
-class FormWebMap : public QWidget
+class FormWebBase : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit FormWebMap(QWidget *parent = 0);
-    ~FormWebMap();
+    explicit FormWebBase(QWidget *parent = 0);
+    ~FormWebBase();
 
 public slots:
     void loadUrl(QString url);

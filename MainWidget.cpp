@@ -12,7 +12,7 @@
 #include <QTimer>
 
 #include "FormLanView.h"
-#include "FormWebMap.h"
+#include "FormWeb.h"
 
 MainWidget::MainWidget(QWidget *parent)
     :BorderlessWidget(parent)
@@ -23,11 +23,11 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowState(Qt::WindowMaximized);//最大化显示
     m_bWndMaxmized = true;
 
+    for(int i = 0 ; i < 7; ++i)
+        m_arrTabInit[i] = false;
+
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
     m_cfgMgr.setFileName(sFileCfg);
-
-    for(int i = 0 ; i < 6; ++i)
-        m_arrTabInit[i] = false;
 
     InitActions();
     InitUI();
@@ -122,21 +122,21 @@ void MainWidget::InitUI()
     m_wndLanView = new FormLanView;
     m_tabWidget->addTab(m_wndLanView/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("局域网工作状态"));
 
-    m_wndWebMap1 = new FormWebMap();
+    m_wndWebMap1 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("预想故障分布图"));
-    m_wndWebMap2 = new FormWebMap();
+    m_wndWebMap2 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap2/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("正常潮流安全分析图"));
-    m_wndWebMap3 = new FormWebMap();
+    m_wndWebMap3 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("匹配项全景感知分析关联图"));
-    m_wndWebMap4 = new FormWebMap();
+    m_wndWebMap4 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap4/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波站点分布图"));
-    m_wndWebMap5 = new FormWebMap();
+    m_wndWebMap5 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap5/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("潮流状态比较图"));
+    m_wndWebBar = new FormWebBase();
+    m_tabWidget->addTab(m_wndWebBar/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
 
     connect(m_tabWidget,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
     m_tabWidget->setCurrentIndex(0);
-
-//    m_arrTabInit[0] = true;
 
     m_mainLayout = new QGridLayout();
     m_mainLayout->setSpacing(0);
@@ -192,37 +192,38 @@ void MainWidget::Refresh()
     else if(1 == m_tabWidget->currentIndex() && m_wndWebMap1)
     {
         QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-		//实际上，此处sUrl还应该带上后缀参数，用来控制web页面展示不同的内容，目前郅治没有实现，等待下一步实现。
+        m_cfgMgr.getValue("url_map1",sUrl);
         m_wndWebMap1->loadUrl(sUrl);
     }
     else if(2 == m_tabWidget->currentIndex() && m_wndWebMap2)
     {
         QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-		//实际上，此处sUrl还应该带上后缀参数，用来控制web页面展示不同的内容，目前郅治没有实现，等待下一步实现。
+        m_cfgMgr.getValue("url_map2",sUrl);
         m_wndWebMap2->loadUrl(sUrl);
     }
     else if(3 == m_tabWidget->currentIndex() && m_wndWebMap3)
     {
         QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-		//实际上，此处sUrl还应该带上后缀参数，用来控制web页面展示不同的内容，目前郅治没有实现，等待下一步实现。
+        m_cfgMgr.getValue("url_map3",sUrl);
         m_wndWebMap3->loadUrl(sUrl);
     }
     else if(4 == m_tabWidget->currentIndex() && m_wndWebMap4)
     {
         QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-		//实际上，此处sUrl还应该带上后缀参数，用来控制web页面展示不同的内容，目前郅治没有实现，等待下一步实现。
+        m_cfgMgr.getValue("url_map4",sUrl);
         m_wndWebMap4->loadUrl(sUrl);
     }
     else if(5 == m_tabWidget->currentIndex() && m_wndWebMap5)
     {
         QString sUrl("");
-        m_cfgMgr.getValue("url_map",sUrl);
-		//实际上，此处sUrl还应该带上后缀参数，用来控制web页面展示不同的内容，目前郅治没有实现，等待下一步实现。
+        m_cfgMgr.getValue("url_map5",sUrl);
         m_wndWebMap5->loadUrl(sUrl);
+    }
+    else if(6 == m_tabWidget->currentIndex() && m_wndWebBar)
+    {
+        QString sUrl("");
+        m_cfgMgr.getValue("url_bar",sUrl);
+        m_wndWebBar->loadUrl(sUrl);
     }
 }
 

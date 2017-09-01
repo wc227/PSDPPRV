@@ -13,7 +13,7 @@ class QToolButton;
 class QTabWidget;
 class QAction;
 class FormLanView;
-class FormWebMap;
+class FormWebBase;
 QT_END_NAMESPACE
 
 
@@ -61,12 +61,13 @@ private:
     QTabWidget *m_tabWidget;
 
     FormLanView* m_wndLanView;
-    FormWebMap *m_wndWebMap1;
-    FormWebMap *m_wndWebMap2;
-    FormWebMap *m_wndWebMap3;
-    FormWebMap *m_wndWebMap4;
-    FormWebMap *m_wndWebMap5;
-    bool m_arrTabInit[6];//标签页面是否初始化
+    FormWebBase *m_wndWebMap1;
+    FormWebBase *m_wndWebMap2;
+    FormWebBase *m_wndWebMap3;
+    FormWebBase *m_wndWebMap4;
+    FormWebBase *m_wndWebMap5;
+    FormWebBase *m_wndWebBar;
+    bool m_arrTabInit[7];//标签页面是否初始化
 
     bool m_bWndMaxmized;//窗口是否最大化
 

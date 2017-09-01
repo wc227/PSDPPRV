@@ -1,8 +1,8 @@
-﻿#include "FormWebMap.h"
+﻿#include "FormWeb.h"
 #include "webaxwidget.h"
 #include <QVBoxLayout>
 
-FormWebMap::FormWebMap(QWidget *parent) :
+FormWebBase::FormWebBase(QWidget *parent) :
     QWidget(parent)
 {
     m_webWidget = new WebAxWidget;
@@ -19,11 +19,11 @@ FormWebMap::FormWebMap(QWidget *parent) :
     setLayout(mainLayout);
 }
 
-FormWebMap::~FormWebMap()
+FormWebBase::~FormWebBase()
 {
 }
 
-void FormWebMap::loadUrl(QString url)
+void FormWebBase::loadUrl(QString url)
 {
     m_webWidget->dynamicCall("Navigate(const QString&)",url);
 }
