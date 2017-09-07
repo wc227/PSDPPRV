@@ -27,9 +27,7 @@ protected:
     void mousePressEvent(QMouseEvent *);
     void mouseMoveEvent(QMouseEvent *);
     void mouseReleaseEvent(QMouseEvent *);
-
     void resizeEvent(QResizeEvent *event);
-
 
 private:
     QRect m_areaMovable;//可移动窗口的区域，鼠标只有在该区域按下才能移动窗口

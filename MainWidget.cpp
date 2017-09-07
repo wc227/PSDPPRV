@@ -23,7 +23,7 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowState(Qt::WindowMaximized);//最大化显示
     m_bWndMaxmized = true;
 
-    for(int i = 0 ; i < 7; ++i)
+    for(int i = 0 ; i < 6; ++i)
         m_arrTabInit[i] = false;
 
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
@@ -114,13 +114,15 @@ void MainWidget::InitUI()
     m_titleBarLayout->addWidget(m_btnMax);
     m_titleBarLayout->addWidget(m_btnClose);
 
+//    setAreaMovable();
+
     m_tabWidget = new QTabWidget();
     m_tabWidget->setObjectName(QStringLiteral("m_tabWidget"));
     m_tabWidget->setIconSize(QSize(24,24));
-    m_tabWidget->setStyleSheet("QTabWidget::tab-bar{left: 530px;}");//距离左侧530px,正好给m_pAfterTabLabel留有余地
+    m_tabWidget->setStyleSheet("QTabWidget::tab-bar{left: 450px;}");//距离左侧450px,正好给m_pAfterTabLabel留有余地
 
     m_wndLanView = new FormLanView;
-    m_tabWidget->addTab(m_wndLanView/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("局域网工作状态"));
+    m_tabWidget->addTab(m_wndLanView/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  局域网工作状态  "));
 
     m_wndWebMap1 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("预想故障分布图"));
@@ -130,10 +132,10 @@ void MainWidget::InitUI()
     m_tabWidget->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("匹配项全景感知分析关联图"));
     m_wndWebMap4 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap4/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波站点分布图"));
-    m_wndWebMap5 = new FormWebBase();
-    m_tabWidget->addTab(m_wndWebMap5/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("潮流状态比较图"));
-    m_wndWebBar = new FormWebBase();
-    m_tabWidget->addTab(m_wndWebBar/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
+//    m_wndWebMap5 = new FormWebBase();
+//    m_tabWidget->addTab(m_wndWebMap5/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("潮流状态比较图"));
+//    m_wndWebBar = new FormWebBase();
+//    m_tabWidget->addTab(m_wndWebBar/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
 
     connect(m_tabWidget,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
     m_tabWidget->setCurrentIndex(0);
@@ -151,7 +153,7 @@ void MainWidget::InitUI()
     m_lblTitleZone->move(10,0);//移动到界面左上角（10，10）的位置，更好看一些
     m_lblTitleZone->raise();//移动到界面的上层，以免被其他东西遮挡
     m_lblTitleZone->setObjectName("m_lblTitleZone");
-    m_lblTitleZone->resize(500,50);//该大小与实际的图title保持同样的长宽比，否则会变形
+    m_lblTitleZone->resize(420,50);//该大小与实际的图title保持同样的长宽比，否则会变形
 
     QString sImgTitle("");
     m_cfgMgr.getValue("img_title",sImgTitle);
@@ -213,13 +215,13 @@ void MainWidget::Refresh()
         m_cfgMgr.getValue("url_map4",sUrl);
         m_wndWebMap4->loadUrl(sUrl);
     }
-    else if(5 == m_tabWidget->currentIndex() && m_wndWebMap5)
-    {
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map5",sUrl);
-        m_wndWebMap5->loadUrl(sUrl);
-    }
-    else if(6 == m_tabWidget->currentIndex() && m_wndWebBar)
+//    else if(5 == m_tabWidget->currentIndex() && m_wndWebMap5)
+//    {
+//        QString sUrl("");
+//        m_cfgMgr.getValue("url_map5",sUrl);
+//        m_wndWebMap5->loadUrl(sUrl);
+//    }
+    else if(5 == m_tabWidget->currentIndex() && m_wndWebBar)
     {
         QString sUrl("");
         m_cfgMgr.getValue("url_bar",sUrl);
@@ -287,8 +289,15 @@ void MainWidget::paintEvent(QPaintEvent *event)
     painter.restore();
 }
 
+void MainWidget::resizeEvent(QResizeEvent *event)
+{
+    setAreaMovable(m_titleBarLayout->geometry());
+}
+
 void MainWidget::mouseDoubleClickEvent(QMouseEvent *event)
 {
     QWidget::mouseDoubleClickEvent(event);
-    showMaxOrNormal();//双击可以最大化或还原大小
+
+    if(m_titleBarLayout->geometry().contains(event->pos()))
+        showMaxOrNormal();//双击可以最大化或还原大小
 }

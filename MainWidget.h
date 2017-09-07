@@ -29,6 +29,8 @@ public:
 protected:
     void paintEvent(QPaintEvent *event);
 
+    void resizeEvent(QResizeEvent *event);
+
     void mouseDoubleClickEvent(QMouseEvent *event);
 
     //初始化所有的动作
@@ -65,9 +67,8 @@ private:
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;
     FormWebBase *m_wndWebMap4;
-    FormWebBase *m_wndWebMap5;
     FormWebBase *m_wndWebBar;
-    bool m_arrTabInit[7];//标签页面是否初始化
+    bool m_arrTabInit[6];//标签页面是否初始化
 
     bool m_bWndMaxmized;//窗口是否最大化
 

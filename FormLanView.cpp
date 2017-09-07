@@ -28,8 +28,8 @@ void FormLanView::Init()
 {
     m_viewLan = new QGraphicsView();
     m_viewLan->setObjectName(QStringLiteral("m_viewLan"));
-    m_viewLan->setStyleSheet(QLatin1String("#m_viewLan{background-color: rgb(212, 229, 255);}\n"
-""));
+//    m_viewLan->setStyleSheet(QLatin1String("#m_viewLan{background-color: rgb(212, 229, 255);}\n"
+//""));
     m_viewLan->setLineWidth(0);
 
     qreal w = CMyCompItem::s_nLen * s_nMax + s_nGap * (s_nMax -1);
