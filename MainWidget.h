@@ -2,6 +2,7 @@
 #define MAINWIDGET_H
 
 #include "BorderlessWidget.h"
+#include "WorkFlow/dlgworkflow.h"
 #include "CfgMgr.h"
 #include <QProcess>
 
@@ -62,13 +63,12 @@ private:
     QToolButton *m_btnClose;
     QTabWidget *m_tabWidget;
 
-    FormLanView* m_wndLanView;
+    DlgWorkFlow *m_wndWorkFlow;
     FormWebBase *m_wndWebMap1;
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;
-    FormWebBase *m_wndWebMap4;
     FormWebBase *m_wndWebBar;
-    bool m_arrTabInit[6];//标签页面是否初始化
+    bool m_arrTabInit[5];//标签页面是否初始化
 
     bool m_bWndMaxmized;//窗口是否最大化
 

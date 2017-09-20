@@ -23,7 +23,7 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowState(Qt::WindowMaximized);//最大化显示
     m_bWndMaxmized = true;
 
-    for(int i = 0 ; i < 6; ++i)
+    for(int i = 0 ; i < 5; ++i)
         m_arrTabInit[i] = false;
 
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
@@ -121,8 +121,11 @@ void MainWidget::InitUI()
     m_tabWidget->setIconSize(QSize(24,24));
     m_tabWidget->setStyleSheet("QTabWidget::tab-bar{left: 450px;}");//距离左侧450px,正好给m_pAfterTabLabel留有余地
 
-    m_wndLanView = new FormLanView;
-    m_tabWidget->addTab(m_wndLanView/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  局域网工作状态  "));
+    m_wndWorkFlow = new DlgWorkFlow;
+    m_tabWidget->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  导航图  "));
+    QString sFileLan("");
+    m_cfgMgr.getValue("file_lan",sFileLan);
+    m_wndWorkFlow->setIniPath(sFileLan);
 
     m_wndWebMap1 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("预想故障分布图"));
@@ -130,12 +133,6 @@ void MainWidget::InitUI()
     m_tabWidget->addTab(m_wndWebMap2/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("正常潮流安全分析图"));
     m_wndWebMap3 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("匹配项全景感知分析关联图"));
-    m_wndWebMap4 = new FormWebBase();
-    m_tabWidget->addTab(m_wndWebMap4/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波站点分布图"));
-//    m_wndWebMap5 = new FormWebBase();
-//    m_tabWidget->addTab(m_wndWebMap5/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("潮流状态比较图"));
-//    m_wndWebBar = new FormWebBase();
-//    m_tabWidget->addTab(m_wndWebBar/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
 
     connect(m_tabWidget,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
     m_tabWidget->setCurrentIndex(0);
@@ -184,12 +181,12 @@ void MainWidget::activeTab(int nTab)
 //刷新
 void MainWidget::Refresh()
 {
-    if(0 == m_tabWidget->currentIndex() && m_wndLanView)
+    if(0 == m_tabWidget->currentIndex() && m_wndWorkFlow)
     {
-        QString sFile("");
-        m_cfgMgr.getValue("file_lan",sFile);
-        m_wndLanView->SetFileCom(sFile);
-        m_wndLanView->UpdateLan();
+//        QString sFile("");
+//        m_cfgMgr.getValue("file_lan",sFile);
+//        m_wndLanView->SetFileCom(sFile);
+//        m_wndLanView->UpdateLan();
     }
     else if(1 == m_tabWidget->currentIndex() && m_wndWebMap1)
     {
@@ -209,19 +206,7 @@ void MainWidget::Refresh()
         m_cfgMgr.getValue("url_map3",sUrl);
         m_wndWebMap3->loadUrl(sUrl);
     }
-    else if(4 == m_tabWidget->currentIndex() && m_wndWebMap4)
-    {
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map4",sUrl);
-        m_wndWebMap4->loadUrl(sUrl);
-    }
-//    else if(5 == m_tabWidget->currentIndex() && m_wndWebMap5)
-//    {
-//        QString sUrl("");
-//        m_cfgMgr.getValue("url_map5",sUrl);
-//        m_wndWebMap5->loadUrl(sUrl);
-//    }
-    else if(5 == m_tabWidget->currentIndex() && m_wndWebBar)
+    else if(4 == m_tabWidget->currentIndex() && m_wndWebBar)
     {
         QString sUrl("");
         m_cfgMgr.getValue("url_bar",sUrl);

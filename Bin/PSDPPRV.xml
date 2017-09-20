@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<PSDPPRV>
+	<FileCfg>
+		<key>img_bg</key>
+		<value><![CDATA[bg.png]]></value>
+		<comment>主程序背景图片</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>img_title</key>
+		<value><![CDATA[title.png]]></value>
+		<comment>标题栏背景图片</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>file_lan</key>
+		<value><![CDATA[E:/Test/PSDATC/App/UI/TGanSuOCX3D/pp.ini]]></value>
+		<comment>局域网工作状态</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>url_map1</key>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=1&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/ZL.CSV]]></value>
+		<comment>预想故障分布图</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>url_map2</key>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=2&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/rlt.txt]]></value>
+		<comment>正常潮流安全分析图</comment>
+	</FileCfg>	
+	
+	<FileCfg>
+		<key>url_map3</key>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=3&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/南网-GD_广东-广东line.txt]]></value>
+		<comment>匹配项全景感知分析关联图</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>url_bar</key>
+		<value><![CDATA[http://localhost:8080/bar/?path=E:/DKY/04_OtherPeople/ChenRui/bar/test.txt&color=D:/DKY/04_OtherPeople/ChenRui/bar/color/]]></value>
+		<comment>场站数据时序状态图</comment>
+	</FileCfg>
+</PSDPPRV>
