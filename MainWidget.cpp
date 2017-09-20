@@ -1,5 +1,5 @@
 ﻿#include "MainWidget.h"
-#include "DlgSetting.h"
+#include "FormWeb.h"
 #include <QInputDialog>
 #include <QTextStream>
 #include <QApplication>
@@ -10,9 +10,6 @@
 #include <QTabWidget>
 #include <QAction>
 #include <QTimer>
-
-#include "FormLanView.h"
-#include "FormWeb.h"
 
 MainWidget::MainWidget(QWidget *parent)
     :BorderlessWidget(parent)

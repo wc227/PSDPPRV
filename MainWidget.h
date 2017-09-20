@@ -13,7 +13,6 @@ class QLabel;
 class QToolButton;
 class QTabWidget;
 class QAction;
-class FormLanView;
 class FormWebBase;
 QT_END_NAMESPACE
 

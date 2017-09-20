@@ -18,27 +18,25 @@ RESOURCES += \
     Resources/360safe.qrc
 
 FORMS += \
-#    FrmMain.ui \
-    DlgSetting.ui \
     WorkFlow/citempropertydialog.ui
 
 HEADERS += \
     XxwQtPub.h \
 #    PubHead.h \
-    MyComDatMgr.h \
-    MyCompInfo.h \
-    MyCompItem.h \
-    MyPolylineItem.h \
+#    MyComDatMgr.h \
+#    MyCompInfo.h \
+#    MyCompItem.h \
+#    MyPolylineItem.h \
 #    PushButtonEx.h \
     webaxwidget.h \
     BorderlessWidget.h \
 #    FrmMain.h \
-    DlgSetting.h \
+#    DlgSetting.h \
     MainWidget.h \
 #    MapWidget.h \
     CfgMgr.h \
     FileMgrBase.h \
-    FormLanView.h \
+#    FormLanView.h \
     FormWeb.h \
     WorkFlow/cbaritem.h \
     WorkFlow/CGraphicsObjectItem.h \
@@ -53,19 +51,19 @@ HEADERS += \
 SOURCES += \
     main.cpp \
     XxwQtPub.cpp \
-    MyComDatMgr.cpp \
-    MyCompInfo.cpp \
-    MyCompItem.cpp \
-    MyPolylineItem.cpp \
+#    MyComDatMgr.cpp \
+#    MyCompInfo.cpp \
+#    MyCompItem.cpp \
+#    MyPolylineItem.cpp \
 #    PushButtonEx.cpp \
     BorderlessWidget.cpp \
 #    FrmMain.cpp \
-    DlgSetting.cpp \
+#    DlgSetting.cpp \
     MainWidget.cpp \
 #    MapWidget.cpp \
     CfgMgr.cpp \
     FileMgrBase.cpp \
-    FormLanView.cpp \
+#    FormLanView.cpp \
     FormWeb.cpp \
     WorkFlow/cbaritem.cpp \
     WorkFlow/cgraphicsobjectitem.cpp \
