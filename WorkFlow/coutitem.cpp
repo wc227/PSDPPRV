@@ -30,12 +30,7 @@ COutItem::COutItem(bool isEditState) :
     setZValue(0);
     m_EventNumber = 0;
 
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+    QString sDllName = "Mems.dll";
     //ShareMemoryBuild();
     QLibrary lib(sDllName);
     if (lib.load())
@@ -95,39 +90,17 @@ void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
 void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-//    if(!shape().contains(event->pos()))
-//        return;
     if(m_CursorPos != MouseNo)
         return;
 
     if(b_IsEditState)
     {
-//        COutItemPropertyDialog dlg(static_cast<QWidget*> (this->scene()->views().at(0)), this);
-        COutItemPropertyDialog dlg;
+        QGraphicsView* pView = this->scene()->views().at(0);
+        COutItemPropertyDialog dlg((QWidget*)pView, this);
         dlg.exec();
-//        QString numbers;
-//        for(int i=0; i<m_TaskNumbers.count(); i++)
-//        {
-//            if(i!=0)
-//                numbers.append(":");
-//            numbers.append(m_TaskNumbers.at(i).trimmed());
-//        }
-
-//        bool ok;
-//        QString text = QInputDialog::getText(0, tr("QInputDialog::getText()"),
-//                                             tr("User name:"), QLineEdit::Normal,
-//                                             numbers, &ok);
-//        if (ok && !text.isEmpty())
-//            m_Name = text;
     }
     else
     {
-//        for(int i=0; i<m_TaskNumbers.count(); i++)
-//        {
-//            m_EventNumber = m_TaskNumbers[i];
-//            emit EvtFileChange(m_EventNumber);
-//            qDebug() << m_EventNumber;
-//        }
         SetEvtList(m_TaskNumbersList, 1);
     }
 }
@@ -176,12 +149,7 @@ void COutItem::SetEvtList(QList<QString>& arList, int val)
     if (arList.size() == 0)
         return;
 
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+    QString sDllName = "Mems.dll";
     QLibrary lib(sDllName);
     if (lib.load())
     {
@@ -407,9 +375,12 @@ COutItemPropertyDialog::COutItemPropertyDialog(QWidget *parent, COutItem *curren
 
     this->setLayout(pMainLayout);
 
-    setName(m_CurrentItem->getCaptainName());
-    setEvents(m_CurrentItem->getEventNumber());
-    setShape(m_CurrentItem->getShape());
+    if(m_CurrentItem)
+    {
+        setName(m_CurrentItem->getCaptainName());
+        setEvents(m_CurrentItem->getEventNumber());
+        setShape(m_CurrentItem->getShape());
+    }
 
     connect(m_pEventLineEdit, SIGNAL(editingFinished()),
             this, SLOT(SLOT_EventLineEditChanged()));

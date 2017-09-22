@@ -118,11 +118,11 @@ void MainWidget::InitUI()
     m_tabWidget->setIconSize(QSize(24,24));
     m_tabWidget->setStyleSheet("QTabWidget::tab-bar{left: 450px;}");//距离左侧450px,正好给m_pAfterTabLabel留有余地
 
-    m_wndWorkFlow = new DlgWorkFlow;
+    m_wndWorkFlow = new CNaviWidget;
     m_tabWidget->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  导航图  "));
     QString sFileLan("");
     m_cfgMgr.getValue("file_lan",sFileLan);
-    m_wndWorkFlow->setIniPath(sFileLan);
+    m_wndWorkFlow->setFileCfg(sFileLan);
 
     m_wndWebMap1 = new FormWebBase();
     m_tabWidget->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("预想故障分布图"));

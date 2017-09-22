@@ -32,12 +32,7 @@ CGraphicsScene::CGraphicsScene(QObject *parent) :
     b_MousePressInItem = false;
     createContextMenu();
 
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+    QString sDllName = "Mems.dll";
     //ShareMemoryBuild();
     QLibrary lib(sDllName);
     if (lib.load())
@@ -159,12 +154,7 @@ void CGraphicsScene::slotEVTFileChange(int n)
 {
     qDebug() << "change" << n;
 
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+    QString sDllName = "Mems.dll";
 //     EVTFileChange(n,1);
     QLibrary lib(sDllName);
     if (lib.load())

@@ -26,20 +26,21 @@ public:
      * @param val
      */
     void setEventList(QList<QString> &arList, int val);
-    /**
-     * @brief eventType      分析事件类型
-     * @param pchEvent       需要得到的原事件字符串
-     * @param pnEventNo      将pchEvent字符串转成对应的事件
-     * @return               事件类型
-     */
-    int eventType(QString &pchEvent, int *pnEventNo );//事件值类型
 
     /**
-     * @brief evtCounter     计算事件计数器
-     * @param pchEvent       事件字符串
+     * @brief eventType      分析事件类型，处理事件类型和对应的事件号
+     * @param sEvent         待分析的事件字符串
+     * @param pnEventNo      对应的事件号
+     * @return               事件类型
+     */
+    int eventType(QString &sEvent, int &nEventNo );
+
+    /**
+     * @brief evtCounter     获取事件的计数器
+     * @param sEvent         事件字符串
      * @return               返回事件计数器的值
      */
-    int evtCounter(QString &pchEvent);
+    int evtCounter(QString &sEvent);
 protected:
 public slots:
 };

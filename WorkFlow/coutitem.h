@@ -94,7 +94,7 @@ public:
     void setShape(int); //设置item形状
 
 signals:
-    void EvtFileChange(int number); //文件时间发生改变
+    void EvtFileChange(int number); //文件事件发生改变
 
 private:
 //    QList<int> m_TaskNumbers;

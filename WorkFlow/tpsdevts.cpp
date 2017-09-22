@@ -24,12 +24,13 @@ typedef int(*FUN5)(int);
 TPsdEvts::TPsdEvts(QObject *parent) :
     QObject(parent)
 {
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+//    QString sDllName = "";
+//#ifdef QT_NO_DEBUG
+//    sDllName = "Mems.dll";
+//#else
+//    sDllName = "Memsd.dll";
+//#endif
+    QString sDllName = "Mems.dll";
     //ShareMemoryBuild();
     QLibrary lib(sDllName);
     if (lib.load())
@@ -47,12 +48,7 @@ TPsdEvts::~TPsdEvts()
 
 void TPsdEvts::setEventList(QList<QString> &arList, int val)
 {
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+    QString sDllName = "Mems.dll";
     if (arList.size() == 0)
         return;
 
@@ -71,13 +67,13 @@ void TPsdEvts::setEventList(QList<QString> &arList, int val)
         QString  szTmp;
         szTmp.clear();
         int  nTmp  = 0;
-        int  nEvt  = 0;
+        int  nEvtNo  = 0;
         bool bInvert = false;
         int  nMax  = arList.count();
         for (int i = 0; i < nMax; i++)
         {
             QString s = arList.at(i);
-            nEvt = 0;
+            nEvtNo = 0;
             //反逻辑提取
             s = s.trimmed(); //trimmed()返回值是将 \r \t除去 而不是在原来变量上直接删除
             if(s.isEmpty())
@@ -89,38 +85,35 @@ void TPsdEvts::setEventList(QList<QString> &arList, int val)
                 bInvert = true;
                 szTmp.remove(0,1); //删除掉!
             }
-            nTmp = eventType(szTmp, &nEvt);
+            nTmp = eventType(szTmp, nEvtNo);
             switch (nTmp)
             {
             case EVT_FILE_TYPE:
             {
                 if(bInvert)
                     val*=-1;
-                EVTFileChange(nEvt, val);
+                EVTFileChange(nEvtNo, val);
             }break;
             case EVT_TASK_TYPE:
             {
                 if(bInvert)
                     val*=-1;
-                EVTTaskChange(nEvt, val);
-                qDebug() << "Current Task Number:" << nEvt << "counter:"<< EVTTaskCounter(nEvt);
+                EVTTaskChange(nEvtNo, val);
+//                qDebug() << "Current Task Number:" << nEvtNo << "counter:"<< EVTTaskCounter(nEvtNo);
             }break;
             case EVT_STATUS_TYPE:
             {//与val无关
-                bool b = EVTStatus(nEvt);
+                bool b = EVTStatus(nEvtNo);
                 if(bInvert) //反逻辑标记
-                    EVTStatusSet(nEvt, !b);
+                    EVTStatusSet(nEvtNo, !b);
                 else
-                    EVTStatusSet(nEvt, true); //直接设置为真状态[到应用时修订];
-                //	if (val > 0)
-                //	else
-                // EVTStatusSet(nEvt, false);
+                    EVTStatusSet(nEvtNo, true); //直接设置为真状态[到应用时修订];
             }break;
             case EVT_APP_TYPE:
             {
                 if(bInvert)
                     val*=-1;
-                PSDAPPChange(nEvt, val);
+                PSDAPPChange(nEvtNo, val);
             }break;
             default:
             {
@@ -131,115 +124,111 @@ void TPsdEvts::setEventList(QList<QString> &arList, int val)
     }
 }
 
-int TPsdEvts::eventType(QString &pchEvent, int *pnEventNo)
+int TPsdEvts::eventType(QString &sEvent, int &nEventNo)
 {
     int Rtn=-1;
-    if(pchEvent == NULL)
+    if(sEvent == NULL)
     {
         return Rtn;
     }//end if
+
     int nTmp = 0;
-    QString szEvent = pchEvent;
-    szEvent.trimmed();
-    if(szEvent.isEmpty())
+    QString sEventTemp = sEvent;
+    sEventTemp = sEventTemp.trimmed();
+    if(sEventTemp.isEmpty())
         return Rtn;
-    QChar ch=szEvent.at(0);
-    if(ch=='#')
+
+    QChar ch = sEventTemp.at(0);
+    if(ch == '#')//文件事件
     {
-        szEvent.remove(0,1);
-        nTmp = szEvent.toInt();
+        sEventTemp.remove(0,1);
+        nTmp = sEventTemp.toInt();
         if(nTmp>0)
         {
             Rtn = EVT_FILE_TYPE;
-            if(pnEventNo)
-                *pnEventNo = nTmp;
+            nEventNo = nTmp;
         }
     }
-    else if(ch=='@')
+    else if(ch=='@')//任务事件
     {
-        szEvent.remove(0,1);
-        nTmp = szEvent.toInt();
+        sEventTemp.remove(0,1);
+        nTmp = sEventTemp.toInt();
         if(nTmp>0)
         {
             Rtn = EVT_TASK_TYPE;
-            if(pnEventNo)
-                *pnEventNo = nTmp;
+            nEventNo = nTmp;
         }
     }
-    else if(ch=='$')
+    else if(ch=='$')//状态事件
     {
-        szEvent.remove(0,1);
-        nTmp = szEvent.toInt();
+        sEventTemp.remove(0,1);
+        nTmp = sEventTemp.toInt();
         if(nTmp>0)
         {
             Rtn = EVT_STATUS_TYPE;
-            if(pnEventNo)
-                *pnEventNo = nTmp;
+            nEventNo = nTmp;
         }
     }
-    else if(ch=='?')
-    {                           //20140301  进程编码前到标志;
-        szEvent.remove(0,1);	 //必须对标记进行清掉;
-        nTmp = szEvent.toInt();
+    else if(ch=='?')//应用事件
+    {
+        sEventTemp.remove(0,1);
+        nTmp = sEventTemp.toInt();
         if(nTmp>0)
         {
-            Rtn = EVT_APP_TYPE; //缺省的处理内容;
-            if(pnEventNo)
-                *pnEventNo = nTmp;
+            Rtn = EVT_APP_TYPE;
+            nEventNo = nTmp;
         }
     }
     else
     {
-        szEvent = szEvent.trimmed();
-        pchEvent.prepend('#');
-        nTmp = szEvent.toInt();
+        sEventTemp = sEventTemp.trimmed();
+        sEvent.prepend('#');
+        nTmp = sEventTemp.toInt();
         if(nTmp>0)
         {
-            Rtn = EVT_FILE_TYPE;  //缺省的处理内容;
-            if(pnEventNo)
-                *pnEventNo = nTmp;
+            Rtn = EVT_FILE_TYPE;//缺省的处理内容;
+            nEventNo = nTmp;
         }
     }
     return Rtn;
 }
 
-int TPsdEvts::evtCounter(QString &pchEvent)
+int TPsdEvts::evtCounter(QString &sEvent)
 {
     int nCounter = 0;
-    QString sDllName = "";
-#ifdef QT_NO_DEBUG
-    sDllName = "Mems.dll";
-#else
-    sDllName = "Memsd.dll";
-#endif
+
+    QString sDllName = "Mems.dll";
     QLibrary lib(sDllName);
     if (lib.load())
     {
 //        FUN1 ShareMemoryBuild = (FUN1)lib.resolve("?ShareMemoryBuild@@YAJXZ");//dll中ShareMemoryBuild对应的实际是 ?ShareMemoryBuild@@YAJXZ
 //        FUN2 EVTFileChange = (FUN2)lib.resolve("?EVTFileChange@@YAHHH@Z");//dll中 EVTFileChange 对应的实际是 ?EVTFileChange@@YAHHH@Z
 //        FUN2 EVTTaskChange = (FUN2)lib.resolve("?EVTTaskChange@@YAHHH@Z");//dll中 EVTTaskChange 对应的实际是 ?EVTTaskChange@@YAHHH@Z
-//        FUN2 PSDAPPChange = (FUN2)lib.resolve("?PSDAPPChange@@YAHHH@Z");//dll中 PSDAPPChange 对应的实际是 ?PSDAPPChange@@YAHHH@Z
-//        FUN3 EVTStatus = (FUN3)lib.resolve("?EVTStatus@@YA_NH@Z");//dll中 EVTStatus 对应的实际是 ?EVTStatus@@YA_NH@Z
+        FUN2 PSDAPPChange = (FUN2)lib.resolve("?PSDAPPChange@@YAHHH@Z");//dll中 PSDAPPChange 对应的实际是 ?PSDAPPChange@@YAHHH@Z
+        FUN3 EVTStatus = (FUN3)lib.resolve("?EVTStatus@@YA_NH@Z");//dll中 EVTStatus 对应的实际是 ?EVTStatus@@YA_NH@Z
 //        FUN4 EVTStatusSet = (FUN4)lib.resolve("?EVTStatusSet@@YA_NH_N@Z");//dll中 EVTStatusSet 对应的实际是 ?EVTStatusSet@@YA_NH_N@Z
         FUN5 EVTTaskCounter = (FUN5)lib.resolve("?EVTTaskCounter@@YAHH@Z");//dll中 EVTTaskCounter 对应的实际是 ?EVTTaskCounter@@YAHH@Z
         FUN5 EVTFileCounter = (FUN5)lib.resolve("?EVTFileCounter@@YAHH@Z");//dll中 EVTFileCounter 对应的实际是 ?EVTFileCounter@@YAHH@Z
 
         int nType = -1;  //事件类型
-        int nEvt;        //事件值
-        nType = eventType(pchEvent, &nEvt);
-
+        int nEvtNo;        //事件值
+        nType = eventType(sEvent, nEvtNo);
         switch (nType) {
         case EVT_FILE_TYPE:
             if(EVTFileCounter)
-                nCounter = EVTFileCounter(nEvt);
+                nCounter = EVTFileCounter(nEvtNo);
             break;
         case EVT_TASK_TYPE:
             if(EVTTaskCounter)
-                nCounter = EVTTaskCounter(nEvt);
+                nCounter = EVTTaskCounter(nEvtNo);
             break;
         case EVT_STATUS_TYPE:
+            if(EVTStatus)
+                nCounter = (int)EVTStatus(nEvtNo);
             break;
         case EVT_APP_TYPE:
+            if(PSDAPPChange)
+                nCounter = PSDAPPChange(nEvtNo,0);
             break;
         default:
             break;

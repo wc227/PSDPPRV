@@ -45,7 +45,7 @@ HEADERS += \
     WorkFlow/cmypathitem.h \
     WorkFlow/coutitem.h \
     WorkFlow/cwidget.h \
-    WorkFlow/dlgworkflow.h \
+#    WorkFlow/dlgworkflow.h \
     WorkFlow/tpsdevts.h
 
 SOURCES += \
@@ -72,7 +72,7 @@ SOURCES += \
     WorkFlow/cmypathitem.cpp \
     WorkFlow/coutitem.cpp \
     WorkFlow/cwidget.cpp \
-    WorkFlow/dlgworkflow.cpp \
+#    WorkFlow/dlgworkflow.cpp \
     WorkFlow/tpsdevts.cpp
 
 

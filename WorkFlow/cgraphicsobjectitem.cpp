@@ -4,7 +4,7 @@
 #include <QHBoxLayout>
 #include <QTimer>
 #include <QTextCodec>
-
+#include <QGraphicsView>
 #include "citempropertydialog.h"
 
 CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
@@ -226,8 +226,9 @@ void CGraphicsObjectItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
     if(b_IsEditState)
     {
-//        CItemPropertyDialog *dlg = new CItemPropertyDialog(static_cast<QWidget*> (this->scene()->views().at(0)));
-        CItemPropertyDialog *dlg = new CItemPropertyDialog;
+        QGraphicsView* pView = this->scene()->views().at(0);
+        CItemPropertyDialog *dlg = new CItemPropertyDialog((QWidget*)pView);
+//        CItemPropertyDialog *dlg = new CItemPropertyDialog;
 
         dlg->getItemPointer(this);
         dlg->setPosXSpinBox(this->scenePos().x());

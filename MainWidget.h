@@ -2,7 +2,8 @@
 #define MAINWIDGET_H
 
 #include "BorderlessWidget.h"
-#include "WorkFlow/dlgworkflow.h"
+//#include "WorkFlow/dlgworkflow.h"
+#include "WorkFlow/cwidget.h"
 #include "CfgMgr.h"
 #include <QProcess>
 
@@ -62,7 +63,7 @@ private:
     QToolButton *m_btnClose;
     QTabWidget *m_tabWidget;
 
-    DlgWorkFlow *m_wndWorkFlow;
+    CNaviWidget *m_wndWorkFlow;
     FormWebBase *m_wndWebMap1;
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;

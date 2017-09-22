@@ -14,25 +14,25 @@
 	
 	<FileCfg>
 		<key>file_lan</key>
-		<value><![CDATA[E:/Test/PSDATC/App/UI/TGanSuOCX3D/pp.ini]]></value>
+		<value><![CDATA[D:/DKY/20170721_PSDPPRV/Doc/cfg.ini]]></value>
 		<comment>局域网工作状态</comment>
 	</FileCfg>
 	
 	<FileCfg>
 		<key>url_map1</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=1&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/ZL.CSV]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=1&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\ZL.CSV]]></value>
 		<comment>预想故障分布图</comment>
 	</FileCfg>
 	
 	<FileCfg>
 		<key>url_map2</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=2&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/rlt.txt]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=4&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\lb.txt]]></value>
 		<comment>正常潮流安全分析图</comment>
 	</FileCfg>	
 	
 	<FileCfg>
 		<key>url_map3</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=3&file=E:/DKY/04_OtherPeople/ZhiZhi/Release/test/南网-GD_广东-广东line.txt]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=5&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\cl.txt]]></value>
 		<comment>匹配项全景感知分析关联图</comment>
 	</FileCfg>
 	
