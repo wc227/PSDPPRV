@@ -139,3 +139,15 @@ code: 0xc0000005: read access violation at: 0x0, flags=0x0 (first chance)
 
 201709202242
 删除原有跟局域网工作状态图相关的源码文件和代码引用
+
+
+2017.09.22
+1 TPsdEvts中的evtCounter函数中添加对状态事件和应用事件的处理
+2 删除了DlgWorkFlow，添加了CNaviWidget类，该类是含有导航图view的widget，其中view无边框背景透明且居中显示，但是不回复制或拉伸，使得视图和场景刚好和底图一样大小。
+
+
+2017.09.27
+1 添加了BorderlessMainWnd类，该类继承自QMainWindow,是一个无边框的主窗口类
+2 添加了MainWnd类，该类的父类为BorderlessMainWnd类，以便能够在它里面添加QDockWidget可停靠子窗口。
+3 在MainWnd中可以添加可停靠的子窗口，但是，有一个问题：可停靠子窗口就好像在主窗口外一样，不处于主窗口的标题栏下。
+也就是说，如果主窗口是无边框的，则可停靠子窗口显示有可能有问题。

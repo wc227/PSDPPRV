@@ -20,23 +20,12 @@ RESOURCES += \
 FORMS += \
     WorkFlow/citempropertydialog.ui
 
+
 HEADERS += \
     XxwQtPub.h \
-#    PubHead.h \
-#    MyComDatMgr.h \
-#    MyCompInfo.h \
-#    MyCompItem.h \
-#    MyPolylineItem.h \
-#    PushButtonEx.h \
     webaxwidget.h \
-    BorderlessWidget.h \
-#    FrmMain.h \
-#    DlgSetting.h \
-    MainWidget.h \
-#    MapWidget.h \
     CfgMgr.h \
     FileMgrBase.h \
-#    FormLanView.h \
     FormWeb.h \
     WorkFlow/cbaritem.h \
     WorkFlow/CGraphicsObjectItem.h \
@@ -45,25 +34,15 @@ HEADERS += \
     WorkFlow/cmypathitem.h \
     WorkFlow/coutitem.h \
     WorkFlow/cwidget.h \
-#    WorkFlow/dlgworkflow.h \
-    WorkFlow/tpsdevts.h
+    WorkFlow/tpsdevts.h \
+    BorderlessMainWnd.h \
+    MainWnd.h
 
 SOURCES += \
     main.cpp \
     XxwQtPub.cpp \
-#    MyComDatMgr.cpp \
-#    MyCompInfo.cpp \
-#    MyCompItem.cpp \
-#    MyPolylineItem.cpp \
-#    PushButtonEx.cpp \
-    BorderlessWidget.cpp \
-#    FrmMain.cpp \
-#    DlgSetting.cpp \
-    MainWidget.cpp \
-#    MapWidget.cpp \
     CfgMgr.cpp \
     FileMgrBase.cpp \
-#    FormLanView.cpp \
     FormWeb.cpp \
     WorkFlow/cbaritem.cpp \
     WorkFlow/cgraphicsobjectitem.cpp \
@@ -72,9 +51,9 @@ SOURCES += \
     WorkFlow/cmypathitem.cpp \
     WorkFlow/coutitem.cpp \
     WorkFlow/cwidget.cpp \
-#    WorkFlow/dlgworkflow.cpp \
-    WorkFlow/tpsdevts.cpp
-
+    WorkFlow/tpsdevts.cpp \
+    BorderlessMainWnd.cpp \
+    MainWnd.cpp
 
 
 CONFIG(debug, debug|release) {

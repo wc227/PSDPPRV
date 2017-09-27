@@ -1,8 +1,9 @@
 ﻿#include <QApplication>
-#include <QTextCodec>
+//#include <QTextCodec>
 #include <QFile>
 #include <QSharedMemory>
-#include "MainWidget.h"
+#include "MainWnd.h"
+#include <QDebug>
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +30,8 @@ int main(int argc, char *argv[])
         qApp->setStyleSheet(qss.readAll());
         qss.close();
 
-        MainWidget wnd;
+//        MainWidget wnd;
+        MainWnd wnd;
         wnd.show();
 
         return a.exec();

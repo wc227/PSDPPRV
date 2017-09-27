@@ -74,8 +74,8 @@ public:
         View = new CWidget;
         View->setObjectName(QStringLiteral("View"));
         gridLayout->addWidget(View, 1, 1, 1, 1);//居中显示
-
-//        View->setStyleSheet("CWidget#View{border:0px; background:transparent;}");//仅仅设置View无边框，背景透明，其子窗口和控件不受影响
+//        setStyleSheet(QStringLiteral("border-image: url(:/skin/bg);"));//显示背景图
+//        View->setStyleSheet(QStringLiteral("CWidget#View{border-image:none;border:0px; background:transparent;}"));//不显示背景图，无边框，背景透明
     }
 
     //设置文件配置路径
