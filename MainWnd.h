@@ -1,7 +1,7 @@
 ﻿#ifndef _MAINWND_H_20170927_
 #define _MAINWND_H_20170927_
 
-#include "BorderlessMainWnd.h"
+#include <QMainWindow>
 #include "WorkFlow/cwidget.h"
 #include "CfgMgr.h"
 #include <QProcess>
@@ -15,45 +15,46 @@ class QTabWidget;
 class QAction;
 class FormWebBase;
 class QListWidget;
+class CXxwDockWidget;
+class QTextEdit;
 QT_END_NAMESPACE
 
 
-class MainWnd : public BorderlessMainWnd
+class MainWnd : public QMainWindow
 {
     Q_OBJECT
 
 public:
     MainWnd(QWidget *parent = 0);
 
-    void InitUI();
+    //初始化界面
+    void initUI();
+
+    //创建可停靠窗口
+    void createDockWnd();
 
 protected:
-    void resizeEvent(QResizeEvent *event);
-
-    void mouseDoubleClickEvent(QMouseEvent *event);
-
     //初始化所有的动作
-    void InitActions();
+    void initActions();
 
 private slots:
-    //最大化或还原
-    void showMaxOrNormal();
-
     //激活标签页窗口
     void activeTab(int nTab);
 
     //刷新
-    void Refresh();
+    void refresh();
 
-private:
+    //显示隐藏可停靠窗口
+    void showDockWnds();
+
+private:    
+    QAction *m_actionRefresh;//刷新动作
+
     QWidget *m_wgtCentral;//中央主窗体
     QGridLayout *m_mainLayout;//主窗体的布局
     QHBoxLayout *m_titleBarLayout;//标题栏的布局
     QLabel *m_lblTitle;
     QLabel *m_lblTitleZone;//用来显示标题区域
-    QToolButton *m_btnMin;
-    QToolButton *m_btnMax;
-    QToolButton *m_btnClose;
     QTabWidget *m_tabMain;
 
     CNaviWidget *m_wndWorkFlow;//导航页面
@@ -62,16 +63,21 @@ private:
     FormWebBase *m_wndWebMap3;
     FormWebBase *m_wndWebBar;
 
-    QListWidget *customerList;
-    QListWidget *paragraphsList;
+    CXxwDockWidget *dock1;
+    QTextEdit *txt1;
+
+    CXxwDockWidget *dock2;
+    QTextEdit *txt2;
+
+    CXxwDockWidget *dock3;
+    QTextEdit *txt3;
+
+    CXxwDockWidget *dock4;
+    QTextEdit *txt4;
 
     bool m_arrTabInit[5];//标签页面是否初始化
 
     bool m_bWndMaxmized;//窗口是否最大化
-
-    QAction *m_pActionRefresh;//刷新动作
-
-    QProcess m_proHttpServer;//httpServer进程
 
     CfgMgr m_cfgMgr;//配置信息
 };

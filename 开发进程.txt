@@ -151,3 +151,9 @@ code: 0xc0000005: read access violation at: 0x0, flags=0x0 (first chance)
 2 添加了MainWnd类，该类的父类为BorderlessMainWnd类，以便能够在它里面添加QDockWidget可停靠子窗口。
 3 在MainWnd中可以添加可停靠的子窗口，但是，有一个问题：可停靠子窗口就好像在主窗口外一样，不处于主窗口的标题栏下。
 也就是说，如果主窗口是无边框的，则可停靠子窗口显示有可能有问题。
+
+
+2017.09.28
+1 将MainWnd类改成普通的主窗口，直接继承自QMainWindow，有边框有标题栏。
+2 添加了可停靠窗口类CXxxwDockWidget，可以显示或隐藏窗口标题栏。
+3 在主窗口MainWnd中添加了四个可停靠的子窗口，测试用。

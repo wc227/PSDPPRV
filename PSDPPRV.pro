@@ -35,8 +35,9 @@ HEADERS += \
     WorkFlow/coutitem.h \
     WorkFlow/cwidget.h \
     WorkFlow/tpsdevts.h \
-    BorderlessMainWnd.h \
-    MainWnd.h
+#    BorderlessMainWnd.h \
+    MainWnd.h \
+    XxwDockWidget.h
 
 SOURCES += \
     main.cpp \
@@ -52,7 +53,7 @@ SOURCES += \
     WorkFlow/coutitem.cpp \
     WorkFlow/cwidget.cpp \
     WorkFlow/tpsdevts.cpp \
-    BorderlessMainWnd.cpp \
+#    BorderlessMainWnd.cpp \
     MainWnd.cpp
 
 
