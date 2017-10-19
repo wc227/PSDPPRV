@@ -15,9 +15,10 @@ CItemPropertyDialog::CItemPropertyDialog(QWidget *parent) :
 
     ui->colorLabel->hide();
     ui->colorshowLabel->hide();
+    ui->setColorButton->hide();
+
     ui->fileNumberLabel->hide();
     ui->fileNumberlineEdit->hide();
-    ui->setColorButton->hide();
 }
 
 CItemPropertyDialog::~CItemPropertyDialog()
@@ -55,6 +56,9 @@ void CItemPropertyDialog::createConnect()
     //连接修改是否垂直的信号与槽
     connect(ui->checkBox, SIGNAL(stateChanged(int)),
             this, SLOT(SLOT_SetVertical(int)));
+    //连接修改是否循环动画的信号与槽
+    connect(ui->checkBox_Loop, SIGNAL(stateChanged(int)),
+            this, SLOT(SLOT_SetLoop(int)));
 }
 
 void CItemPropertyDialog::setPosXSpinBox(double x)
@@ -138,6 +142,11 @@ void CItemPropertyDialog::setCaptatinName(QString &name)
 void CItemPropertyDialog::setVerticalCheckBox(bool bCheckState)
 {
     ui->checkBox->setChecked(bCheckState);
+}
+
+void CItemPropertyDialog::setLoopCheckBox(bool bCheckState)
+{
+    ui->checkBox_Loop->setChecked(bCheckState);
 }
 
 void CItemPropertyDialog::setShowTimeLineEdit(int showTime)
@@ -236,7 +245,25 @@ void CItemPropertyDialog::SLOT_SetVertical(int checkState)
     }
 }
 
+
+void CItemPropertyDialog::SLOT_SetLoop(int checkState)
+{
+    if(checkState == Qt::Checked)
+    {
+        currentItem->enableLoopAnimation(true);
+    }
+    else
+    {
+        currentItem->enableLoopAnimation(false);
+    }
+}
+
 void CItemPropertyDialog::getItemPointer(QGraphicsItem *item)
 {
     currentItem = dynamic_cast<CBarItem*>(item);
+}
+
+void CItemPropertyDialog::on_btnOK_clicked()
+{
+    close();
 }

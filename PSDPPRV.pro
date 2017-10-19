@@ -4,7 +4,8 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets axcontainer
+#QT       += core gui widgets
+QT       += axcontainer charts
 
 RC_ICONS = earth.ico
 
@@ -35,9 +36,10 @@ HEADERS += \
     WorkFlow/coutitem.h \
     WorkFlow/cwidget.h \
     WorkFlow/tpsdevts.h \
-#    BorderlessMainWnd.h \
     MainWnd.h \
-    XxwDockWidget.h
+    XxwDockWidget.h \
+    WorkFlow/CWidgetWork.h \
+    CXBarChart.h
 
 SOURCES += \
     main.cpp \
@@ -53,8 +55,9 @@ SOURCES += \
     WorkFlow/coutitem.cpp \
     WorkFlow/cwidget.cpp \
     WorkFlow/tpsdevts.cpp \
-#    BorderlessMainWnd.cpp \
-    MainWnd.cpp
+    MainWnd.cpp \
+    WorkFlow/CWidgetWork.cpp \
+    CXBarChart.cpp
 
 
 CONFIG(debug, debug|release) {

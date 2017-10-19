@@ -43,49 +43,73 @@ COutItem::COutItem(bool isEditState) :
 
 void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if(b_IsEditState)
+//    if(b_IsEditState)
+//    {
+//        if (option->state & QStyle::State_Selected)
+//        {  //设置虚线
+//            QPen dashLinepen(Qt::black);
+//            dashLinepen.setWidth(1);
+//            dashLinepen.setStyle(Qt::DashLine);
+//            painter->setPen(dashLinepen);
+//            painter->drawRect(QRectF(0,0,m_Width,m_Height));
+//        }
+//    }
+
+//    if(!b_HoverEnter && !this->isSelected())
+//    {
+//      painter->setOpacity(0);
+//    }
+
+//    if(b_HoverEnter && !this->isSelected())
+//    {
+//        painter->setOpacity(1);
+//        painter->setPen(Qt::red);
+//    }
+
+//    painter->save();
+//    //反锯齿
+//    painter->setRenderHint(QPainter::Antialiasing,true);
+//    QPen p(Qt::red);
+//    p.setWidth(3);
+//    p.setJoinStyle(Qt::RoundJoin);
+//    painter->setPen(p);
+//    painter->drawPath(shape());////////////////
+//    painter->restore();
+
+//    if(b_IsEditState)
+//    {
+//        if (option->state & QStyle::State_Selected) {
+//            QPen borderSquarePen(Qt::gray);
+//            painter->setPen(borderSquarePen);
+//            painter->setBrush(Qt::gray);
+//            painter->setOpacity(0.7);
+//            createBorderSquare();
+//            drawBorderSquare(painter);
+//        }
+//    }
+
+    painter->save();
+
+    if(!b_HoverEnter && !isSelected())
     {
-        if (option->state & QStyle::State_Selected) {  //设置虚线
-            QPen dashLinepen(Qt::black);
-            dashLinepen.setWidth(1);
-            dashLinepen.setStyle(Qt::DashLine);
-            painter->setPen(dashLinepen);
-            painter->drawRect(QRectF(0,0,m_Width,m_Height));
-        }
+        painter->setOpacity(0);
     }
 
-    if(!b_HoverEnter && !this->isSelected())
-    {
-      painter->setOpacity(0);
-    }
-
-    if(b_HoverEnter && !this->isSelected())
+    if(b_HoverEnter && !isSelected())
     {
         painter->setOpacity(1);
         painter->setPen(Qt::red);
     }
 
-    painter->save();
-    //反锯齿
-    painter->setRenderHint(QPainter::Antialiasing,true);
+    painter->setRenderHint(QPainter::Antialiasing,true);//反锯齿
     QPen p(Qt::red);
     p.setWidth(3);
     p.setJoinStyle(Qt::RoundJoin);
     painter->setPen(p);
-    painter->drawPath(shape());////////////////
+    painter->drawRect(QRectF(0,0,m_Width,m_Height));
     painter->restore();
 
-    if(b_IsEditState)
-    {
-        if (option->state & QStyle::State_Selected) {
-            QPen borderSquarePen(Qt::gray);
-            painter->setPen(borderSquarePen);
-            painter->setBrush(Qt::gray);
-            painter->setOpacity(0.7);
-            createBorderSquare();
-            drawBorderSquare(painter);
-        }
-    }
+    CGraphicsObjectItem::paint(painter, option, widget);
 }
 
 void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

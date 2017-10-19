@@ -1,4 +1,4 @@
-<RCC>
+﻿<RCC>
     <qresource prefix="/sysButton">
         <file alias="arrow_down">img/sysButton/arrow_down.png</file>
         <file alias="close">img/sysButton/close.png</file>
@@ -65,7 +65,7 @@
         <file alias="loading">img/loading.gif</file>
         <file alias="loading1">img/loading1.gif</file>
         <file alias="loading2">img/loading2.gif</file>
-        <file>img/title.png</file>
+        <file alias="title">img/title.png</file>
     </qresource>
     <qresource prefix="/toolWidget">
         <file alias="gongNeng">img/toolWidget/gongNeng.png</file>

@@ -1,10 +1,16 @@
-﻿#ifndef _MAINWND_H_20170927_
-#define _MAINWND_H_20170927_
+﻿#ifndef _MAINWND_H_20170928_
+#define _MAINWND_H_20170928_
 
 #include <QMainWindow>
-#include "WorkFlow/cwidget.h"
+#include "WorkFlow/CWidgetWork.h"
 #include "CfgMgr.h"
 #include <QProcess>
+//#include "NXDockWidget/NXDockWidget.h"
+
+#include <QChartGlobal>
+#include <QtCharts/QChartView>
+
+QT_CHARTS_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
@@ -17,8 +23,8 @@ class FormWebBase;
 class QListWidget;
 class CXxwDockWidget;
 class QTextEdit;
+class ThemeWidget;
 QT_END_NAMESPACE
-
 
 class MainWnd : public QMainWindow
 {
@@ -32,6 +38,8 @@ public:
 
     //创建可停靠窗口
     void createDockWnd();
+
+    void createBarChart();
 
 protected:
     //初始化所有的动作
@@ -57,11 +65,13 @@ private:
     QLabel *m_lblTitleZone;//用来显示标题区域
     QTabWidget *m_tabMain;
 
-    CNaviWidget *m_wndWorkFlow;//导航页面
+    CWidgetWork *m_wndWorkFlow;//导航页面
     FormWebBase *m_wndWebMap1;
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;
-    FormWebBase *m_wndWebBar;
+//    ThemeWidget *m_wndCharts;
+    QChartView *m_chartView;
+
 
     CXxwDockWidget *dock1;
     QTextEdit *txt1;
@@ -82,4 +92,4 @@ private:
     CfgMgr m_cfgMgr;//配置信息
 };
 
-#endif // _MAINWND_H_20170927_
+#endif // _MAINWND_H_20170928_

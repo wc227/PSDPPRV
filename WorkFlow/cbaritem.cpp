@@ -2,14 +2,19 @@
 
 CBarItem::CBarItem(bool isEditState):
     CGraphicsObjectItem(isEditState),
-    m_ShowTime(2000)
+    m_pAnimation(0),
+    m_ShowTime(2000),
+    m_widthAni(m_Width)
 {
+    m_bLoopAnimation = false;
+
+    if(isEditState)
+        setVisible(true);//编辑态显示
+    else
+        setVisible(false);//运行态不显示，只有执行动画时才显示
+
     setZValue(1);
-    p = new QPropertyAnimation(this, "sizeChange");
-    p->setDuration(m_ShowTime);
-//    p->setStartValue(QRectF(0,0,0,m_Height));
-//    p->setEndValue(QRectF(0,0,m_Width,m_Height));
-//    this->rotate(270);
+    initAnimation();
 }
 
 QRectF CBarItem::getAnmationSize()
@@ -17,9 +22,11 @@ QRectF CBarItem::getAnmationSize()
     return QRectF(0,0,m_Width,m_Height);
 }
 
-void CBarItem::setAnmationSize(QRectF s)
+void CBarItem::setAnmationSize(QRectF sz)
 {
-    setSize(s.width(), s.height());
+    m_Width = sz.width();
+    m_Height = sz.height();
+    update();
 }
 
 void CBarItem::setSize(int width, int height)
@@ -27,6 +34,13 @@ void CBarItem::setSize(int width, int height)
     m_Width = width;
     m_Height = height;
     update();
+
+    m_widthAni = width;
+    if(m_pAnimation)
+    {
+        m_pAnimation->setStartValue(QRectF(0,0,0,m_Height));
+        m_pAnimation->setEndValue(QRectF(0,0,m_widthAni,m_Height));
+    }
 }
 
 int CBarItem::getEventNumber()
@@ -34,38 +48,21 @@ int CBarItem::getEventNumber()
     return m_EventNumber;
 }
 
-QPointF CBarItem::m_Geometry() const
-{
-    return this->pos();
-}
+//QPointF CBarItem::Geometry() const
+//{
+//    return this->pos();
+//}
 
-void CBarItem::m_SetGeometry(QPointF p)
-{
-    setPos(p);
-}
-
-//运行动画
-void CBarItem::startAnimation()
-{
-    if(p->state() == p->Stopped)//判断动画是否停止
-    {
-        this->show();//显示该对象
-        if(p->startValue().toRectF() != QRectF(0,0,0,m_Height))
-            p->setStartValue(QRectF(0,0,0,m_Height));
-
-        if(p->endValue().toRectF() != QRectF(0,0,m_Width,m_Height))
-            p->setEndValue(QRectF(0,0,m_Width,m_Height));
-
-        width = m_Width;
-        p->start();//运行动画
-    }
-}
+//void CBarItem::SetGeometry(QPointF p)
+//{
+//    setPos(p);
+//}
 
 //更新大小
-QRectF CBarItem::updateRect()
-{
-    return QRectF(this->scenePos(), QSize(m_Width, m_Height));
-}
+//QRectF CBarItem::updateRect()
+//{
+//    return QRectF(this->scenePos(), QSize(m_Width, m_Height));
+//}
 
 //获取显示时间
 int CBarItem::getShowTime()
@@ -77,7 +74,8 @@ int CBarItem::getShowTime()
 void CBarItem::setShowTime(int time)
 {
     m_ShowTime = time*1000;
-    p->setDuration(m_ShowTime);
+    if(m_pAnimation)
+        m_pAnimation->setDuration(m_ShowTime);
 }
 
 void CBarItem::setCaptainName(const QString &name)
@@ -90,59 +88,6 @@ QString CBarItem::getCaptainName()
     return m_CaptainName;
 }
 
-//重绘
-void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-//    painter->setPen(Qt::white);
-    painter->setPen(Qt::NoPen);
-
-    if(b_IsEditState)
-    {
-        if (option->state & QStyle::State_Selected) {  //设置虚线
-            QPen dashLinepen(Qt::black);
-            dashLinepen.setWidth(1);
-            dashLinepen.setStyle(Qt::DashLine);
-            painter->setPen(dashLinepen);
-        }
-    }
-//    painter->setOpacity(1);
-
-    QLinearGradient linearGradient(0,0,0,m_Height);
-    linearGradient.setColorAt(0.2, Qt::white);
-    linearGradient.setColorAt(0.6, Qt::green);
-    linearGradient.setColorAt(1.0, Qt::black);
-    painter->setBrush(QBrush(linearGradient));
-
-    painter->drawRect(QRectF(0, 0, m_Width, m_Height));
-
-    if(b_IsEditState)
-    {
-        if (option->state & QStyle::State_Selected) {
-            QPen borderSquarePen(Qt::gray);
-            painter->setPen(borderSquarePen);
-//            painter->setBrush(Qt::gray);
-//            painter->setOpacity(0.7);
-            createBorderSquare();
-            drawBorderSquare(painter);
-        }
-    }
-
-    if(!b_IsEditState && width == m_Width)
-        this->hide();
-
-//    CGraphicsObjectItem::paint(painter, option, widget);
-}
-
-void CBarItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
-    qDebug() << "sss";
-}
-
-void CBarItem::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
-{
-    CGraphicsObjectItem::mouseMoveEvent(event);
-}
-
 void CBarItem::setEventNumber(QString evts)
 {
 	m_EventNumbers = evts;
@@ -151,4 +96,62 @@ void CBarItem::setEventNumber(QString evts)
 QString CBarItem::getEventNumbers()
 {
 	return m_EventNumbers;
+}
+
+void CBarItem::enableLoopAnimation(bool loop)
+{
+    m_bLoopAnimation = loop;
+    if(m_bLoopAnimation && m_pAnimation)
+        connect(m_pAnimation, &QPropertyAnimation::finished,this,&CBarItem::startAnimation);//可循环动画
+}
+
+bool CBarItem::isLoopAnimation()
+{
+    return m_bLoopAnimation;
+}
+
+//重绘
+void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    //渐变色充填
+//    QLinearGradient linearGradient(0,0,0,m_Height);
+//    linearGradient.setColorAt(0, Qt::green);
+//    linearGradient.setColorAt(0.5, Qt::white);
+//    linearGradient.setColorAt(1.0, Qt::green);
+//    painter->fillPath(shape(),QBrush(linearGradient));
+    painter->fillPath(shape(),QBrush(Qt::green));
+
+    CGraphicsObjectItem::paint(painter,option,widget);
+
+    if(!b_IsEditState && m_widthAni == m_Width)
+        this->hide();
+}
+
+//初始化动画
+void CBarItem::initAnimation()
+{
+    if(!m_pAnimation)
+        m_pAnimation = new QPropertyAnimation(this, "anmationSize");
+
+    m_pAnimation->setDuration(m_ShowTime);
+    m_pAnimation->setStartValue(QRectF(0,0,0,m_Height));
+    m_pAnimation->setEndValue(QRectF(0,0,m_Width,m_Height));
+}
+
+//运行动画
+void CBarItem::startAnimation()
+{
+    if(!m_pAnimation)
+        initAnimation();
+
+    if(m_pAnimation->state() == QAbstractAnimation::Stopped)//判断动画是否停止
+    {
+        show();//显示该对象
+
+        m_pAnimation->setDuration(m_ShowTime);
+        m_pAnimation->setStartValue(QRectF(0,0,0,m_Height));
+        m_pAnimation->setEndValue(QRectF(0,0,m_widthAni,m_Height));
+
+        m_pAnimation->start();//运行动画
+    }
 }

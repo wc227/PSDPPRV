@@ -65,6 +65,8 @@ public:
 
     void setVerticalCheckBox(bool);
 
+    void setLoopCheckBox(bool);
+
     void setShowTimeLineEdit(int showTime);
 
 private:
@@ -131,6 +133,10 @@ private slots:
       ** 参数： 用于获得checkState(int)中参数;
       **/
     void SLOT_SetVertical(int);
+
+    void SLOT_SetLoop(int);
+
+    void on_btnOK_clicked();
 };
 
 #endif // CITEMPROPERTYDIALOG_H

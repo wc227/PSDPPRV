@@ -157,3 +157,10 @@ code: 0xc0000005: read access violation at: 0x0, flags=0x0 (first chance)
 1 将MainWnd类改成普通的主窗口，直接继承自QMainWindow，有边框有标题栏。
 2 添加了可停靠窗口类CXxxwDockWidget，可以显示或隐藏窗口标题栏。
 3 在主窗口MainWnd中添加了四个可停靠的子窗口，测试用。
+
+
+20171019
+1 添加了一个测试用的动态堆积柱形图页面
+2 改进了CBarItem类的绘制和动画显示机制，更简洁易用
+3 CBarItem类添加了可以控制是否循环动画的功能，同时在配置文件cfg.ini中也做了相应的修改。
+4 修改了citempropertydialog界面类

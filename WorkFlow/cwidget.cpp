@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QPushButton>
 
 
 //long ShareMemoryBuild();
@@ -25,17 +26,16 @@ typedef int(*FUN5)(int);
 
 CWidget::CWidget(QWidget *parent)
 	: QGraphicsView(parent)
-{	    
-//    setWindowFlags(Qt::FramelessWindowHint);//无边框
-
+{
 	//this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    setStyleSheet("CWidget{border:0px; background:transparent;}");//仅仅设置CWidget类对象无边框，背景透明，其子窗口和控件不受影响
-//    setStyleSheet("border:0px; background:transparent;");//无边框，背景透明(子控件和子窗口都会显示无边框和透明背景)
+    setObjectName(QStringLiteral("CWidget"));
+    setStyleSheet(QStringLiteral("CWidget{border-image:none; border:0px; background:transparent;}"));//仅仅设置CWidget类对象无边框，背景透明，其子窗口和控件不受影响
 
-    m_Scene = new CGraphicsScene(0,0,500,300);
+    m_Scene = new CGraphicsScene(0,0,1200,900);
     setScene(m_Scene);
+    resize(1200,900);//尽量大
 
 /***********************************************************************/
 
@@ -66,7 +66,8 @@ void CWidget::setFileCfg(const QString &path)
     m_bIsEdit = s->value("editState/isEdit", 1).toBool();
 
     m_Scene->b_IsEdit = m_bIsEdit; //用于是否产生右键菜单，编辑状态下产生
-    s->setIniCodec(QTextCodec::codecForLocale());
+//    s->setIniCodec(QTextCodec::codecForLocale());
+    s->setIniCodec(QTextCodec::codecForName("UTF-8"));
     m_sFileBackPic = s->value("background/pic").toString();
 
     if(m_bIsEdit)
@@ -107,8 +108,8 @@ void CWidget::initBack()
 
     //设定窗体的大小
     QPixmap pixmap(m_sFileBackPic);
-//  this->setFixedSize(pixmap.size());
-//	this->resize(pixmap.size());
+//    setFixedSize(pixmap.size());
+    resize(pixmap.size());
 
     m_Scene->setSceneRect(0,0, pixmap.width(), pixmap.height());
 
@@ -120,6 +121,7 @@ void CWidget::initBack()
 void CWidget::initAllItems()
 {
     QSettings saveInSettings(m_sFileCfg,QSettings::IniFormat);
+    saveInSettings.setIniCodec(QTextCodec::codecForName("UTF-8"));
 
     QStringList allkeys;
     QString value;
@@ -239,10 +241,18 @@ void CWidget::stringToItemData(QString data, QString type)
 //                    value.remove("fileNumber:", Qt::CaseInsensitive);
 //                    fileNumber = value.toInt();
 //                }
-                else if(value.contains("m_nTimeShow:", Qt::CaseInsensitive))
+                else if(value.contains("aniTime:", Qt::CaseInsensitive))
                 {
-                    value.remove("m_nTimeShow:", Qt::CaseInsensitive);
+                    value.remove("aniTime:", Qt::CaseInsensitive);
                     item->setShowTime(value.toInt());
+                }
+                else if(value.contains("loop:", Qt::CaseInsensitive))
+                {
+                    value.remove("loop:", Qt::CaseInsensitive);
+                    if(value.toInt() == 1)
+                        item->enableLoopAnimation(true);
+                    else if(value.toInt() == 0)
+                        item->enableLoopAnimation(false);
                 }
             }
         }
@@ -304,7 +314,16 @@ void CWidget::stringToItemData(QString data, QString type)
                 }
             }
         }
-        this->m_Scene->addItem(item);
+        m_Scene->addItem(item);
+
+
+        if(!m_bIsEdit)
+        {
+            QPushButton *btn = new QPushButton;
+            m_Scene->addWidget(btn);
+            btn->move(item->pos().x(),item->pos().y());
+            btn->resize(item->m_Width,item->m_Height);
+        }
     }
 }
 
@@ -314,11 +333,12 @@ void CWidget::saveToIniFile()
         return;
 
     QSettings saveInSettings(m_sFileCfg,QSettings::IniFormat);
-    saveInSettings.setIniCodec(QTextCodec::codecForLocale());
+//    saveInSettings.setIniCodec(QTextCodec::codecForLocale());
+    saveInSettings.setIniCodec(QTextCodec::codecForName("UTF-8"));
 
     saveInSettings.clear();
     saveInSettings.setValue("background/pic",m_sFileBackPic);
-    saveInSettings.setValue("editState/isEdit",!m_bIsEdit);
+    saveInSettings.setValue("editState/isEdit",m_bIsEdit);
 
     int i=0,j=0;
     QString group;
@@ -326,7 +346,8 @@ void CWidget::saveToIniFile()
 //    m_Scene->items()包括了item中Widget的项，所以counts = 2 * item的count()
 
     qDebug() << saveInSettings.group();
-    foreach (QGraphicsItem *item, m_Scene->items()) {
+    foreach (QGraphicsItem *item, m_Scene->items())
+    {
         if(item->type() == CBarItem::Type)
         {
             group = "In";
@@ -337,14 +358,14 @@ void CWidget::saveToIniFile()
 
             key = "InItem" + QString::number(++i);
 
-            QString value = QString("{pos:%1; size:%2; rotate:%3; name:%4; eventNumber:%5; fileNumber:%6; m_nTimeShow:%7}")
+            QString value = QString("{pos:%1; size:%2; rotate:%3; name:%4; eventNumber:%5; aniTime:%6; loop:%7}")
                     .arg(QString("%1,%2").arg(currentItem->pos().x()).arg(currentItem->pos().y()))//%1
                     .arg(QString("%1,%2").arg(currentItem->m_Width).arg(currentItem->m_Height))//%2
                     .arg(QString::number(currentItem->rotation()))//%3
                     .arg(currentItem->getCaptainName())//%4
                     .arg(currentItem->getEventNumbers())
-                    .arg(" ")
-                    .arg(currentItem->getShowTime());
+                    .arg(currentItem->getShowTime())
+                    .arg(currentItem->isLoopAnimation());
             saveInSettings.setValue(key,value);
 
             saveInSettings.endGroup();
