@@ -63,7 +63,8 @@ QString& CXxwQtPub::trimeLeftRight(QString& str,QChar c)
 //静态函数：将文件路径标准化（qt默认路径分隔符是'/',而不是'\\'）
 void CXxwQtPub::standardFilePath(QString &filePath)
 {
-    filePath.replace('\\','/');
+//    filePath.replace('\\','/');
+    filePath = QDir::toNativeSeparators(filePath);
 }
 
 
@@ -252,4 +253,51 @@ QFileInfoList CXxwQtPub::GetFileList(QString path, bool bInSub)
     }
 
     return file_list;
+}
+
+// 复制文件路径
+bool CXxwQtPub::copyRecursively(const QString &srcFilePath,
+                            const QString &tgtFilePath)
+{
+    QFileInfo srcFileInfo(srcFilePath);
+    if (srcFileInfo.isDir()) {
+        QDir targetDir(tgtFilePath);
+        targetDir.cdUp();
+        if (!targetDir.mkdir(QFileInfo(tgtFilePath).fileName()))
+            return false;
+        QDir sourceDir(srcFilePath);
+        QStringList fileNames = sourceDir.entryList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+        foreach (const QString &fileName, fileNames) {
+            const QString newSrcFilePath
+                    = srcFilePath + QLatin1Char('/') + fileName;
+            const QString newTgtFilePath
+                    = tgtFilePath + QLatin1Char('/') + fileName;
+            if (!copyRecursively(newSrcFilePath, newTgtFilePath))
+                return false;
+        }
+    } else {
+        if (!QFile::copy(srcFilePath, tgtFilePath))
+            return false;
+    }
+    return true;
+}
+
+//清空文件夹目录，保留目录
+void CXxwQtPub::clearDir(QString sDir)
+{
+    QDir dir(sDir);
+    if(!dir.exists())
+        return;
+
+    QFileInfoList file_list = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot | QDir::Hidden | QDir::System);
+    foreach (QFileInfo fi, file_list) {
+        if(fi.isFile() || fi.isSymLink()){
+            QFile::setPermissions(fi.absoluteFilePath(), QFile::WriteOwner);//修改权限，使得可以删除
+            QFile::remove(fi.absoluteFilePath());
+        }
+        else if(fi.isDir()) {
+            QDir dir(fi.absoluteFilePath());
+            dir.removeRecursively();
+        }
+    }
 }

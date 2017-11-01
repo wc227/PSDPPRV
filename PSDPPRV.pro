@@ -39,7 +39,9 @@ HEADERS += \
     MainWnd.h \
     XxwDockWidget.h \
     WorkFlow/CWidgetWork.h \
-    CXBarChart.h
+    XBar.h \
+    XBarChart.h \
+    FileMgrDIDX.h
 
 SOURCES += \
     main.cpp \
@@ -57,7 +59,9 @@ SOURCES += \
     WorkFlow/tpsdevts.cpp \
     MainWnd.cpp \
     WorkFlow/CWidgetWork.cpp \
-    CXBarChart.cpp
+    XBar.cpp \
+    XBarChart.cpp \
+    FileMgrDIDX.cpp
 
 
 CONFIG(debug, debug|release) {

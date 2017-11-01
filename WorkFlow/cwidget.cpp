@@ -323,6 +323,8 @@ void CWidget::stringToItemData(QString data, QString type)
             m_Scene->addWidget(btn);
             btn->move(item->pos().x(),item->pos().y());
             btn->resize(item->m_Width,item->m_Height);
+            btn->setText(item->getCaptainName());
+            connect(btn,&QPushButton::clicked,this,&CWidget::btnClickTest);
         }
     }
 }
@@ -404,6 +406,14 @@ void CWidget::SLOT_EvtFileChange(int e)
         if (EVTFileChange)
             EVTFileChange(e,1);
     }
+}
+
+//单击按钮测试
+void CWidget::btnClickTest()
+{
+    QPushButton* btn = dynamic_cast<QPushButton*>(this->sender());
+    QString sMsg = QString("%1被单击").arg(btn->text());
+    QMessageBox::information(this,"提示",sMsg,QMessageBox::Ok);
 }
 
 void CWidget::timerEvent(QTimerEvent *)

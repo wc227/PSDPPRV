@@ -43,6 +43,7 @@ private:
 public slots:
     virtual void setFileCfg(const QString &path); //设置配置文件路径
     void SLOT_EvtFileChange(int);	//事件号改变
+    void btnClickTest();//单击按钮测试
 
 public:
     void timerEvent(QTimerEvent *);  //定时器检测事件号是否发生改变

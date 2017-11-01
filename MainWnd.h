@@ -5,12 +5,8 @@
 #include "WorkFlow/CWidgetWork.h"
 #include "CfgMgr.h"
 #include <QProcess>
-//#include "NXDockWidget/NXDockWidget.h"
+#include "XBarChart.h"
 
-#include <QChartGlobal>
-#include <QtCharts/QChartView>
-
-QT_CHARTS_USE_NAMESPACE
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
@@ -69,9 +65,7 @@ private:
     FormWebBase *m_wndWebMap1;
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;
-//    ThemeWidget *m_wndCharts;
-    QChartView *m_chartView;
-
+    XBarChart *m_chartView;
 
     CXxwDockWidget *dock1;
     QTextEdit *txt1;

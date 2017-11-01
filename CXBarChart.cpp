@@ -5,6 +5,9 @@
 
 QT_CHARTS_USE_NAMESPACE
 
+
+int CXBarChart::s_step = 0;
+
 CXBarChart::CXBarChart(QGraphicsItem *parent, Qt::WindowFlags wFlags):
     QChart(QChart::ChartTypeCartesian, parent, wFlags),
     m_series(0),
@@ -64,7 +67,7 @@ void CXBarChart::initChart()
 
     //!create x axis
     for(int i1 = 0; i1 < nCat; ++i1)
-        m_categories << QString("%1月").arg(i1+1);
+        m_categories << QString("%1").arg(++s_step);
     m_axisX = new QBarCategoryAxis();
     m_axisX->append(m_categories);
     m_axisX->setTitleText("月份");//设置轴标题，默认为空
@@ -119,23 +122,41 @@ void CXBarChart::initChart()
 void CXBarChart::updateChart()
 {
     int nValueMax = 10;
-    m_series->barSets();
+//    if(m_series && m_series->barSets().count() > 0)
+//    {
+//        foreach (QBarSet* set, m_series->barSets())
+//        {
+//            if(set)
+//            {
+//                //删除所有数据
+//                if(set->count() > 0)
+//                    set->remove(0,set->count());
+//                //添加新数据
+//                for(int i1 = 0; i1 < 6; ++i1)
+//                {
+//                    set->append(qrand() % nValueMax);
+//                }
+//            }
+//        }
+//    }
+
     if(m_series && m_series->barSets().count() > 0)
     {
         foreach (QBarSet* set, m_series->barSets())
         {
             if(set)
             {
-                //删除所有数据
                 if(set->count() > 0)
-                    set->remove(0,set->count());
-                //添加新数据
-                for(int i1 = 0; i1 < 6; ++i1)
                 {
-                    set->append(qrand() % nValueMax);
+                    set->remove(0);//删除开头的数据
+                    set->append(qrand() % nValueMax);//在末尾添加新数据
                 }
             }
         }
     }
-}
 
+    m_axisX->clear();
+    m_categories.removeFirst();
+    m_categories.append(QString("%1").arg(++s_step));
+    m_axisX->append(m_categories);
+}

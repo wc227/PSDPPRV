@@ -73,6 +73,13 @@ QString currentExeFilePath();
 ///
 QFileInfoList GetFileList(QString path, bool bInSub = true);
 
+// 复制文件路径
+bool copyRecursively(const QString &srcFilePath,
+                            const QString &tgtFilePath);
+
+//清空文件夹目录，保留目录
+void clearDir(QString sDir);
+
 }
 
 #endif // CXXWPUBQT_H

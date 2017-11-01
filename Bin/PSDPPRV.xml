@@ -15,7 +15,7 @@
 	<FileCfg>
 		<key>file_lan</key>
 		<value><![CDATA[D:/DKY/20170721_PSDPPRV/Doc/cfg.ini]]></value>
-		<comment>局域网工作状态</comment>
+		<comment>局域网工作状态配置文件</comment>
 	</FileCfg>
 	
 	<FileCfg>
@@ -37,8 +37,14 @@
 	</FileCfg>
 	
 	<FileCfg>
-		<key>url_bar</key>
-		<value><![CDATA[http://localhost:8080/bar/?path=E:/DKY/04_OtherPeople/ChenRui/bar/test.txt&color=D:/DKY/04_OtherPeople/ChenRui/bar/color/]]></value>
+		<key>file_bar</key>
+		<value><![CDATA[D:\DKY\20170721_PSDPPRV\Doc\BPA.DIDX]]></value>
 		<comment>场站数据时序状态图</comment>
+	</FileCfg>
+	
+	<FileCfg>
+		<key>file_color</key>
+		<value><![CDATA[D:\DKY\20170721_PSDPPRV\Doc\colorcfg.ini]]></value>
+		<comment>颜色配置文件</comment>
 	</FileCfg>
 </PSDPPRV>

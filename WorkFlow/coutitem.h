@@ -9,6 +9,7 @@
 #include "cgraphicsscene.h"
 #include <QLabel>
 #include <QComboBox>
+#include <QPushButton>
 
 #ifndef  EVT_FILE_TYPE
 #define  EVT_FILE_TYPE      0       //201402020 文件事件类型
@@ -65,6 +66,8 @@ private:
     QComboBox *m_pShapeComBox;
     int nShape;
 
+    QPushButton *m_pBtnOK;
+
     bool bDataIsChanged;        //用于弹出窗口是否修改；
     COutItem *m_CurrentItem;
 public slots:
@@ -99,7 +102,6 @@ signals:
 private:
 //    QList<int> m_TaskNumbers;
     int nShape;            //设置显示形状
-    QString m_Name;
     QString m_TaskNumber; //用于将m_TaskNumbers数组列表转换成字符串返回;
     QList<QString> m_TaskNumbersList;
 

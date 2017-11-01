@@ -4,10 +4,7 @@
 
 FileMgrBase::FileMgrBase(QString sFile)
 {
-    m_nTimeLastModify = 0;
     m_sFileName = sFile;
-    if(QFile::exists(m_sFileName))
-        m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
 }
 
     //设置文件名称（含绝对路径）
@@ -18,8 +15,7 @@ void FileMgrBase::setFileName(const QString& sFile)
         return;//如果文件名没有改变，且文件没有改变，就不用重新打开文件
     }
     m_sFileName = sFile;
-    if(QFile::exists(m_sFileName))
-        m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
+    m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
     openFile();
 }
 

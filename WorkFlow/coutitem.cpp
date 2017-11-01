@@ -148,13 +148,13 @@ void COutItem::setEventNumber(const QString &eventNumbers)
 
 QString COutItem::getCaptainName()
 {
-    return m_Name;
+    return m_CaptainName;
 }
 
 void COutItem::setCaptainName(const QString &name)
 {
-    m_Name = name;
-    qDebug() << m_Name;
+    m_CaptainName = name;
+    qDebug() << m_CaptainName;
 }
 
 int COutItem::getShape()
@@ -391,11 +391,20 @@ COutItemPropertyDialog::COutItemPropertyDialog(QWidget *parent, COutItem *curren
 
     pShapeLayout->addWidget(m_pShapeLabel);
     pShapeLayout->addWidget(m_pShapeComBox);
+    m_pShapeLabel->setEnabled(false);
+    m_pShapeComBox->setEnabled(false);
+
+    m_pBtnOK = new QPushButton("关闭");
+    m_pBtnOK->setDefault(true);
+    m_pBtnOK->setMinimumSize(60,25);
+    m_pBtnOK->setMaximumSize(60,25);
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
     pMainLayout->addLayout(pNameLayout);
     pMainLayout->addLayout(pEventLayout);
     pMainLayout->addLayout(pShapeLayout);
+    pMainLayout->addWidget(m_pBtnOK);
+    pMainLayout->setAlignment(m_pBtnOK,Qt::AlignHCenter);
 
     this->setLayout(pMainLayout);
 
@@ -412,8 +421,9 @@ COutItemPropertyDialog::COutItemPropertyDialog(QWidget *parent, COutItem *curren
             this, SLOT(SLOT_NameLineEditChanged()));
     connect(m_pShapeComBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(SLOT_ShapeComboxChanged(int)));
+    connect(m_pBtnOK,&QPushButton::clicked,this,&COutItemPropertyDialog::close);
 
-    this->setWindowTitle(tr("Save"));
+    this->setWindowTitle(tr("属性"));
 }
 
 COutItemPropertyDialog::~COutItemPropertyDialog()

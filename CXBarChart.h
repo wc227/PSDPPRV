@@ -28,6 +28,8 @@ private:
     QStringList m_categories;
     QStackedBarSeries *m_series;
     QBarCategoryAxis *m_axisX;
+
+    static int s_step;
 };
 
 #endif // CXBARCHART_H

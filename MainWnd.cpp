@@ -11,22 +11,6 @@
 #include <QTextEdit>
 #include "XxwDockWidget.h"
 
-//#include <QTreeWidget>
-//#include <QListView>
-//#include <QFileSystemModel>
-//#include <QPushButton>
-//#include <QRadioButton>
-//#include <QCheckBox>
-//#include <QFormLayout>
-//#include <QSpinBox>
-//#include <QLineEdit>
-
-#include <QtCharts/QBarSet>
-#include <QtCharts/QStackedBarSeries>
-#include <QtCharts/QLegend>
-#include <QtCharts/QBarCategoryAxis>
-#include "CXBarChart.h"
-
 MainWnd::MainWnd(QWidget *parent)
     :QMainWindow(parent)
 {
@@ -42,6 +26,7 @@ MainWnd::MainWnd(QWidget *parent)
     for(int i = 0 ; i < 5; ++i)
         m_arrTabInit[i] = false;
 
+    //读取配置文件
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
     m_cfgMgr.setFileName(sFileCfg);
 
@@ -98,12 +83,19 @@ void MainWnd::initUI()
     m_wndWebMap3 = new FormWebBase();
     m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("匹配项全景感知分析关联图"));
 
-//    m_wndCharts = new ThemeWidget();
-//    m_tabMain->addTab(m_wndCharts/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("QtCharts示例"));
-
     createBarChart();
     if(m_chartView)
+    {
+        QString sFileColor("");
+        m_cfgMgr.getValue("file_color",sFileColor);
+        m_chartView->setColorCfgFile(sFileColor);
+
+        QString sFileDidx("");
+        m_cfgMgr.getValue("file_bar",sFileDidx);
+        m_chartView->setFileData(sFileDidx);
+
         m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("动态堆积柱状图"));
+    }
 
     m_tabMain->setCurrentIndex(0);
 
@@ -145,7 +137,7 @@ void MainWnd::createDockWnd()
     dock1->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
     dock1->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
     txt1 = new QTextEdit(dock1);
-    txt1->setObjectName(QStringLiteral("txt1"));
+    txt1->setObjectName(QStringLiteral("Output1"));
     txt1->setStyleSheet("#txt1{border:0px; }");
     txt1->setText("111");
     dock1->setWidget(txt1);
@@ -154,7 +146,7 @@ void MainWnd::createDockWnd()
     dock2->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
     dock2->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
     txt2 = new QTextEdit(dock2);
-    txt2->setObjectName(QStringLiteral("txt2"));
+    txt2->setObjectName(QStringLiteral("Output2"));
     txt2->setStyleSheet("#txt2{border:0px; }");
     txt2->setText("222");
     dock2->setWidget(txt2);
@@ -163,7 +155,7 @@ void MainWnd::createDockWnd()
     dock3->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
     dock3->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
     txt3 = new QTextEdit(dock3);
-    txt3->setObjectName(QStringLiteral("txt3"));
+    txt3->setObjectName(QStringLiteral("Output3"));
     txt3->setStyleSheet("#txt3{border:0px; }");
     txt3->setText("333");
     dock3->setWidget(txt3);
@@ -172,7 +164,7 @@ void MainWnd::createDockWnd()
     dock4->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
     dock4->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
     txt4 = new QTextEdit(dock4);
-    txt4->setObjectName(QStringLiteral("txt4"));
+    txt4->setObjectName(QStringLiteral("Output4"));
     txt4->setStyleSheet("#txt4{border:0px; }");
     txt4->setText("444");
     dock4->setWidget(txt4);
@@ -202,72 +194,6 @@ void MainWnd::createDockWnd()
 //    tabifyDockWidget(dock2,dock3);//添加dock3和dock2合并成tab
     tabifyDockWidget(dock3,dock4);//添加dock4和dock3合并成tab
     dock3->raise();
-
-
-//！使用NXDockWidget实现可停靠窗口，失败？
-//    NXDockWidget* fileDockWidget = new NXDockWidget("File Explorer");
-//    addDockWidget(Qt::LeftDockWidgetArea, fileDockWidget);
-
-//    QFileSystemModel* fsModel = new QFileSystemModel;
-//    fsModel->setRootPath(QDir::currentPath());
-
-//    QTreeView* fileTreeView = new QTreeView();
-//    fileTreeView->setModel(fsModel);
-//    fileTreeView->setRootIndex(fsModel->index(QDir::currentPath()));
-
-//    fileDockWidget->setWidget(fileTreeView);
-
-//    //------------------------------------------------------------------------
-//    // Create the dockwidget that display list names of some Qt classes
-//    //------------------------------------------------------------------------
-
-//    NXDockWidget* strListDockWidget = new NXDockWidget("Class View");
-//    addDockWidget(Qt::RightDockWidgetArea, strListDockWidget);
-
-//    QStringListModel* slModel = new QStringListModel();
-//    QStringList classList;
-//    classList << "QWidget" << "QPushButton" << "QImage" << "QCheckBox" << "QWindow" << "QTextEdit" << "QScrollBar" << "QPoint";
-//    slModel->setStringList(classList);
-
-//    QListView* strView = new QListView();
-//    strView->setModel(slModel);
-
-//    strListDockWidget->setWidget(strView);
-
-//    //------------------------------------------------------------------------
-//    // Create the dockwidget that display list of some standard widgets
-//    //------------------------------------------------------------------------
-
-//    NXDockWidget* toolBoxDockWidget = new NXDockWidget("Tool Box");
-
-//    QWidget* toolBox = new QWidget();
-//    QFormLayout* formLayout = new QFormLayout();
-//    formLayout->setLabelAlignment(Qt::AlignRight);
-//    toolBox->setLayout(formLayout);
-
-//    formLayout->addRow("Push Button", new QPushButton("OK"));
-//    formLayout->addRow("Tool Button", new QToolButton());
-//    formLayout->addRow("Radio Button", new QRadioButton());
-//    formLayout->addRow("Check Box", new QCheckBox());
-//    formLayout->addRow("Spin Box", new QSpinBox());
-//    formLayout->addRow("Line Edit", new QLineEdit());
-//    formLayout->addRow("Combo Box", new QComboBox());
-
-//    toolBoxDockWidget->setWidget(toolBox);
-//    addDockWidget(Qt::RightDockWidgetArea, toolBoxDockWidget);
-
-//    //------------------------------------------------------------------------
-//    // Create the dockwidget that display a text edit widget
-//    //------------------------------------------------------------------------
-
-//    NXDockWidget* outputDockWidget = new NXDockWidget("Output");
-//    addDockWidget(Qt::BottomDockWidgetArea, outputDockWidget);
-
-//    QTextEdit* textEdit = new QTextEdit();
-//    textEdit->setReadOnly(true);
-//    textEdit->setText(R"(Output text)");
-
-//    outputDockWidget->setWidget(textEdit);
 }
 
 
@@ -275,11 +201,7 @@ void MainWnd::createBarChart()
 {
     if(m_chartView)
         delete m_chartView;
-
-    CXBarChart *chart = new CXBarChart();
-
-    m_chartView = new QChartView(chart);
-    m_chartView->setRenderHint(QPainter::Antialiasing);
+    m_chartView = new XBarChart();
 }
 
 //激活标签页窗口
