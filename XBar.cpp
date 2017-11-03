@@ -32,6 +32,26 @@ void XBar::init()
 
     m_BackColor = Qt::red;
     m_BackColor.setAlphaF(1);
+
+    initAnimation();
+}
+
+void XBar::initAnimation()
+{
+    animation = new QGraphicsItemAnimation();
+    animation->setItem(this);
+    timer = new QTimeLine();
+    timer->setDuration(1000);
+    timer->setFrameRange(0, 100);
+    for (int i = 0; i < 100; ++i)
+        animation->setScaleAt(i/100.0,i/100.0,i/100.0);
+    animation->setTimeLine(timer);
+}
+
+void XBar::startAnimation()
+{
+    if(timer)
+        timer->start();
 }
 
 BarInfo XBar::barInfo() const

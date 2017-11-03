@@ -86,6 +86,7 @@ void MainWnd::initUI()
     createBarChart();
     if(m_chartView)
     {
+        m_chartView->setTitle("场站数据时序状态图");
         QString sFileColor("");
         m_cfgMgr.getValue("file_color",sFileColor);
         m_chartView->setColorCfgFile(sFileColor);
@@ -94,7 +95,7 @@ void MainWnd::initUI()
         m_cfgMgr.getValue("file_bar",sFileDidx);
         m_chartView->setFileData(sFileDidx);
 
-        m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("动态堆积柱状图"));
+        m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
     }
 
     m_tabMain->setCurrentIndex(0);

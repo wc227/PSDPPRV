@@ -312,20 +312,16 @@ void CWidget::stringToItemData(QString data, QString type)
                     if(value.toInt() == 1)
                         item->isLine = true;
                 }
+                else if(value.contains("cmd:", Qt::CaseInsensitive))
+                {
+                    value.remove("cmd:", Qt::CaseInsensitive);
+                    value = value.trimmed();
+                    if(!value.isEmpty())
+                        item->setCommands(value);
+                }
             }
         }
         m_Scene->addItem(item);
-
-
-        if(!m_bIsEdit)
-        {
-            QPushButton *btn = new QPushButton;
-            m_Scene->addWidget(btn);
-            btn->move(item->pos().x(),item->pos().y());
-            btn->resize(item->m_Width,item->m_Height);
-            btn->setText(item->getCaptainName());
-            connect(btn,&QPushButton::clicked,this,&CWidget::btnClickTest);
-        }
     }
 }
 
@@ -379,12 +375,13 @@ void CWidget::saveToIniFile()
             saveInSettings.beginGroup(group);
             COutItem *currentItem = dynamic_cast<COutItem*> (item);
             key = "OutItem" + QString::number(++j);
-            QString value = QString("{pos:%1; size:%2; eventNumber:%3; name:%4; shape:%5}")
+            QString value = QString("{pos:%1; size:%2; eventNumber:%3; name:%4; shape:%5; cmd:%6}")
                     .arg(QString("%1,%2").arg(currentItem->pos().x()).arg(currentItem->pos().y()))
                     .arg(QString("%1,%2").arg(currentItem->m_Width).arg(currentItem->m_Height))
                     .arg(currentItem->getEventNumber())
                     .arg(currentItem->getCaptainName())
-                    .arg(currentItem->getShape());
+                    .arg(currentItem->getShape())
+                    .arg(currentItem->getCommands());
 
             saveInSettings.setValue(key,value);
             saveInSettings.endGroup();

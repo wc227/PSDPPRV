@@ -3,6 +3,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
+#include <QProcess>
 
 
 //long ShareMemoryBuild();
@@ -39,6 +40,8 @@ COutItem::COutItem(bool isEditState) :
         if (ShareMemoryBuild)
             ShareMemoryBuild();
     }
+
+    m_Commands = "";
 }
 
 void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -126,6 +129,10 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     else
     {
         SetEvtList(m_TaskNumbersList, 1);
+        if(!(m_Commands.isEmpty()))
+        {
+            QProcess::execute(m_Commands);//执行命令行参数
+        }
     }
 }
 

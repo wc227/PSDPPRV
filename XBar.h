@@ -5,6 +5,8 @@
 #include <QGraphicsTextItem>
 #include <QColor>
 #include <QList>
+#include <QGraphicsItemAnimation>
+#include <QTimeLine>
 
 //自定义的条形图的基本信息
 struct BarInfo
@@ -34,6 +36,10 @@ public:
 
     void init();
 
+    void initAnimation();
+
+    void startAnimation();
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
     void updateInfo();
@@ -58,6 +64,10 @@ protected:
     BarInfo m_BarInfo;//基本信息
 
     QColor m_BackColor;//背景色
+
+    QGraphicsItemAnimation *animation;
+
+    QTimeLine *timer;
 };
 
 

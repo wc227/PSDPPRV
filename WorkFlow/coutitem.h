@@ -116,6 +116,21 @@ protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);	//鼠标双击事件
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);	//右键菜单项
+
+protected:
+    QString m_Commands;//命令行参数
+
+public:
+    void setCommands(QString val)
+    {
+        if(m_Commands != val)
+            m_Commands = val;
+    }
+
+    QString getCommands() const
+    {
+        return m_Commands;
+    }
 };
 
 #endif // COUTITEM_H

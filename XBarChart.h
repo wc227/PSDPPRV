@@ -17,27 +17,33 @@ class XBarChart : public QGraphicsView
 protected:
     QGraphicsScene *m_Scene;//场景
 
-    int m_Margin;//边距
+    int m_Margin;//边距(最小20，最大50)
     QColor m_BackColor;//背景颜色
 
     QGraphicsTextItem *m_Title;//标题栏
     QString m_TitleTxt;//标题内容
-    int m_TitleHeight;//标题区域高度
+    int m_TitleHeight;//标题区域高度(最小20，最大50)
 
     bool m_GridVisible;//是否显示网格线
-    int m_BarGroupNum;//条形图组数，也是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图
-    int m_MaxBarNumInGroup;//组中条形图的数目的最大值
+    int m_VGridNum;//垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大6，默认是5)
+    int m_HGridNum;//水平网格数，也即每个垂直网格里显示条形图的最大值(最小2，最大10，默认是5)
+    int m_MaxBarNumInGroup;//单组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元
-    QList<ListBar> m_BarGroups;//条形图组
+    QList<ListBarInfo> m_BarGroups;//条形图组
+    QList<XBar *> m_BarItems;//所有的条形图
+    int m_BarGroupsCapacity;//条形图组的最大容量（也就是最多可容纳多少组条形图）
     QStringList m_Times;//条形图组对应的时间
+    bool m_IsSortByDuriation;//是否根据持续时间排序
 
     QString m_ColorCfgFile;//颜色配置文件
     QMap<int, QColor> m_Type2Color;//类型和颜色的映射，真实数据应该从配置文件中读取
 
     FileMgrDIDX m_FileMgrDIDX;//
     QTimer m_TimerCheckFile;//定时器，定时检查标记文件是否更新
-    int m_TimeInterval;//检查间隔时间
+    int m_TimeInterval;//检查间隔时间（单位：毫秒）
+
+    int m_PageIndex;//页面序号（从0开始）
 
 public:
     XBarChart(QWidget *parent=0);
@@ -56,6 +62,11 @@ public:
     //设置边距
     void setMargin(int val)
     {
+        if(val < 20)
+            val = 20;
+        else if(val > 50)
+            val = 50;
+
         if(m_Margin != val)
         {
             m_Margin = val;
@@ -116,6 +127,11 @@ public:
     //设置标题区域高度
     void setTitleHeight(int val)
     {
+        if(val < 20)
+            val = 20;
+        else if(val > 50)
+            val = 50;
+
         if(m_TitleHeight != val)
         {
             m_TitleHeight = val;
@@ -139,19 +155,63 @@ public:
         }
     }
 
-    //获取条形图组数
-    int getBarGroupNum() const
+    //获取垂直网格数
+    int getVGridNum() const
     {
-        return m_BarGroupNum;
+        return m_VGridNum;
     }
 
-    //设置条形图组数
-    void setBarGroupNum(int val)
+    //设置垂直网格数
+    void setVGridNum(int val)
     {
-        if(m_BarGroupNum != val)
+        if(val < 2)
+            val = 2;
+        else if(val >6)
+            val = 6;
+
+        if(m_VGridNum != val)
         {
-            m_BarGroupNum = val;
+            m_VGridNum = val;
             this->update();
+        }
+    }
+
+    //获取水平网格数
+    int getHGridNum() const
+    {
+        return m_HGridNum;
+    }
+
+    //设置水平网格数
+    void setHGridNum(int val)
+    {
+        if(val < 2)
+            val = 2;
+        else if(val > 10)
+            val = 10;
+
+        if(m_HGridNum != val)
+        {
+            m_HGridNum = val;
+            this->update();
+        }
+    }
+
+    //获取条形图组的最大数量值
+    int getBarGroupsCapacity() const
+    {
+        return m_BarGroupsCapacity;
+    }
+
+    //设置条形图组的最大数量值
+    void setBarGroupsCapacity(int val)
+    {
+        if(val < m_VGridNum)
+            val = m_VGridNum;
+
+        if(m_BarGroupsCapacity != val)
+        {
+            m_BarGroupsCapacity = val;
         }
     }
 
@@ -165,6 +225,42 @@ public:
         }
     }
 
+    //获取检查间隔时间（单位：毫秒）
+    int getTimeInterval() const
+    {
+        return m_TimeInterval;
+    }
+
+    //设置检查间隔时间（单位：毫秒）
+    void setTimeInterval(int val)
+    {
+        if(val < 1)
+            val = 1;
+
+        if(m_TimeInterval != val)
+        {
+            m_TimeInterval = val;
+            m_TimerCheckFile.setInterval(m_TimeInterval);
+        }
+    }
+
+    //添加一个图元
+    void addBarItem(XBar *item)
+    {
+        m_Scene->addItem(item);
+        m_BarItems.append(item);
+    }
+
+    //清空所有的条形图
+    void clearBarItems()
+    {
+        foreach (XBar *bar, m_BarItems)
+        {
+            m_Scene->removeItem(bar);
+        }
+        m_BarItems.clear();
+    }
+
     //加载颜色配置文件
     void loadColorCfgFile();
 
@@ -173,7 +269,6 @@ public:
 
     //获取数据文件
     QString getFileData();
-
 
 protected:
     //初始化图
