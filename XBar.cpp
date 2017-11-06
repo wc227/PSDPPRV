@@ -38,20 +38,20 @@ void XBar::init()
 
 void XBar::initAnimation()
 {
-    animation = new QGraphicsItemAnimation();
-    animation->setItem(this);
-    timer = new QTimeLine();
-    timer->setDuration(1000);
-    timer->setFrameRange(0, 100);
-    for (int i = 0; i < 100; ++i)
-        animation->setScaleAt(i/100.0,i/100.0,i/100.0);
-    animation->setTimeLine(timer);
+//    animation = new QGraphicsItemAnimation();
+//    animation->setItem(this);
+//    timer = new QTimeLine();
+//    timer->setDuration(1000);
+//    timer->setFrameRange(0, 100);
+//    for (int i = 0; i < 100; ++i)
+//        animation->setScaleAt(i/100.0,i/100.0,i/100.0);
+//    animation->setTimeLine(timer);
 }
 
 void XBar::startAnimation()
 {
-    if(timer)
-        timer->start();
+//    if(timer)
+//        timer->start();
 }
 
 BarInfo XBar::barInfo() const
@@ -81,10 +81,12 @@ void XBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->save();
     m_BackColor.setAlphaF(0.5 + m_BarInfo.m_Margin * 0.5);//设置透明度
     painter->fillRect(rect(),m_BackColor);
+
     painter->setPen(Qt::white);
     painter->drawRect(rect());
-    QColor clrTxt(255-m_BackColor.red(),255-m_BackColor.green(),255-m_BackColor.blue());//颜色取反
-    painter->setPen(clrTxt);
+
+//    QColor clrTxt(255-m_BackColor.red(),255-m_BackColor.green(),255-m_BackColor.blue());//颜色取反
+//    painter->setPen(clrTxt);
     painter->drawText(rect(),Qt::AlignCenter,m_BarInfo.m_Name);
     painter->restore();
 }

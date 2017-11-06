@@ -11,6 +11,8 @@
 #include <QTimer>
 #include "FileMgrDIDX.h"
 #include <QColor>
+#include <QPushButton>
+#include <QLabel>
 
 class XBarChart : public QGraphicsView
 {    
@@ -25,9 +27,9 @@ protected:
     int m_TitleHeight;//标题区域高度(最小20，最大50)
 
     bool m_GridVisible;//是否显示网格线
-    int m_VGridNum;//垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大6，默认是5)
-    int m_HGridNum;//水平网格数，也即每个垂直网格里显示条形图的最大值(最小2，最大10，默认是5)
-    int m_MaxBarNumInGroup;//单组中条形图的数目的最大值
+    int m_VGridNum;//垂直网格数(也就是页面上显示条形图组的最大值)，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大6，默认是5)
+    int m_MaxBarNumOfGroupInPage;//页面上垂直网格里显示条形图的最大值(最小2，最大10，默认是5)
+    int m_MaxBarNumOfGroup;//条形图组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元
     QList<ListBarInfo> m_BarGroups;//条形图组
@@ -43,7 +45,18 @@ protected:
     QTimer m_TimerCheckFile;//定时器，定时检查标记文件是否更新
     int m_TimeInterval;//检查间隔时间（单位：毫秒）
 
-    int m_PageIndex;//页面序号（从0开始）
+    int m_HPageCount;//水平方向页面总数
+    int m_HPageNo;//水平方向页面序号（从1开始）
+
+    int m_VPageCount;//垂直方向页面总数
+    int m_VPageNo;//垂直方向页面序号（从1开始）
+
+    QPushButton *m_BtnPageLeft;//左一页
+    QPushButton *m_BtnPageRight;//右一页
+    QLabel *m_LblPageNO;//当前页号
+
+    QPushButton *m_BtnPageUp;//上一页
+    QPushButton *m_BtnPageDown;//下一页
 
 public:
     XBarChart(QWidget *parent=0);
@@ -176,23 +189,23 @@ public:
         }
     }
 
-    //获取水平网格数
-    int getHGridNum() const
+    //页面上垂直网格里显示条形图的最大值
+    int getMaxBarNumOfGroupInPage() const
     {
-        return m_HGridNum;
+        return m_MaxBarNumOfGroupInPage;
     }
 
-    //设置水平网格数
-    void setHGridNum(int val)
+    //页面上垂直网格里显示条形图的最大值
+    void setMaxBarNumOfGroupInPage(int val)
     {
         if(val < 2)
             val = 2;
         else if(val > 10)
             val = 10;
 
-        if(m_HGridNum != val)
+        if(m_MaxBarNumOfGroupInPage != val)
         {
-            m_HGridNum = val;
+            m_MaxBarNumOfGroupInPage = val;
             this->update();
         }
     }
@@ -292,6 +305,9 @@ protected:
     //更新条形图
     virtual void updateBars();
 
+    //更新导航功能相关的部件
+    virtual void updateNavi();
+
 protected:
     void paintEvent(QPaintEvent *event) ;
     void resizeEvent(QResizeEvent *event);
@@ -299,6 +315,18 @@ protected:
 public slots:
     //检查文件是否更新
     void checkFileData();
+
+    //左一页
+    void pageLeft();
+
+    //右一页
+    void pageRight();
+
+    //上一页
+    void pageUp();
+
+    //下一页
+    void pageDown();
 };
 
 #endif // XBARCHART_H

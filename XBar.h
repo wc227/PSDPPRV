@@ -19,6 +19,7 @@ struct BarInfo
     QString m_FilePath;//文件地址
 };
 
+//条形图，继承自QGraphicsRectItem，
 class XBar:public QGraphicsRectItem
 {
 public:
@@ -65,9 +66,9 @@ protected:
 
     QColor m_BackColor;//背景色
 
-    QGraphicsItemAnimation *animation;
+//    QGraphicsItemAnimation *animation;
 
-    QTimeLine *timer;
+//    QTimeLine *timer;
 };
 
 

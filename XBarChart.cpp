@@ -60,8 +60,8 @@ void XBarChart::initChart()
 
     m_GridVisible = true;
     m_VGridNum = 5;
-    m_HGridNum = 5;
-    m_MaxBarNumInGroup = 0;
+    m_MaxBarNumOfGroupInPage = 5;
+    m_MaxBarNumOfGroup = 0;
 
     for(int i = 0; i < m_VGridNum; ++i)
     {
@@ -74,12 +74,67 @@ void XBarChart::initChart()
     m_BarGroupsCapacity = 20;
     m_IsSortByDuriation = true;
 
-    m_PageIndex = 0;
+    m_HPageCount = 1;
+    m_HPageNo = 1;
+
+    m_VPageCount = 1;
+    m_VPageNo = 1;
 
     m_TimeInterval = 5000;
 //    connect(&m_TimerCheckFile, SIGNAL(timeout()), this, SLOT(checkFileData()));
     connect(&m_TimerCheckFile,&QTimer::timeout,this,&XBarChart::checkFileData);
     m_TimerCheckFile.start(m_TimeInterval);//m_timeInterval毫秒检查一次该文件是否修改
+
+    m_BtnPageLeft = new QPushButton("←");//上一页
+    m_BtnPageLeft->setToolTip("前一页");
+    m_BtnPageLeft->setShortcut(Qt::Key_Left);
+    m_BtnPageRight = new QPushButton("→");//下一页
+    m_BtnPageRight->setToolTip("后一页");
+    m_BtnPageRight->setShortcut(Qt::Key_Right);
+    m_LblPageNO= new QLabel("");//当前页号
+    m_BtnPageLeft->setMinimumSize(30,20);
+    m_BtnPageLeft->setMaximumSize(30,20);
+    m_BtnPageRight->setMinimumSize(30,20);
+    m_BtnPageRight->setMaximumSize(30,20);
+    m_LblPageNO->setMinimumSize(30,20);
+    m_LblPageNO->setMaximumSize(30,20);
+    m_LblPageNO->setText(QString("%1").arg(m_HPageNo));
+    m_LblPageNO->setAlignment(Qt::AlignCenter);
+
+    m_Scene->addWidget(m_BtnPageLeft);
+    m_Scene->addWidget(m_BtnPageRight);
+    m_Scene->addWidget(m_LblPageNO);
+    int y = this->height() - 20;
+    int x = this->width()/2 - m_BtnPageLeft->width() - m_LblPageNO->width()/2;
+    m_BtnPageLeft->setGeometry(x,y,m_BtnPageLeft->width(),m_BtnPageLeft->height());
+    x = this->width()/2 - m_LblPageNO->width()/2;
+    m_LblPageNO->setGeometry(x,y,m_LblPageNO->width(),m_LblPageNO->height());
+    x = this->width()/2 + m_LblPageNO->width()/2;
+    m_BtnPageRight->setGeometry(x,y,m_BtnPageRight->width(),m_BtnPageRight->height());
+
+    m_BtnPageUp = new QPushButton("↑");//上一页
+    m_BtnPageUp->setToolTip("上一页");
+    m_BtnPageUp->setShortcut(Qt::Key_Up);
+    m_BtnPageDown = new QPushButton("↓");//下一页
+    m_BtnPageDown->setToolTip("下一页");
+    m_BtnPageDown->setShortcut(Qt::Key_Down);
+    m_BtnPageUp->setMinimumSize(30,20);
+    m_BtnPageUp->setMaximumSize(30,20);
+    m_BtnPageDown->setMinimumSize(30,20);
+    m_BtnPageDown->setMaximumSize(30,20);
+
+    m_Scene->addWidget(m_BtnPageUp);
+    m_Scene->addWidget(m_BtnPageDown);
+    x = this->width() - 30;
+    y = this->height() / 2 - m_BtnPageUp->height();
+    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());
+    y = this->height() / 2;
+    m_BtnPageDown->setGeometry(x,y,m_BtnPageDown->width(),m_BtnPageDown->height());
+
+    connect(m_BtnPageLeft,&QPushButton::clicked,this,&XBarChart::pageLeft);
+    connect(m_BtnPageRight,&QPushButton::clicked,this,&XBarChart::pageRight);
+    connect(m_BtnPageUp,&QPushButton::clicked,this,&XBarChart::pageUp);
+    connect(m_BtnPageDown,&QPushButton::clicked,this,&XBarChart::pageDown);
 }
 
 //重新绘制图标
@@ -92,6 +147,7 @@ void XBarChart::repaintChart()
     updateTitle();
     updateAxisX();
     updateBars();
+    updateNavi();
 }
 
 //绘制主区域
@@ -130,14 +186,14 @@ void XBarChart::drawGrid(QPainter *painter)
     if(!m_GridVisible)
         return;
 
-    //计算条形图组中条形图数目的最大值
-    m_MaxBarNumInGroup = 0;
-    foreach(ListBarInfo lbi, m_BarGroups)
-    {
-        int cnt = lbi.count();
-        if(m_MaxBarNumInGroup < cnt)
-            m_MaxBarNumInGroup = cnt;
-    }
+//    //计算条形图组中条形图数目的最大值
+//    m_MaxBarNumOfGroup = 0;
+//    foreach(ListBarInfo lbi, m_BarGroups)
+//    {
+//        int cnt = lbi.count();
+//        if(m_MaxBarNumOfGroup < cnt)
+//            m_MaxBarNumOfGroup = cnt;
+//    }
 
     painter->save();
 
@@ -148,8 +204,8 @@ void XBarChart::drawGrid(QPainter *painter)
     qreal hei = this->height() - m_Margin * 2;
 
     //水平网格线
-    //    qreal diffY = hei/m_MaxBarNumInGroup;
-    //    for(int i = 1; i < m_MaxBarNumInGroup; i++)
+    //    qreal diffY = hei/m_MaxBarNumOfGroup;
+    //    for(int i = 1; i < m_MaxBarNumOfGroup; i++)
     //    {
     //        painter->drawLine(left, top + diffY * i, left + wid, top + diffY * i);
     //    }
@@ -191,11 +247,11 @@ void XBarChart::updateAxisX()
     qreal top = this->height() - m_Margin;
     qreal left = m_Margin;
     qreal gridWid = wid/m_VGridNum;//网格宽度
-    for(int vgridNo(0),groupNo = m_VGridNum * m_PageIndex;
-        groupNo < m_BarGroups.count() && vgridNo < m_VGridNum;
-        ++groupNo, ++vgridNo)
+    for(int vgridNo(0),groupID = m_VGridNum * (m_HPageNo - 1);
+        groupID < m_BarGroups.count() && vgridNo < m_VGridNum;
+        ++groupID, ++vgridNo)
     {
-        ListBarInfo lbi = m_BarGroups.at(groupNo);
+        ListBarInfo lbi = m_BarGroups.at(groupID);
         if(lbi.isEmpty())
             continue;
         left = m_Margin + gridWid * vgridNo;
@@ -210,7 +266,7 @@ void XBarChart::updateAxisX()
             }
         }
 
-        QString sTxt = QString("时间:%1(时长:%2s)").arg(m_Times.at(groupNo)).arg(maxDuriation);
+        QString sTxt = QString("时间:%1(时长:%2s)").arg(m_Times.at(groupID)).arg(maxDuriation);
         QGraphicsTextItem *text = m_TimeItems.at(vgridNo);
         if(text)
         {
@@ -228,26 +284,42 @@ void XBarChart::updateBars()
     if(0 == m_BarGroups.count())
         return;
 
+//    //计算条形图组中条形图数目的最大值
+//    m_MaxBarNumOfGroup = 0;
+//    foreach(ListBarInfo lbi, m_BarGroups)
+//    {
+//        int cnt = lbi.count();
+//        if(m_MaxBarNumOfGroup < cnt)
+//            m_MaxBarNumOfGroup = cnt;
+//    }
+
+//    int nVal = m_MaxBarNumOfGroup % m_VGridNum;
+//    if(0 == nVal)
+//        m_VPageCount = m_MaxBarNumOfGroup / m_VGridNum;
+//    else
+//        m_VPageCount = m_MaxBarNumOfGroup / m_VGridNum + 1;
+
     qreal left = m_Margin;
-    qreal top = m_Margin;
+//    qreal top = m_Margin;
     qreal bot = this->height() - m_Margin;
     qreal wid = this->width() - m_Margin * 2;
     qreal hei = this->height() - m_Margin * 2;
 
     //所有列的条形图高度一致，宽度代表持续时间
-    qreal gridWid = wid/m_VGridNum;//网格宽度
-    qreal barWid = gridWid;//条形图的宽度（等于网格宽度的一半）
-    qreal maxBarWid = gridWid;//条形图的最大宽度
+    qreal gridWid = wid / m_VGridNum;//网格宽度
+    qreal barWid = gridWid;//条形图的宽度
     qreal barTop = 0;
-    qreal barHei = hei / m_HGridNum;
+    qreal barHei = hei / m_MaxBarNumOfGroupInPage;
 
-    //当前页面m_PageIndex
-    for(int vgridNo(0),groupNo = m_VGridNum * m_PageIndex;
-        groupNo < m_BarGroups.count() && vgridNo < m_VGridNum;
-        ++groupNo, ++vgridNo)
+    //当前页面 m_HPageNo,m_VPageNo
+    for(int groupID = m_VGridNum * (m_HPageNo - 1);
+        groupID < m_BarGroups.count() && groupID < m_VGridNum * m_HPageNo;
+        ++groupID)
     {
-        ListBarInfo lbi = m_BarGroups.at(groupNo);
-        left = m_Margin + gridWid * vgridNo;
+        ListBarInfo lbi = m_BarGroups.at(groupID);
+
+        int gNo = groupID - m_VGridNum * (m_HPageNo - 1);
+        left = m_Margin + gridWid * gNo;
         bot = this->height() - m_Margin;
         if(lbi.isEmpty())
             continue;
@@ -264,27 +336,59 @@ void XBarChart::updateBars()
             }
         }
 
-        for(int j = 0; j < lbi.count(); ++j)
+        for(int barID = m_MaxBarNumOfGroupInPage * (m_VPageNo - 1);
+            barID < lbi.count() && barID < m_MaxBarNumOfGroupInPage * m_VPageNo;
+            ++barID)
         {
-            if(j >= m_HGridNum)
-                break;
-
-            BarInfo bi = lbi.at(j);
+            BarInfo bi = lbi.at(barID);
             XBar* bar = new XBar();
             bar->setBarInfo(bi);
             QColor clr = m_Type2Color.value(bar->barInfo().m_Type,Qt::green);
             bar->setBackColor(clr);
             barTop = bot - barHei;
-            barWid = maxBarWid * bi.m_Duration / (maxDuriation * 1.0f);
+            barWid = gridWid * bi.m_Duration / (maxDuriation * 1.0f);
             QRectF rect(0,0,barWid,barHei);
             bar->setRect(rect);
-
             addBarItem(bar);
-
             bar->setPos(left,barTop);
             bot = barTop;
         }
     }
+}
+
+//更新导航功能相关的部件
+void XBarChart::updateNavi()
+{
+    m_BtnPageLeft->setEnabled(true);
+    m_BtnPageRight->setEnabled(true);
+
+    m_LblPageNO->setText(QString("%1").arg(m_HPageNo));
+
+    int y = this->height() - 20;
+    int x = this->width()/2 - m_BtnPageLeft->width() - m_LblPageNO->width()/2;
+    m_BtnPageLeft->setGeometry(x,y,m_BtnPageLeft->width(),m_BtnPageLeft->height());
+    x = this->width()/2 - m_LblPageNO->width()/2;
+    m_LblPageNO->setGeometry(x,y,m_LblPageNO->width(),m_LblPageNO->height());
+    x = this->width()/2 + m_LblPageNO->width()/2;
+    m_BtnPageRight->setGeometry(x,y,m_BtnPageRight->width(),m_BtnPageRight->height());
+
+    if(1 == m_HPageNo)
+        m_BtnPageLeft->setEnabled(false);
+    if(m_HPageNo == m_HPageCount)
+        m_BtnPageRight->setEnabled(false);
+
+
+    m_BtnPageUp->setEnabled(true);
+    m_BtnPageDown->setEnabled(true);
+    x = this->width() - 30;
+    y = this->height() / 2 - m_BtnPageUp->height();
+    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());
+    y = this->height() / 2;
+    m_BtnPageDown->setGeometry(x,y,m_BtnPageDown->width(),m_BtnPageDown->height());
+    if(1 == m_VPageNo)
+        m_BtnPageDown->setEnabled(false);
+    if(m_VPageNo == m_VPageCount)
+        m_BtnPageUp->setEnabled(false);
 }
 
 void XBarChart::paintEvent(QPaintEvent *event)
@@ -314,7 +418,7 @@ void XBarChart::addBars(ListBarInfo bars)
 
     //添加一组新的条形图
     m_BarGroups.append(bars);
-    m_Times.append(bars.at(0).m_Time);//添加时间
+    m_Times.append(bars.at(0).m_Time);//添加时间        
 
     //如果组数超出最大值，就删除第组列条形图
     if(m_BarGroups.count() > m_BarGroupsCapacity)
@@ -323,8 +427,25 @@ void XBarChart::addBars(ListBarInfo bars)
         m_Times.removeFirst();
     }
 
-    if(m_BarGroups.count() > m_VGridNum * (m_PageIndex + 1))
-        ++m_PageIndex;//自动转到新的页面
+    //计算条形图组中条形图数目的最大值
+    m_MaxBarNumOfGroup = 0;
+    foreach(ListBarInfo lbi, m_BarGroups)
+    {
+        int cnt = lbi.count();
+        if(m_MaxBarNumOfGroup < cnt)
+            m_MaxBarNumOfGroup = cnt;
+    }
+
+    //更新垂直方向页面数目
+    if(m_MaxBarNumOfGroup > m_MaxBarNumOfGroupInPage * m_VPageCount)
+        m_VPageCount++;
+
+    //更新水平方向页面数目
+    if(m_BarGroups.count() > m_VGridNum * m_HPageCount)
+         m_HPageCount++;
+
+    m_HPageNo = m_HPageCount;//自动跳转到新的页面
+    m_VPageNo = 1;
 
     repaintChart();
 
@@ -384,4 +505,41 @@ void XBarChart::checkFileData()
         m_FileMgrDIDX.openFile();
         addBars(m_FileMgrDIDX.getData());
     }
+}
+
+
+//左一页
+void XBarChart::pageLeft()
+{
+    m_HPageNo--;
+    if(m_HPageNo < 1)
+        m_HPageNo = 1;
+    update();
+}
+
+//右一页
+void XBarChart::pageRight()
+{
+    m_HPageNo++;
+    if(m_HPageNo > m_HPageCount)
+        m_HPageNo = m_HPageCount;
+    update();
+}
+
+//上一页
+void XBarChart::pageUp()
+{
+    m_VPageNo++;
+    if(m_VPageNo > m_VPageCount)
+        m_VPageNo = m_VPageCount;
+    update();
+}
+
+//下一页
+void XBarChart::pageDown()
+{
+    m_VPageNo--;
+    if(m_VPageNo < 1)
+        m_VPageNo = 1;
+    update();
 }
