@@ -13,8 +13,6 @@ CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
 {
     setAcceptHoverEvents(true);
 
-    m_bLoopAnimation = false;
-
     //编辑态，可选，可移动
     if(b_IsEditState)
     {
@@ -37,15 +35,11 @@ CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
     isLine = false;
 }
 
-void CGraphicsObjectItem::setEventNumber(int eventNumber)
-{
-    m_EventNumber = eventNumber;
-}
-
 void CGraphicsObjectItem::setSize(int width, int height)
 {
     m_Height = height;
     m_Width = width;
+    update();
 }
 
 
@@ -269,7 +263,7 @@ void CGraphicsObjectItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
             dlg->setVerticalCheckBox(false);
 
         dlg->setShowTimeLineEdit(dynamic_cast<CBarItem*> (this)->getShowTime());
-        dlg->setLoopCheckBox(this->m_bLoopAnimation);
+//        dlg->setLoopCheckBox(this->m_bLoopAnimation);
 
         dlg->exec();
     }

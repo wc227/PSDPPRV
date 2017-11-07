@@ -84,14 +84,9 @@ public:
     enum {Type = UserType + 2}; //根据Type判断是否是COutItem
     COutItem(bool isEditState);
 
-//    bool b_IsEditState;
     int type() const { return Type;} //COutItem自定义type，重新type
 
-    QString getEventNumber();	//获取item的事件号
-    void setEventNumber(const QString &eventNumbers);//设置事件号
-
-    QString getCaptainName();	//获取item名称
-    void setCaptainName(const QString &name);//设置item名称
+    void setEventNumbers(const QString &eventNumbers);//设置事件号
 
     int getShape(); //获取item形状
     void setShape(int); //设置item形状
@@ -102,7 +97,6 @@ signals:
 private:
 //    QList<int> m_TaskNumbers;
     int nShape;            //设置显示形状
-    QString m_TaskNumber; //用于将m_TaskNumbers数组列表转换成字符串返回;
     QList<QString> m_TaskNumbersList;
 
     void SetEvtList(QList<QString>& arList, int val);  //触发事件
@@ -115,7 +109,7 @@ private:
 protected:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);	//鼠标双击事件
-    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);	//右键菜单项
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);	//右键菜单项
 
 protected:
     QString m_Commands;//命令行参数

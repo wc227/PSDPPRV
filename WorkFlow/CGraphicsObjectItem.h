@@ -17,16 +17,45 @@
 class CItemPrivate
 {
 public:
-    int     m_EventNumber;//事件号
+    CItemPrivate()
+    {
+        m_CaptainName = "";//名称
+        m_EventNumbers = "";//一个或多个事件号组成的字符串
+//        m_Size == QSizeF(1,1);//大小
+//        m_Color = Qt::black;//颜色
+        m_ScenePos = QPointF(0,0);//位置（场景坐标）
+        m_MousePressPos = QPointF(0,0);//鼠标按下的位置（场景坐标）
+        m_MouseReleasePos = QPointF(0,0);//鼠标释放的位置（场景坐标）
+    }
+
+    virtual void setCaptainName(const QString &name)
+    {
+        m_CaptainName = name;
+    }
+
+    virtual QString getCaptainName()
+    {
+        return m_CaptainName;
+    }
+
+    virtual void setEventNumbers(QString evts)
+    {
+        m_EventNumbers = evts;
+    }
+
+    virtual QString getEventNumbers()
+    {
+        return m_EventNumbers;
+    }
+
+protected:
+    QString m_CaptainName;//名称
     QString m_EventNumbers;//多个事件号
+//    QSizeF  m_Size;//大小
+//    QColor  m_Color;//颜色
     QPointF m_ScenePos;//位置（场景坐标）
     QPointF m_MousePressPos;//鼠标按下的位置（场景坐标）
     QPointF m_MouseReleasePos;//鼠标释放的位置（场景坐标）
-    QColor  m_Color;//颜色
-    QSizeF  m_Size;//大小
-    QString m_CaptainName;//名称
-    int     m_ShowTime;//动画显示时间
-    bool    m_bLoopAnimation;//是否循环动画
 };
 
 
@@ -65,8 +94,6 @@ public:
 
     bool isLine;
 
-    virtual void setEventNumber(int eventNumber);
-//    void setEventNumber(QList<int> eventNumber);
     /**
      * @brief setSize
      * @param width

@@ -4,6 +4,7 @@
 #include <QMessageBox>
 #include <QFileDialog>
 #include <QPushButton>
+#include <QStringList>
 
 
 //long ShareMemoryBuild();
@@ -159,7 +160,7 @@ void CWidget::stringToItemData(QString data, QString type)
     if(type == "In")
     {
         CBarItem* item = new CBarItem(m_bIsEdit);
-        item->setShowTime(m_nTimeShow);
+//        item->setShowTime(m_nTimeShow);
         if(!m_bIsEdit)
             item->hide();
         if(data.startsWith('{') && data.endsWith('}'))
@@ -202,45 +203,60 @@ void CWidget::stringToItemData(QString data, QString type)
                 {
                     value.remove("eventNumber:", Qt::CaseInsensitive);
                     value = value.trimmed();
-//                    eventNumber = value.toInt();
-                    item->setEventNumber(value);
+                    item->setEventNumbers(value);
 
-                    //判断获取value是否为空;
+                    /*
+                     * value是一串事件号组成的字符串，由前后2部分组成，之间由"-"分割。
+                     * 第一部分是启动事件号，第二部分是结束事件号。
+                     * 每个部分都是由多个事件号组成的字符串，用:进行连接。
+                     * 例如：#1:#2;#3:#4
+                    */
                     if(!value.isEmpty())
                     {
-                        //value是一串事件号组成的字符串，用:进行连接，所以通过:得到所有事件号保存到list中;
-                        QStringList lstEvts = value.split(":");
-                        //获取当前item每个事件号与其对应的事件计数器;
-                        for (int i=0; i<lstEvts.count(); i++)
+                        QStringList list1 = value.split('-');
+                        if(list1.count() > 0)
                         {
-                            //将当前item的事件号与计数器保存到Map中;
-                            QString sEvt = lstEvts.at(i);
-                            int nCounter = m_psdEvts.evtCounter(sEvt);
-                            m_mapEvtNum2Counter.insert(sEvt,nCounter);
+                            QStringList list2 = list1.at(0).split(':');
+                            //获取当前item每个事件号与其对应的事件计数器;
+                            for (int i = 0; i < list2.count(); i++)
+                            {
+                                //将当前item的事件号与计数器保存到Map中;
+                                QString sEvt = list2.at(i);
+                                int nCounter = m_psdEvts.evtCounter(sEvt);
+                                m_mapStartEvtNum2Counter.insert(sEvt,nCounter);
 
-                            //判断对应事件号的是否对应多个item;
-                            //如果没有对应的item则新添加到map中;
-                            QMap<QString, QList<QGraphicsItem*>>::iterator it = m_mapEvtNum2Items.find(sEvt);
-                            QList<QGraphicsItem*> items;
-                            //如果在map中找到已有的事件号，则添加到已有事件号对应的value中;
-                            if(it == m_mapEvtNum2Items.end())
-                            {
+                                //判断对应事件号的是否对应多个item;
+                                QList<QGraphicsItem*> items;
+                                //如果在map中找到已有的事件号，则添加到已有事件号对应的value中;
+                                if(m_mapEvtNum2Items.contains(sEvt))
+                                    items = m_mapEvtNum2Items.value(sEvt);
                                 items.append(item);
+                                m_mapEvtNum2Items.insert(sEvt,items);
                             }
-                            else
+
+                            if(list1.count() > 1)
                             {
-                                items = it.value();
-                                items.append(item);
+                                QStringList list3 = list1.at(1).split(":");
+                                //获取当前item每个事件号与其对应的事件计数器;
+                                for (int i = 0; i < list3.count(); i++)
+                                {
+                                    //将当前item的事件号与计数器保存到Map中;
+                                    QString sEvt = list3.at(i);
+                                    int nCounter = m_psdEvts.evtCounter(sEvt);
+                                    m_mapStopEvtNum2Counter.insert(sEvt,nCounter);
+
+                                    //判断对应事件号的是否对应多个item;
+                                    QList<QGraphicsItem*> items;
+                                    //如果在map中找到已有的事件号，则添加到已有事件号对应的value中;
+                                    if(m_mapEvtNum2Items.contains(sEvt))
+                                        items = m_mapEvtNum2Items.value(sEvt);
+                                    items.append(item);
+                                    m_mapEvtNum2Items.insert(sEvt,items);
+                                }
                             }
-                            m_mapEvtNum2Items.insert(sEvt,items);
                         }
                     }
                 }
-//                else if(value.contains("fileNumber:", Qt::CaseInsensitive))
-//                {
-//                    value.remove("fileNumber:", Qt::CaseInsensitive);
-//                    fileNumber = value.toInt();
-//                }
                 else if(value.contains("aniTime:", Qt::CaseInsensitive))
                 {
                     value.remove("aniTime:", Qt::CaseInsensitive);
@@ -298,7 +314,7 @@ void CWidget::stringToItemData(QString data, QString type)
                     value.remove("eventNumber:", Qt::CaseInsensitive);
                     value = value.trimmed();
 //                    eventNumber = value.toInt();
-                    item->setEventNumber(value.trimmed()); //参数修改成QString
+                    item->setEventNumbers(value.trimmed()); //参数修改成QString
                 }
 //                else if(value.contains("fileNumber:", Qt::CaseInsensitive))
 //                {
@@ -378,7 +394,7 @@ void CWidget::saveToIniFile()
             QString value = QString("{pos:%1; size:%2; eventNumber:%3; name:%4; shape:%5; cmd:%6}")
                     .arg(QString("%1,%2").arg(currentItem->pos().x()).arg(currentItem->pos().y()))
                     .arg(QString("%1,%2").arg(currentItem->m_Width).arg(currentItem->m_Height))
-                    .arg(currentItem->getEventNumber())
+                    .arg(currentItem->getEventNumbers())
                     .arg(currentItem->getCaptainName())
                     .arg(currentItem->getShape())
                     .arg(currentItem->getCommands());
@@ -413,31 +429,63 @@ void CWidget::btnClickTest()
     QMessageBox::information(this,"提示",sMsg,QMessageBox::Ok);
 }
 
-void CWidget::timerEvent(QTimerEvent *)
+void CWidget::timerEvent(QTimerEvent *event)
 {
-    QMap<QString, int>::iterator it = m_mapEvtNum2Counter.begin();
-    while(it != m_mapEvtNum2Counter.end())
-	{
-        QString sEvt = it.key();//事件号
-        int nCounterOld = it.value();//旧的事件计数器
-        int nCounterNew = m_psdEvts.evtCounter(sEvt);//新的事件计数器
-        if(nCounterOld != nCounterNew)//事件计数器改变
+    if(event->timerId() == m_nTimerID)
+    {
+        QMap<QString, int>::iterator it = m_mapStartEvtNum2Counter.begin();
+        while(it != m_mapStartEvtNum2Counter.end())
         {
-            //更新事件计数器
-            it.value() =  nCounterNew;
-            //该事件对应的所有图元显示动画
-            if(m_mapEvtNum2Items.contains(sEvt))
+            QString sEvt = it.key();//事件号
+            int nCounterOld = it.value();//旧的事件计数器
+            int nCounterNew = m_psdEvts.evtCounter(sEvt);//新的事件计数器
+            if(nCounterOld != nCounterNew)//事件计数器改变
             {
-                QList<QGraphicsItem*> items = m_mapEvtNum2Items.find(sEvt).value();
-                for (int i=0; i<items.count(); i++)
+                //更新事件计数器
+                it.value() =  nCounterNew;
+                //该事件对应的所有图元显示动画
+                if(m_mapEvtNum2Items.contains(sEvt))
                 {
-                    CBarItem *item = dynamic_cast<CBarItem*>(items[i]);
-                    if(item)
-                        item->startAnimation();
+                    QList<QGraphicsItem*> items = m_mapEvtNum2Items.find(sEvt).value();
+                    for (int i=0; i<items.count(); i++)
+                    {
+                        CBarItem *item = dynamic_cast<CBarItem*>(items[i]);
+                        if(item)
+                            item->startAnimation();
+                    }
                 }
             }
-		}
-		it++;
-	}
+            it++;
+        }
+
+        it = m_mapStopEvtNum2Counter.begin();
+        while(it != m_mapStopEvtNum2Counter.end())
+        {
+            QString sEvt = it.key();//事件号
+            int nCounterOld = it.value();//旧的事件计数器
+            int nCounterNew = m_psdEvts.evtCounter(sEvt);//新的事件计数器
+            if(nCounterOld != nCounterNew)//事件计数器改变
+            {
+                //更新事件计数器
+                it.value() =  nCounterNew;
+                //该事件对应的所有图元显示动画
+                if(m_mapEvtNum2Items.contains(sEvt))
+                {
+                    QList<QGraphicsItem*> items = m_mapEvtNum2Items.find(sEvt).value();
+                    for (int i=0; i<items.count(); i++)
+                    {
+                        CBarItem *item = dynamic_cast<CBarItem*>(items[i]);
+                        if(item)
+                        {
+                            item->stopAnimation();
+//                            this->scene()->update(item->mapRectToScene(item->boundingRect()).toRect());
+//                            this->scene()->update();
+                        }
+                    }
+                }
+            }
+            it++;
+        }
+    }
 }
 

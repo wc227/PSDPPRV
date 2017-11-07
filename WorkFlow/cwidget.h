@@ -31,12 +31,11 @@ private:
     QString m_sFileCfg;             //配置文件绝对路径
     QString m_sFileBackPic;         //背景图片
     bool m_bIsEdit;                 //是否是编辑模式，true-编辑模式，false-运行模式
-    int m_nTimeShow;                //滚动条显示时间
     int m_nTimerID;                 //定时器id
-//    QMap<int, int> m_NumberToCounter;//用于存EventNumber和事件counter; 用于对输入事件编号进行是否改变判断
-	//2015年3月2日 14:51:29 修改
+
 	//增加事件分类触发
-    QMap<QString, int> m_mapEvtNum2Counter; //事件号和事件计数器
+    QMap<QString, int> m_mapStartEvtNum2Counter; //开始动画的事件号和事件计数值
+    QMap<QString, int> m_mapStopEvtNum2Counter; //结束动画的事件号和事件计数值
     QMap<QString, QList<QGraphicsItem*> > m_mapEvtNum2Items; //事件号与对应的多个Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 

@@ -197,7 +197,7 @@ void CItemPropertyDialog::SLOT_EventNumberEditFinished()
 	m_EventNumbers = ui->eventNumberlineEdit->text();
     if(!m_EventNumbers.isEmpty()){
         if(currentItem != NULL)
-            currentItem->setEventNumber(m_EventNumbers);
+            currentItem->setEventNumbers(m_EventNumbers);
     }
 }
 

@@ -23,43 +23,32 @@ public:
 
     virtual void setSize(int width, int height);
 
-	//2015年3月2日 16:02:03 添加;
-	void setEventNumber(QString evts);
-
-	//QString m_EventNumbers;
-	QString getEventNumbers();
-
-    int getEventNumber();
     int type() const { return Type;}    //返回判断类型
-
-//    QPointF Geometry() const;
-//    void SetGeometry(QPointF p);
-
-//    QRectF updateRect();    //返回scene刷新的矩形,起点是Item在Scene中的Pos
 
     int getShowTime();
     void setShowTime(int time);
-
-    void setCaptainName(const QString&);
-    QString getCaptainName();
 
     void enableLoopAnimation(bool loop = true);
 
     bool isLoopAnimation();
 
 public Q_SLOTS:
-    void startAnimation();  //运行动画
+    //运行动画
+    void startAnimation();
+
+    //结束动画
+    void stopAnimation();
 
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-
     void initAnimation();//初始化动画
 
     QPropertyAnimation *m_pAnimation;
+
     int m_widthAni;//动画矩形的宽度
-    int m_ShowTime;//动画显示时间
-//    double m_Angle;
+    int m_ShowTime;//动画显示时间(单位:s)
+    bool m_bLoopAnimation;//是否循环显示动画
 };
 
 #endif // CBarItem_H

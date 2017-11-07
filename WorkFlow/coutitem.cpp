@@ -29,7 +29,6 @@ COutItem::COutItem(bool isEditState) :
     nShape(0)
 {
     setZValue(0);
-    m_EventNumber = 0;
 
     QString sDllName = "Mems.dll";
     //ShareMemoryBuild();
@@ -136,32 +135,15 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     }
 }
 
-void COutItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-{
+//void COutItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
+//{
+//}
 
-}
-
-QString COutItem::getEventNumber()
+void COutItem::setEventNumbers(const QString &eventNumbers)
 {
-    return m_TaskNumber;
-}
-
-void COutItem::setEventNumber(const QString &eventNumbers)
-{
-    m_TaskNumber = eventNumbers;
+    m_EventNumbers = eventNumbers;
     if(!b_IsEditState)
-        m_TaskNumbersList = m_TaskNumber.split(":");
-}
-
-QString COutItem::getCaptainName()
-{
-    return m_CaptainName;
-}
-
-void COutItem::setCaptainName(const QString &name)
-{
-    m_CaptainName = name;
-    qDebug() << m_CaptainName;
+        m_TaskNumbersList = m_EventNumbers.split(":");
 }
 
 int COutItem::getShape()
@@ -418,7 +400,7 @@ COutItemPropertyDialog::COutItemPropertyDialog(QWidget *parent, COutItem *curren
     if(m_CurrentItem)
     {
         setName(m_CurrentItem->getCaptainName());
-        setEvents(m_CurrentItem->getEventNumber());
+        setEvents(m_CurrentItem->getEventNumbers());
         setShape(m_CurrentItem->getShape());
     }
 
@@ -456,7 +438,7 @@ COutItemPropertyDialog::~COutItemPropertyDialog()
             m_CurrentItem->setCaptainName(m_ModifiName);
 
         if( m_ModifiEvents != m_SaveEvents)
-            m_CurrentItem->setEventNumber(m_ModifiEvents);
+            m_CurrentItem->setEventNumbers(m_ModifiEvents);
 
         if( m_CurrentItem->getShape() != (int)shapeType)
             m_CurrentItem->setShape((int)shapeType);
