@@ -5,11 +5,14 @@
 #include <QSettings>
 #include <QTextCodec>
 #include <QFont>
+#include "DlgXBarChartProperty.h"
 
 XBarChart::XBarChart(QWidget *parent)
     : QGraphicsView(parent)
 {
+    initPopMenu();
     initChart();
+    m_CurrentItem = 0;
 }
 
 
@@ -59,11 +62,11 @@ void XBarChart::initChart()
     m_Scene->addItem(m_Title);
 
     m_GridVisible = true;
-    m_VGridNum = 5;
+    m_MaxGroupNumInPage = 5;
     m_MaxBarNumOfGroupInPage = 5;
     m_MaxBarNumOfGroup = 0;
 
-    for(int i = 0; i < m_VGridNum; ++i)
+    for(int i = 0; i < m_MaxGroupNumInPage; ++i)
     {
         QGraphicsTextItem *textItem = new QGraphicsTextItem();
         textItem->setPlainText("");
@@ -174,7 +177,7 @@ void XBarChart::drawMainArea(QPainter *painter)
     //画横轴标题
     pen.setColor(Qt::red);
     painter->setPen(pen);
-    QRectF rectTitle(left+wid,top+hei,m_Margin,m_Margin);
+    QRectF rectTitle(left+wid,top+hei,40,20);
     painter->drawText(rectTitle,Qt::AlignLeft | Qt::AlignVCenter,"时间");
 
     painter->restore();
@@ -211,8 +214,8 @@ void XBarChart::drawGrid(QPainter *painter)
     //    }
 
     //垂直网格线
-    qreal diffX = wid/m_VGridNum;
-    for(int i = 1; i < m_VGridNum; i++)
+    qreal diffX = wid/m_MaxGroupNumInPage;
+    for(int i = 1; i < m_MaxGroupNumInPage; i++)
     {
         painter->drawLine(left + diffX * i, top, left + diffX * i, top + hei);
     }
@@ -246,9 +249,9 @@ void XBarChart::updateAxisX()
     qreal wid = this->width() - m_Margin * 2;
     qreal top = this->height() - m_Margin;
     qreal left = m_Margin;
-    qreal gridWid = wid/m_VGridNum;//网格宽度
-    for(int vgridNo(0),groupID = m_VGridNum * (m_HPageNo - 1);
-        groupID < m_BarGroups.count() && vgridNo < m_VGridNum;
+    qreal gridWid = wid/m_MaxGroupNumInPage;//网格宽度
+    for(int vgridNo(0),groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
+        groupID < m_BarGroups.count() && vgridNo < m_MaxGroupNumInPage;
         ++groupID, ++vgridNo)
     {
         ListBarInfo lbi = m_BarGroups.at(groupID);
@@ -293,11 +296,11 @@ void XBarChart::updateBars()
 //            m_MaxBarNumOfGroup = cnt;
 //    }
 
-//    int nVal = m_MaxBarNumOfGroup % m_VGridNum;
+//    int nVal = m_MaxBarNumOfGroup % m_MaxGroupNumInPage;
 //    if(0 == nVal)
-//        m_VPageCount = m_MaxBarNumOfGroup / m_VGridNum;
+//        m_VPageCount = m_MaxBarNumOfGroup / m_MaxGroupNumInPage;
 //    else
-//        m_VPageCount = m_MaxBarNumOfGroup / m_VGridNum + 1;
+//        m_VPageCount = m_MaxBarNumOfGroup / m_MaxGroupNumInPage + 1;
 
     qreal left = m_Margin;
 //    qreal top = m_Margin;
@@ -306,19 +309,19 @@ void XBarChart::updateBars()
     qreal hei = this->height() - m_Margin * 2;
 
     //所有列的条形图高度一致，宽度代表持续时间
-    qreal gridWid = wid / m_VGridNum;//网格宽度
+    qreal gridWid = wid / m_MaxGroupNumInPage;//网格宽度
     qreal barWid = gridWid;//条形图的宽度
     qreal barTop = 0;
     qreal barHei = hei / m_MaxBarNumOfGroupInPage;
 
     //当前页面 m_HPageNo,m_VPageNo
-    for(int groupID = m_VGridNum * (m_HPageNo - 1);
-        groupID < m_BarGroups.count() && groupID < m_VGridNum * m_HPageNo;
+    for(int groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
+        groupID < m_BarGroups.count() && groupID < m_MaxGroupNumInPage * m_HPageNo;
         ++groupID)
     {
         ListBarInfo lbi = m_BarGroups.at(groupID);
 
-        int gNo = groupID - m_VGridNum * (m_HPageNo - 1);
+        int gNo = groupID - m_MaxGroupNumInPage * (m_HPageNo - 1);
         left = m_Margin + gridWid * gNo;
         bot = this->height() - m_Margin;
         if(lbi.isEmpty())
@@ -391,6 +394,28 @@ void XBarChart::updateNavi()
         m_BtnPageUp->setEnabled(false);
 }
 
+
+//初始化右键菜单
+void XBarChart::initPopMenu()
+{
+    //创建菜单项
+    m_PopMenu = new QMenu(this);
+    m_Action_Property = new QAction(this);
+    m_Action_Property->setText("属性");
+    //    m_Action_Property->setShortcut(Qt::Key_F1);
+    //    m_Action_Property->setIcon(icon);
+    QObject::connect(m_Action_Property, &QAction::triggered, this,&XBarChart::editProperty);
+    m_PopMenu->addAction(m_Action_Property);
+
+    m_PopMenuBar = new QMenu(this);
+    m_Action_BarOpenFile = new QAction(this);
+    m_Action_BarOpenFile->setText("打开数据文件");
+    //    m_Action_BarOpenFile->setShortcut(Qt::Key_F1);
+    //    m_Action_BarOpenFile->setIcon(icon);
+    QObject::connect(m_Action_BarOpenFile, &QAction::triggered, this,&XBarChart::openFileOfBar);
+    m_PopMenuBar->addAction(m_Action_BarOpenFile);
+}
+
 void XBarChart::paintEvent(QPaintEvent *event)
 {
     repaintChart();
@@ -400,6 +425,38 @@ void XBarChart::paintEvent(QPaintEvent *event)
 void XBarChart::resizeEvent(QResizeEvent *event)
 {
     setSceneRect(0,0,this->width(),this->height());//随时更新场景大小，刚好布满整个view
+}
+
+void XBarChart::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    editProperty();
+}
+
+
+//void XBarChart::mousePressEvent(QMouseEvent *event)
+//{
+//    m_CurrentItem = itemAt(event->pos());
+//}
+
+//在此集中处理chart和chart上面的所有的图元的右键菜单
+void XBarChart::contextMenuEvent(QContextMenuEvent *event)
+{
+    m_CurrentItem = itemAt(event->pos());
+    if (m_CurrentItem)
+    {
+        if( m_CurrentItem->type() == XBar::Type)
+            m_PopMenuBar->exec(QCursor::pos());//在条形图上弹出右键菜单
+        //在item上，就将控制权交还给QGraphicsView来处理，例如显示item的右键菜单
+        else
+            QGraphicsView::contextMenuEvent(event);
+    }
+    else
+    {
+        //不在item上，就调用自定义的右键菜单
+        m_PopMenu->exec(QCursor::pos());//菜单出现的位置为当前鼠标的位置
+//        m_PopMenu->exec(event->globalPos());
+//        event->accept();
+    }
 }
 
 //添加一组条形图
@@ -441,7 +498,7 @@ void XBarChart::addBars(ListBarInfo bars)
         m_VPageCount++;
 
     //更新水平方向页面数目
-    if(m_BarGroups.count() > m_VGridNum * m_HPageCount)
+    if(m_BarGroups.count() > m_MaxGroupNumInPage * m_HPageCount)
          m_HPageCount++;
 
     m_HPageNo = m_HPageCount;//自动跳转到新的页面
@@ -542,4 +599,23 @@ void XBarChart::pageDown()
     if(m_VPageNo < 1)
         m_VPageNo = 1;
     update();
+}
+
+
+//属性编辑
+void XBarChart::editProperty()
+{
+    DlgXBarChartProperty dlg(this,this);
+    dlg.exec();
+}
+
+
+//打开条形图的数据文件
+void XBarChart::openFileOfBar()
+{
+    if(m_CurrentItem && m_CurrentItem->type() == XBar::Type)
+    {
+        XBar *bar = dynamic_cast<XBar *>(m_CurrentItem);
+        bar->openFile();
+    }
 }

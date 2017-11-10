@@ -19,7 +19,8 @@ RESOURCES += \
     Resources/360safe.qrc
 
 FORMS += \
-    WorkFlow/citempropertydialog.ui
+    WorkFlow/citempropertydialog.ui \
+    DlgXBarChartProperty.ui
 
 
 HEADERS += \
@@ -41,7 +42,8 @@ HEADERS += \
     WorkFlow/CWidgetWork.h \
     XBar.h \
     XBarChart.h \
-    FileMgrDIDX.h
+    FileMgrDIDX.h \
+    DlgXBarChartProperty.h
 
 SOURCES += \
     main.cpp \
@@ -61,7 +63,8 @@ SOURCES += \
     WorkFlow/CWidgetWork.cpp \
     XBar.cpp \
     XBarChart.cpp \
-    FileMgrDIDX.cpp
+    FileMgrDIDX.cpp \
+    DlgXBarChartProperty.cpp
 
 
 CONFIG(debug, debug|release) {

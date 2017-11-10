@@ -1,25 +1,29 @@
 ﻿#ifndef XBARCHART_H
 #define XBARCHART_H
 
+#include "XBar.h"
+#include "FileMgrDIDX.h"
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QPaintEvent>
 #include <QMap>
-#include "XBar.h"
 #include <QGraphicsTextItem>
 #include <QTimer>
-#include "FileMgrDIDX.h"
 #include <QColor>
 #include <QPushButton>
 #include <QLabel>
+#include <QMenu>
+#include <QAction>
 
 class XBarChart : public QGraphicsView
-{    
+{
+    Q_OBJECT
+
 protected:
     QGraphicsScene *m_Scene;//场景
 
-    int m_Margin;//边距(最小20，最大50)
+    int m_Margin;//边距(最小20，最大100)
     QColor m_BackColor;//背景颜色
 
     QGraphicsTextItem *m_Title;//标题栏
@@ -27,8 +31,8 @@ protected:
     int m_TitleHeight;//标题区域高度(最小20，最大50)
 
     bool m_GridVisible;//是否显示网格线
-    int m_VGridNum;//垂直网格数(也就是页面上显示条形图组的最大值)，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大6，默认是5)
-    int m_MaxBarNumOfGroupInPage;//页面上垂直网格里显示条形图的最大值(最小2，最大10，默认是5)
+    int m_MaxGroupNumInPage;//页面显示的条形图组数目（条形图列数）,也就是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大10，默认是5)
+    int m_MaxBarNumOfGroupInPage;//页面上垂直网格里显示条形图的最大值(列中条形图数目)，最小2，最大10，默认是5
     int m_MaxBarNumOfGroup;//条形图组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元
@@ -58,6 +62,14 @@ protected:
     QPushButton *m_BtnPageUp;//上一页
     QPushButton *m_BtnPageDown;//下一页
 
+    QMenu *m_PopMenu;//右键菜单    
+    QAction *m_Action_Property;
+
+    QMenu *m_PopMenuBar;//条形图的右键菜单
+    QAction *m_Action_BarOpenFile;
+
+    QGraphicsItem *m_CurrentItem;//当前选中的图元
+
 public:
     XBarChart(QWidget *parent=0);
 
@@ -77,8 +89,8 @@ public:
     {
         if(val < 20)
             val = 20;
-        else if(val > 50)
-            val = 50;
+        else if(val > 100)
+            val = 100;
 
         if(m_Margin != val)
         {
@@ -169,22 +181,22 @@ public:
     }
 
     //获取垂直网格数
-    int getVGridNum() const
+    int getMaxGroupNumInPage() const
     {
-        return m_VGridNum;
+        return m_MaxGroupNumInPage;
     }
 
     //设置垂直网格数
-    void setVGridNum(int val)
+    void setMaxGroupNumInPage(int val)
     {
         if(val < 2)
             val = 2;
-        else if(val >6)
-            val = 6;
+        else if(val >10)
+            val = 10;
 
-        if(m_VGridNum != val)
+        if(m_MaxGroupNumInPage != val)
         {
-            m_VGridNum = val;
+            m_MaxGroupNumInPage = val;
             this->update();
         }
     }
@@ -219,8 +231,8 @@ public:
     //设置条形图组的最大数量值
     void setBarGroupsCapacity(int val)
     {
-        if(val < m_VGridNum)
-            val = m_VGridNum;
+        if(val < m_MaxGroupNumInPage)
+            val = m_MaxGroupNumInPage;
 
         if(m_BarGroupsCapacity != val)
         {
@@ -308,9 +320,15 @@ protected:
     //更新导航功能相关的部件
     virtual void updateNavi();
 
+    //初始化右键菜单
+    virtual void initPopMenu();
+
 protected:
-    void paintEvent(QPaintEvent *event) ;
-    void resizeEvent(QResizeEvent *event);
+    void paintEvent(QPaintEvent *event);
+    void resizeEvent(QResizeEvent *event) ;
+    void mouseDoubleClickEvent(QMouseEvent *event);
+//    void mousePressEvent(QMouseEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 public slots:
     //检查文件是否更新
@@ -327,6 +345,12 @@ public slots:
 
     //下一页
     void pageDown();
+
+    //属性编辑
+    void editProperty();
+
+    //打开条形图的数据文件
+    void openFileOfBar();
 };
 
 #endif // XBARCHART_H

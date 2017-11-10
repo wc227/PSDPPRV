@@ -106,6 +106,12 @@ void XBar::updateInfo()
 //双击提示
 void XBar::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
+    openFile();
+}
+
+//打开文件
+void XBar::openFile()
+{
     if(QFile::exists(m_BarInfo.m_FilePath))
     {
         //调用系统自带程序打开文本文件（只适合windows系统）

@@ -5,8 +5,9 @@
 #include <QGraphicsTextItem>
 #include <QColor>
 #include <QList>
-#include <QGraphicsItemAnimation>
-#include <QTimeLine>
+#include <QMenu>
+#include <QAction>
+#include <QGraphicsSceneContextMenuEvent>
 
 //自定义的条形图的基本信息
 struct BarInfo
@@ -20,7 +21,8 @@ struct BarInfo
 };
 
 //条形图，继承自QGraphicsRectItem，
-class XBar:public QGraphicsRectItem
+//继承QObject，用来使用信号和槽
+class XBar: public QGraphicsRectItem
 {
 public:
     enum {Type = UserType + 1 };
@@ -49,8 +51,10 @@ protected:
 //    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
 //    virtual void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 //    virtual void hoverLeaveEvent(QGraphicsSceneHoverEvent *event);
+//    virtual void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
 
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 
 public:
     BarInfo barInfo() const;
@@ -61,14 +65,18 @@ public:
 
     void setAlpha(qreal a);
 
+public slots:
+    //打开文件
+    void openFile();
+
 protected:
     BarInfo m_BarInfo;//基本信息
 
     QColor m_BackColor;//背景色
 
-//    QGraphicsItemAnimation *animation;
+    QMenu *m_PopMenu;//右键菜单
 
-//    QTimeLine *timer;
+    QAction *m_Action_OpenFile;//打开文件
 };
 
 
