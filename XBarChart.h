@@ -61,6 +61,7 @@ protected:
 
     QPushButton *m_BtnPageUp;//上一页
     QPushButton *m_BtnPageDown;//下一页
+    QLabel *m_LblPageNO2;//当前页号
 
     QMenu *m_PopMenu;//右键菜单    
     QAction *m_Action_Property;
@@ -197,6 +198,15 @@ public:
         if(m_MaxGroupNumInPage != val)
         {
             m_MaxGroupNumInPage = val;
+
+            if(0 == m_BarGroups.count() % m_MaxGroupNumInPage)
+                m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage;
+            else
+                m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage + 1;
+
+            if(m_HPageNo > m_HPageCount)
+                m_HPageNo = m_HPageCount;
+
             this->update();
         }
     }
@@ -218,6 +228,15 @@ public:
         if(m_MaxBarNumOfGroupInPage != val)
         {
             m_MaxBarNumOfGroupInPage = val;
+
+            if(0 == m_MaxBarNumOfGroup % m_MaxBarNumOfGroupInPage)
+                m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage;
+            else
+                m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage + 1;
+
+            if(m_VPageNo > m_VPageCount)
+                m_VPageNo = m_VPageCount;
+
             this->update();
         }
     }

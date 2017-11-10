@@ -96,6 +96,8 @@ void CBarItem::startAnimation()
         m_pAnimation->setEndValue(QRectF(0,0,m_widthAni,m_Height));
 
         m_pAnimation->start();//运行动画
+
+        m_timeStartAni = QDateTime::currentSecsSinceEpoch();//动画启动的时间
     }
 }
 
@@ -134,4 +136,9 @@ void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     }
 
     painter->fillPath(shape(),QBrush(Qt::green));
+
+    qint64 timeNow = QDateTime::currentSecsSinceEpoch();//当前时间
+    qint64 timeSpan = timeNow - m_timeStartAni;
+    if(timeSpan > 3)
+        painter->drawText(QRectF(0,0,m_Width,m_Height),Qt::AlignCenter,QString("%1秒").arg(timeNow - m_timeStartAni));
 }

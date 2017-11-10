@@ -15,7 +15,6 @@ XBarChart::XBarChart(QWidget *parent)
     m_CurrentItem = 0;
 }
 
-
 XBarChart::~XBarChart()
 {
     m_TimerCheckFile.stop();
@@ -101,7 +100,7 @@ void XBarChart::initChart()
     m_BtnPageRight->setMaximumSize(30,20);
     m_LblPageNO->setMinimumSize(30,20);
     m_LblPageNO->setMaximumSize(30,20);
-    m_LblPageNO->setText(QString("%1").arg(m_HPageNo));
+    m_LblPageNO->setText(QString("%1/%2").arg(m_HPageNo).arg(m_HPageCount));
     m_LblPageNO->setAlignment(Qt::AlignCenter);
 
     m_Scene->addWidget(m_BtnPageLeft);
@@ -125,13 +124,21 @@ void XBarChart::initChart()
     m_BtnPageUp->setMaximumSize(30,20);
     m_BtnPageDown->setMinimumSize(30,20);
     m_BtnPageDown->setMaximumSize(30,20);
+    m_LblPageNO2 = new QLabel("");//当前页号
+    m_LblPageNO2->setMinimumSize(30,20);
+    m_LblPageNO2->setMaximumSize(30,20);
+    m_LblPageNO2->setText(QString("%1/%2").arg(m_VPageNo).arg(m_VPageCount));
+    m_LblPageNO2->setAlignment(Qt::AlignCenter);
 
     m_Scene->addWidget(m_BtnPageUp);
     m_Scene->addWidget(m_BtnPageDown);
+    m_Scene->addWidget(m_LblPageNO2);
     x = this->width() - 30;
-    y = this->height() / 2 - m_BtnPageUp->height();
-    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());
-    y = this->height() / 2;
+    y = this->height() / 2 - m_BtnPageUp->height() - m_LblPageNO2->height()/2;
+    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());    
+    y = this->height() / 2 - m_LblPageNO2->height()/2;
+    m_LblPageNO2->setGeometry(x,y,m_LblPageNO2->width(),m_LblPageNO2->height());
+    y = this->height() / 2 + m_LblPageNO2->height()/2;
     m_BtnPageDown->setGeometry(x,y,m_BtnPageDown->width(),m_BtnPageDown->height());
 
     connect(m_BtnPageLeft,&QPushButton::clicked,this,&XBarChart::pageLeft);
@@ -269,7 +276,15 @@ void XBarChart::updateAxisX()
             }
         }
 
-        QString sTxt = QString("时间:%1(时长:%2s)").arg(m_Times.at(groupID)).arg(maxDuriation);
+        QString sTime = m_Times.at(groupID);//例如：20170801112503
+        sTime = QString("%1/%2/%3 %4:%5:%6")
+                .arg(sTime.mid(0,4))
+                .arg(sTime.mid(4,2))
+                .arg(sTime.mid(6,2))
+                .arg(sTime.mid(8,2))
+                .arg(sTime.mid(10,2))
+                .arg(sTime.mid(12,2));
+        QString sTxt = QString("%1(%2秒)").arg(sTime).arg(maxDuriation);
         QGraphicsTextItem *text = m_TimeItems.at(vgridNo);
         if(text)
         {
@@ -364,8 +379,7 @@ void XBarChart::updateNavi()
 {
     m_BtnPageLeft->setEnabled(true);
     m_BtnPageRight->setEnabled(true);
-
-    m_LblPageNO->setText(QString("%1").arg(m_HPageNo));
+    m_LblPageNO->setText(QString("%1/%2").arg(m_HPageNo).arg(m_HPageCount));
 
     int y = this->height() - 20;
     int x = this->width()/2 - m_BtnPageLeft->width() - m_LblPageNO->width()/2;
@@ -380,13 +394,15 @@ void XBarChart::updateNavi()
     if(m_HPageNo == m_HPageCount)
         m_BtnPageRight->setEnabled(false);
 
-
     m_BtnPageUp->setEnabled(true);
     m_BtnPageDown->setEnabled(true);
+    m_LblPageNO2->setText(QString("%1/%2").arg(m_VPageNo).arg(m_VPageCount));
     x = this->width() - 30;
-    y = this->height() / 2 - m_BtnPageUp->height();
+    y = this->height() / 2 - m_BtnPageUp->height() - m_LblPageNO2->height()/2;
     m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());
-    y = this->height() / 2;
+    y = this->height() / 2 - m_LblPageNO2->height()/2;
+    m_LblPageNO2->setGeometry(x,y,m_LblPageNO2->width(),m_LblPageNO2->height());
+    y = this->height() / 2 + m_LblPageNO2->height()/2;
     m_BtnPageDown->setGeometry(x,y,m_BtnPageDown->width(),m_BtnPageDown->height());
     if(1 == m_VPageNo)
         m_BtnPageDown->setEnabled(false);

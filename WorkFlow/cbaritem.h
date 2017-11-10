@@ -49,6 +49,7 @@ private:
     int m_widthAni;//动画矩形的宽度
     int m_ShowTime;//动画显示时间(单位:s)
     bool m_bLoopAnimation;//是否循环显示动画
+    qint64 m_timeStartAni;//动画启动的时间
 };
 
 #endif // CBarItem_H
