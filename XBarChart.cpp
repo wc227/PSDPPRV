@@ -60,7 +60,10 @@ void XBarChart::initChart()
     m_Scene = new QGraphicsScene();
     this->setScene(m_Scene);
 
-    m_Margin = 40;
+    m_MarginLeft = 40;
+    m_MarginRight = 40;
+    m_MarginTop = 20;
+    m_MarginBotton = 40;
     m_BackColor = QColor(240,240,255,123);//很浅的蓝色
 
     m_TitleHeight = 30;
@@ -86,7 +89,7 @@ void XBarChart::initChart()
     m_Title->setTextCursor(cursor);
 
     m_Title->setTextWidth(this->width());//设置宽度
-    m_Title->setPos(0,10);
+    m_Title->setPos(0,m_MarginTop);
     m_Scene->addItem(m_Title);
 
     m_GridVisible = true;
@@ -103,7 +106,6 @@ void XBarChart::initChart()
         m_Scene->addItem(textItem);
     }
     m_BarGroupsCapacity = 20;
-    m_IsSortByDuriation = true;
 
     m_HPageCount = 1;
     m_HPageNo = 1;
@@ -177,25 +179,92 @@ void XBarChart::initChart()
 }
 
 //获取边距
-int XBarChart::getMargin() const
+int XBarChart::getMarginLeft() const
 {
-    return m_Margin;
+    return m_MarginLeft;
 }
 
 //设置边距
-void XBarChart::setMargin(int val)
+void XBarChart::setMarginLeft(int val)
 {
     if(val < 20)
         val = 20;
     else if(val > 100)
         val = 100;
 
-    if(m_Margin != val)
+    if(m_MarginLeft != val)
     {
-        m_Margin = val;
+        m_MarginLeft = val;
         this->update();
     }
 }
+
+
+//获取边距
+int XBarChart::getMarginRight() const
+{
+    return m_MarginRight;
+}
+
+//设置边距
+void XBarChart::setMarginRight(int val)
+{
+    if(val < 20)
+        val = 20;
+    else if(val > 100)
+        val = 100;
+
+    if(m_MarginRight != val)
+    {
+        m_MarginRight = val;
+        this->update();
+    }
+}
+
+
+//获取边距
+int XBarChart::getMarginTop() const
+{
+    return m_MarginTop;
+}
+
+//设置边距
+void XBarChart::setMarginTop(int val)
+{
+    if(val < 20)
+        val = 20;
+    else if(val > 100)
+        val = 100;
+
+    if(m_MarginTop != val)
+    {
+        m_MarginTop = val;
+        this->update();
+    }
+}
+
+
+//获取边距
+int XBarChart::getMarginBotton() const
+{
+    return m_MarginBotton;
+}
+
+//设置边距
+void XBarChart::setMarginBotton(int val)
+{
+    if(val < 20)
+        val = 20;
+    else if(val > 100)
+        val = 100;
+
+    if(m_MarginBotton != val)
+    {
+        m_MarginBotton = val;
+        this->update();
+    }
+}
+
 
 //获取背景颜色
 QColor XBarChart::getBackColor() const
@@ -393,12 +462,12 @@ void XBarChart::addBars(ListBarInfo bars)
         return;
 
     //按照持续时间降序排序
-    if(m_IsSortByDuriation)
-    {
-        qSort(bars.begin(),bars.end(),[=](BarInfo a,BarInfo b)->bool{
-            return a.m_Duration > b.m_Duration;
-        });
-    }
+//    if(m_IsSortByDuriation)
+//    {
+//        qSort(bars.begin(),bars.end(),[=](BarInfo a,BarInfo b)->bool{
+//            return a.m_Duration > b.m_Duration;
+//        });
+//    }
 
     //添加一组新的条形图
     m_BarGroups.append(bars);
@@ -473,10 +542,16 @@ void XBarChart::drawMainArea(QPainter *painter)
     QPen pen(Qt::black,1);
     painter->setPen(pen);
 
-    qreal left = m_Margin;
-    qreal top = m_Margin;
-    qreal wid = this->width() - m_Margin * 2;
-    qreal hei = this->height() - m_Margin * 2;
+    qreal left = m_MarginLeft;
+    qreal top = m_MarginTop;
+    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
+    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
+
+    if(isTitleVisible())
+    {
+        top += m_TitleHeight;
+        hei -= m_TitleHeight;
+    }
 
     QRectF rect(left,top,wid,hei);
     painter->fillRect(rect,m_BackColor);//浅灰色充填背景
@@ -502,22 +577,20 @@ void XBarChart::drawGrid(QPainter *painter)
     if(!m_GridVisible)
         return;
 
-//    //计算条形图组中条形图数目的最大值
-//    m_MaxBarNumOfGroup = 0;
-//    foreach(ListBarInfo lbi, m_BarGroups)
-//    {
-//        int cnt = lbi.count();
-//        if(m_MaxBarNumOfGroup < cnt)
-//            m_MaxBarNumOfGroup = cnt;
-//    }
-
     painter->save();
 
     painter->setPen(Qt::lightGray);
-    qreal left = m_Margin;
-    qreal top = m_Margin;
-    qreal wid = this->width() - m_Margin * 2;
-    qreal hei = this->height() - m_Margin * 2;
+
+    qreal left = m_MarginLeft;
+    qreal top = m_MarginTop;
+    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
+    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
+
+    if(isTitleVisible())
+    {
+        top += m_TitleHeight;
+        hei -= m_TitleHeight;
+    }
 
     //水平网格线
     //    qreal diffY = hei/m_MaxBarNumOfGroup;
@@ -542,7 +615,7 @@ void XBarChart::updateTitle()
 {
     if(!isTitleVisible())
         return;
-    m_Title->setTextWidth(this->width());//更新标题的宽度
+
     //设置居中显示
     QTextBlockFormat format;
     format.setAlignment(Qt::AlignCenter);
@@ -551,6 +624,9 @@ void XBarChart::updateTitle()
     cursor.mergeBlockFormat(format);
     cursor.clearSelection();
     m_Title->setTextCursor(cursor);
+
+    m_Title->setTextWidth(this->width());//设置宽度
+    m_Title->setPos(0,m_MarginTop);
 }
 
 //更新X轴
@@ -559,9 +635,17 @@ void XBarChart::updateAxisX()
     foreach(QGraphicsTextItem * item, m_TimeItems)
         item->setPlainText("");
 
-    qreal wid = this->width() - m_Margin * 2;
-    qreal top = this->height() - m_Margin;
-    qreal left = m_Margin;
+    qreal left = m_MarginLeft;
+    qreal top = m_MarginTop;
+    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
+    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
+
+    if(isTitleVisible())
+    {
+        top += m_TitleHeight;
+        hei -= m_TitleHeight;
+    }
+
     qreal gridWid = wid/m_MaxGroupNumInPage;//网格宽度
     for(int vgridNo(0),groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
         groupID < m_BarGroups.count() && vgridNo < m_MaxGroupNumInPage;
@@ -570,16 +654,26 @@ void XBarChart::updateAxisX()
         ListBarInfo lbi = m_BarGroups.at(groupID);
         if(lbi.isEmpty())
             continue;
-        left = m_Margin + gridWid * vgridNo;
-        long maxDuriation = 0;
-        if(m_IsSortByDuriation)
-            maxDuriation = lbi.at(0).m_Duration;
-        else
+
+        left = m_MarginLeft + gridWid * vgridNo;
+
+        QDateTime oldDT = g_getFormatDateTime(lbi.at(0).m_Time);
+        foreach (BarInfo bi, lbi)
         {
-            foreach (BarInfo bi, lbi) {
-                if(maxDuriation < bi.m_Duration)
-                    maxDuriation = bi.m_Duration;
-            }
+            QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
+            if(tempDT < oldDT)
+                oldDT = tempDT;
+        }
+
+        long maxDuriation = 0;//最大持续时间（单位：秒）
+        long oldTime = oldDT.toSecsSinceEpoch();
+        foreach (BarInfo bi, lbi)
+        {
+            QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
+            long tempTime = tempDT.toSecsSinceEpoch();
+            long tempDuriation = tempTime - oldTime + bi.m_Duration;
+            if(maxDuriation < tempDuriation)
+                maxDuriation = tempDuriation;
         }
 
         QString sTime = m_Times.at(groupID);//例如：20170801112503
@@ -602,26 +696,17 @@ void XBarChart::updateBars()
     if(0 == m_BarGroups.count())
         return;
 
-//    //计算条形图组中条形图数目的最大值
-//    m_MaxBarNumOfGroup = 0;
-//    foreach(ListBarInfo lbi, m_BarGroups)
-//    {
-//        int cnt = lbi.count();
-//        if(m_MaxBarNumOfGroup < cnt)
-//            m_MaxBarNumOfGroup = cnt;
-//    }
+    qreal left = m_MarginLeft;
+    qreal top = m_MarginTop;
+    qreal bot = this->height() - m_MarginBotton;
+    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
+    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
 
-//    int nVal = m_MaxBarNumOfGroup % m_MaxGroupNumInPage;
-//    if(0 == nVal)
-//        m_VPageCount = m_MaxBarNumOfGroup / m_MaxGroupNumInPage;
-//    else
-//        m_VPageCount = m_MaxBarNumOfGroup / m_MaxGroupNumInPage + 1;
-
-    qreal left = m_Margin;
-//    qreal top = m_Margin;
-    qreal bot = this->height() - m_Margin;
-    qreal wid = this->width() - m_Margin * 2;
-    qreal hei = this->height() - m_Margin * 2;
+    if(isTitleVisible())
+    {
+        top += m_TitleHeight;
+        hei -= m_TitleHeight;
+    }
 
     //所有列的条形图高度一致，宽度代表持续时间
     qreal gridWid = wid / m_MaxGroupNumInPage;//网格宽度
@@ -637,21 +722,29 @@ void XBarChart::updateBars()
         ListBarInfo lbi = m_BarGroups.at(groupID);
 
         int gNo = groupID - m_MaxGroupNumInPage * (m_HPageNo - 1);
-        left = m_Margin + gridWid * gNo;
-        bot = this->height() - m_Margin;
+        left = m_MarginLeft + gridWid * gNo;
+        bot = this->height() - m_MarginBotton;
         if(lbi.isEmpty())
             continue;
 
         //当前组中最大持续时间
-        long maxDuriation = 0;
-        if(m_IsSortByDuriation)
-            maxDuriation = lbi.at(0).m_Duration;//因为之前已经按持续时间从大到小降序排列，所以第一个就是最大的
-        else
+        QDateTime oldDT = g_getFormatDateTime(lbi.at(0).m_Time);
+        foreach (BarInfo bi, lbi)
         {
-            foreach (BarInfo bi, lbi) {
-                if(maxDuriation < bi.m_Duration)
-                    maxDuriation = bi.m_Duration;
-            }
+            QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
+            if(tempDT < oldDT)
+                oldDT = tempDT;
+        }
+
+        long maxDuriation = 0;//最大持续时间（单位：秒）
+        long oldTime = oldDT.toSecsSinceEpoch();
+        foreach (BarInfo bi, lbi)
+        {
+            QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
+            long tempTime = tempDT.toSecsSinceEpoch();
+            long tempDuriation = tempTime - oldTime + bi.m_Duration;
+            if(maxDuriation < tempDuriation)
+                maxDuriation = tempDuriation;
         }
 
         for(int barID = m_MaxBarNumOfGroupInPage * (m_VPageNo - 1);
@@ -668,7 +761,11 @@ void XBarChart::updateBars()
             QRectF rect(0,0,barWid,barHei);
             bar->setRect(rect);
             addBarItem(bar);
-            bar->setPos(left,barTop);
+
+            QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
+            long tempTime = tempDT.toSecsSinceEpoch();
+            qreal offLeft = gridWid * (tempTime - oldTime) / (maxDuriation * 1.0f);
+            bar->setPos(left + offLeft, barTop);
             bot = barTop;
         }
     }

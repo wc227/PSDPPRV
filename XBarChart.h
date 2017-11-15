@@ -27,6 +27,7 @@ QString g_formatTime(const QString &time);
 //格式化后的时间：2017/08/01 11:25:03
 QDateTime g_getFormatDateTime(const QString &time);
 
+
 class XBarChart : public QGraphicsView
 {
     Q_OBJECT
@@ -34,9 +35,13 @@ class XBarChart : public QGraphicsView
 protected:
     QGraphicsScene *m_Scene;//场景
 
-    int m_Margin;//边距(最小20，最大100)
+    int m_MarginLeft;//左边距(最小20，最大100)
+    int m_MarginRight;//右边距(最小20，最大100)
+    int m_MarginTop;//上边距(最小20，最大100)
+    int m_MarginBotton;//下边距(最小20，最大100)
     QColor m_BackColor;//背景颜色
 
+    bool m_TitleVisible;//标题栏是否可见
     QGraphicsTextItem *m_Title;//标题栏
     QString m_TitleTxt;//标题内容
     int m_TitleHeight;//标题区域高度(最小20，最大50)
@@ -51,7 +56,6 @@ protected:
     QList<XBar *> m_BarItems;//所有的条形图
     int m_BarGroupsCapacity;//条形图组的最大容量（也就是最多可容纳多少组条形图）
     QStringList m_Times;//条形图组对应的时间
-    bool m_IsSortByDuriation;//是否根据持续时间排序
 
     QString m_ColorCfgFile;//颜色配置文件
     QMap<int, QColor> m_Type2Color;//类型和颜色的映射，真实数据应该从配置文件中读取
@@ -88,10 +92,28 @@ public:
     ~XBarChart();
 
     //获取边距
-    int getMargin() const;
+    int getMarginLeft() const;
 
     //设置边距
-    void setMargin(int val);
+    void setMarginLeft(int val);
+
+    //获取边距
+    int getMarginRight() const;
+
+    //设置边距
+    void setMarginRight(int val);
+
+    //获取边距
+    int getMarginTop() const;
+
+    //设置边距
+    void setMarginTop(int val);
+
+    //获取边距
+    int getMarginBotton() const;
+
+    //设置边距
+    void setMarginBotton(int val);
 
     //获取背景颜色
     QColor getBackColor() const;

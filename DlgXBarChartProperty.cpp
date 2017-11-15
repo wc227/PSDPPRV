@@ -26,7 +26,10 @@ void DlgXBarChartProperty::updateChart(bool bUpdate)
 
     if(bUpdate)
     {
-        m_myChart->setMargin(ui->spinBox_Margin->value());
+        m_myChart->setMarginLeft(ui->spinBox_MarginLeft->value());
+        m_myChart->setMarginRight(ui->spinBox_MarginRight->value());
+        m_myChart->setMarginTop(ui->spinBox_MarginTop->value());
+        m_myChart->setMarginBotton(ui->spinBox_MarginBotton->value());
         m_myChart->setTitle(ui->lineEdit_Title->text());
         QPalette pal = ui->pushButton_BackColor->palette();
         m_myChart->setBackColor(pal.color(QPalette::Button));
@@ -36,7 +39,10 @@ void DlgXBarChartProperty::updateChart(bool bUpdate)
     }
     else
     {
-        ui->spinBox_Margin->setValue(m_myChart->getMargin());
+        ui->spinBox_MarginLeft->setValue(m_myChart->getMarginLeft());
+        ui->spinBox_MarginRight->setValue(m_myChart->getMarginRight());
+        ui->spinBox_MarginTop->setValue(m_myChart->getMarginTop());
+        ui->spinBox_MarginBotton->setValue(m_myChart->getMarginBotton());
         ui->lineEdit_Title->setText(m_myChart->getTitle());
         QPalette pal = ui->pushButton_BackColor->palette();
         pal.setColor(QPalette::Button,m_myChart->getBackColor());

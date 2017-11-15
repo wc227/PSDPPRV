@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>260</width>
-    <height>210</height>
+    <height>300</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>260</width>
-    <height>210</height>
+    <height>300</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -38,7 +38,7 @@
    <property name="geometry">
     <rect>
      <x>50</x>
-     <y>180</y>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -51,7 +51,7 @@
    <property name="geometry">
     <rect>
      <x>140</x>
-     <y>180</y>
+     <y>260</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -83,17 +83,31 @@
     </rect>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>12</x>
      <y>46</y>
      <width>241</width>
-     <height>131</height>
+     <height>201</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
     <item row="2" column="0">
+     <widget class="QLabel" name="label_Margin_2">
+      <property name="text">
+       <string>右边距：</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_Margin_3">
+      <property name="text">
+       <string>上边距：</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
      <widget class="QLabel" name="label_MaxGroupNumInPage">
       <property name="text">
        <string>条形图列数：</string>
@@ -103,11 +117,34 @@
     <item row="1" column="0">
      <widget class="QLabel" name="label_Margin">
       <property name="text">
-       <string>边距：</string>
+       <string>左边距：</string>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_MaxBarNumOfGroupInPage">
+      <property name="text">
+       <string>列中条形图数目：</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QSpinBox" name="spinBox_MarginLeft">
+      <property name="toolTip">
+       <string>最小20，最大100</string>
+      </property>
+      <property name="minimum">
+       <number>20</number>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
      <widget class="QSpinBox" name="spinBox_MaxGroupNumInPage">
       <property name="toolTip">
        <string>也就是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大10，默认是5)</string>
@@ -123,14 +160,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0">
-     <widget class="QLabel" name="label_MaxBarNumOfGroupInPage">
-      <property name="text">
-       <string>列中条形图数目：</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="1">
+    <item row="6" column="1">
      <widget class="QSpinBox" name="spinBox_MaxBarNumOfGroupInPage">
       <property name="toolTip">
        <string>页面上垂直网格里显示条形图的最大值，最小2，最大10，默认是5</string>
@@ -143,29 +173,6 @@
       </property>
       <property name="value">
        <number>5</number>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="1">
-     <widget class="QSpinBox" name="spinBox_Margin">
-      <property name="toolTip">
-       <string>最小20，最大100</string>
-      </property>
-      <property name="minimum">
-       <number>20</number>
-      </property>
-      <property name="maximum">
-       <number>100</number>
-      </property>
-      <property name="singleStep">
-       <number>10</number>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QLabel" name="label_BackColor">
-      <property name="text">
-       <string>背景颜色：</string>
       </property>
      </widget>
     </item>
@@ -182,6 +189,68 @@
       </property>
       <property name="flat">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_BackColor">
+      <property name="text">
+       <string>背景颜色：</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_Margin_4">
+      <property name="text">
+       <string>下边距：</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QSpinBox" name="spinBox_MarginRight">
+      <property name="toolTip">
+       <string>最小20，最大100</string>
+      </property>
+      <property name="minimum">
+       <number>20</number>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="1">
+     <widget class="QSpinBox" name="spinBox_MarginTop">
+      <property name="toolTip">
+       <string>最小20，最大100</string>
+      </property>
+      <property name="minimum">
+       <number>20</number>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1">
+     <widget class="QSpinBox" name="spinBox_MarginBotton">
+      <property name="toolTip">
+       <string>最小20，最大100</string>
+      </property>
+      <property name="minimum">
+       <number>20</number>
+      </property>
+      <property name="maximum">
+       <number>100</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
       </property>
      </widget>
     </item>
