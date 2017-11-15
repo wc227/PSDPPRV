@@ -15,6 +15,17 @@
 #include <QLabel>
 #include <QMenu>
 #include <QAction>
+#include <QDateTime>
+
+//标准化时间
+//原时间time：20170801112503
+//格式化后的时间：2017/08/01 11:25:03
+QString g_formatTime(const QString &time);
+
+//标准化时间
+//原时间time：20170801112503
+//格式化后的时间：2017/08/01 11:25:03
+QDateTime g_getFormatDateTime(const QString &time);
 
 class XBarChart : public QGraphicsView
 {
@@ -76,234 +87,78 @@ public:
 
     ~XBarChart();
 
-    //添加一组条形图
-    virtual void addBars(ListBarInfo bars);
-
     //获取边距
-    int getMargin() const
-    {
-        return m_Margin;
-    }
+    int getMargin() const;
 
     //设置边距
-    void setMargin(int val)
-    {
-        if(val < 20)
-            val = 20;
-        else if(val > 100)
-            val = 100;
-
-        if(m_Margin != val)
-        {
-            m_Margin = val;
-            this->update();
-        }
-    }
+    void setMargin(int val);
 
     //获取背景颜色
-    QColor getBackColor() const
-    {
-        return m_BackColor;
-    }
+    QColor getBackColor() const;
 
     //设置背景颜色
-    void setBackColor(QColor val)
-    {
-        if(m_BackColor != val)
-        {
-            m_BackColor = val;
-            this->update();
-        }
-    }
+    void setBackColor(QColor val);
 
     //设置标题
-    void setTitle(QString sTitle)
-    {
-        if(m_TitleTxt != sTitle)
-        {
-            m_TitleTxt = sTitle;
-            m_Title->setPlainText(m_TitleTxt);
-        }
-    }
+    void setTitle(QString sTitle);
 
     //获取标题
-    QString getTitle() const
-    {
-        return m_TitleTxt;
-    }
+    QString getTitle() const;
 
     //标题是否可见
-    bool isTitleVisible() const
-    {
-        return m_Title->isVisible();
-    }
+    bool isTitleVisible() const;
 
     //设置是否显示标题
-    void setTitleVisible(bool vis)
-    {
-        m_Title->setVisible(vis);
-    }
+    void setTitleVisible(bool vis);
 
     //获取标题区域高度
-    int getTitleHeight() const
-    {
-        return m_TitleHeight;
-    }
+    int getTitleHeight() const;
 
     //设置标题区域高度
-    void setTitleHeight(int val)
-    {
-        if(val < 20)
-            val = 20;
-        else if(val > 50)
-            val = 50;
-
-        if(m_TitleHeight != val)
-        {
-            m_TitleHeight = val;
-            this->update();
-        }
-    }
+    void setTitleHeight(int val);
 
     //网格线是否可见
-    bool isGridVisible() const
-    {
-        return m_GridVisible;
-    }
+    bool isGridVisible() const;
 
     //设置是否显示网格线
-    void setGridVisible(bool val)
-    {
-        if(m_GridVisible != val)
-        {
-            m_GridVisible = val;
-            this->update();
-        }
-    }
+    void setGridVisible(bool val);
 
     //获取垂直网格数
-    int getMaxGroupNumInPage() const
-    {
-        return m_MaxGroupNumInPage;
-    }
+    int getMaxGroupNumInPage() const;
 
     //设置垂直网格数
-    void setMaxGroupNumInPage(int val)
-    {
-        if(val < 2)
-            val = 2;
-        else if(val >10)
-            val = 10;
-
-        if(m_MaxGroupNumInPage != val)
-        {
-            m_MaxGroupNumInPage = val;
-
-            if(0 == m_BarGroups.count() % m_MaxGroupNumInPage)
-                m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage;
-            else
-                m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage + 1;
-
-            if(m_HPageNo > m_HPageCount)
-                m_HPageNo = m_HPageCount;
-
-            this->update();
-        }
-    }
+    void setMaxGroupNumInPage(int val);
 
     //页面上垂直网格里显示条形图的最大值
-    int getMaxBarNumOfGroupInPage() const
-    {
-        return m_MaxBarNumOfGroupInPage;
-    }
+    int getMaxBarNumOfGroupInPage() const;
 
     //页面上垂直网格里显示条形图的最大值
-    void setMaxBarNumOfGroupInPage(int val)
-    {
-        if(val < 2)
-            val = 2;
-        else if(val > 10)
-            val = 10;
-
-        if(m_MaxBarNumOfGroupInPage != val)
-        {
-            m_MaxBarNumOfGroupInPage = val;
-
-            if(0 == m_MaxBarNumOfGroup % m_MaxBarNumOfGroupInPage)
-                m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage;
-            else
-                m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage + 1;
-
-            if(m_VPageNo > m_VPageCount)
-                m_VPageNo = m_VPageCount;
-
-            this->update();
-        }
-    }
+    void setMaxBarNumOfGroupInPage(int val);
 
     //获取条形图组的最大数量值
-    int getBarGroupsCapacity() const
-    {
-        return m_BarGroupsCapacity;
-    }
+    int getBarGroupsCapacity() const;
 
     //设置条形图组的最大数量值
-    void setBarGroupsCapacity(int val)
-    {
-        if(val < m_MaxGroupNumInPage)
-            val = m_MaxGroupNumInPage;
-
-        if(m_BarGroupsCapacity != val)
-        {
-            m_BarGroupsCapacity = val;
-        }
-    }
+    void setBarGroupsCapacity(int val);
 
     //设置颜色配置文件
-    void setColorCfgFile(QString val)
-    {
-        if(m_ColorCfgFile != val)
-        {
-            m_ColorCfgFile = val;
-            loadColorCfgFile();
-        }
-    }
+    void setColorCfgFile(QString val);
 
     //获取检查间隔时间（单位：毫秒）
-    int getTimeInterval() const
-    {
-        return m_TimeInterval;
-    }
+    int getTimeInterval() const;
 
     //设置检查间隔时间（单位：毫秒）
-    void setTimeInterval(int val)
-    {
-        if(val < 1)
-            val = 1;
+    void setTimeInterval(int val);
 
-        if(m_TimeInterval != val)
-        {
-            m_TimeInterval = val;
-            m_TimerCheckFile.setInterval(m_TimeInterval);
-        }
-    }
+
+    //添加一组条形图
+    void addBars(ListBarInfo bars);
 
     //添加一个图元
-    void addBarItem(XBar *item)
-    {
-        m_Scene->addItem(item);
-        m_BarItems.append(item);
-    }
+    void addBarItem(XBar *item);
 
     //清空所有的条形图
-    void clearBarItems()
-    {
-        foreach (XBar *bar, m_BarItems)
-        {
-            m_Scene->removeItem(bar);
-        }
-        m_BarItems.clear();
-    }
+    void clearBarItems();
 
     //加载颜色配置文件
     void loadColorCfgFile();

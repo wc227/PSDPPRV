@@ -7,6 +7,35 @@
 #include <QFont>
 #include "DlgXBarChartProperty.h"
 
+//标准化时间
+//原时间time：20170801112503
+//格式化后的时间：2017/08/01 11:25:03
+QString g_formatTime(const QString &sTime)
+{
+    if(sTime.count() != 14)
+        return "";
+    return QString("%1/%2/%3 %4:%5:%6")
+            .arg(sTime.mid(0,4))
+            .arg(sTime.mid(4,2))
+            .arg(sTime.mid(6,2))
+            .arg(sTime.mid(8,2))
+            .arg(sTime.mid(10,2))
+            .arg(sTime.mid(12,2));
+}
+
+//标准化时间
+//原时间time：20170801112503
+//格式化后的时间：2017/08/01 11:25:03
+QDateTime g_getFormatDateTime(const QString &sTime)
+{
+    if(sTime.count() != 14)
+        return QDateTime::currentDateTime();
+
+    QDate date(sTime.mid(0,4).toInt(), sTime.mid(4,4).toInt(), sTime.mid(6,4).toInt());
+    QTime time(sTime.mid(8,2).toInt(), sTime.mid(10,2).toInt(), sTime.mid(12,2).toInt());
+    return QDateTime(date,time);
+}
+
 XBarChart::XBarChart(QWidget *parent)
     : QGraphicsView(parent)
 {
@@ -147,6 +176,283 @@ void XBarChart::initChart()
     connect(m_BtnPageDown,&QPushButton::clicked,this,&XBarChart::pageDown);
 }
 
+//获取边距
+int XBarChart::getMargin() const
+{
+    return m_Margin;
+}
+
+//设置边距
+void XBarChart::setMargin(int val)
+{
+    if(val < 20)
+        val = 20;
+    else if(val > 100)
+        val = 100;
+
+    if(m_Margin != val)
+    {
+        m_Margin = val;
+        this->update();
+    }
+}
+
+//获取背景颜色
+QColor XBarChart::getBackColor() const
+{
+    return m_BackColor;
+}
+
+//设置背景颜色
+void XBarChart::setBackColor(QColor val)
+{
+    if(m_BackColor != val)
+    {
+        m_BackColor = val;
+        this->update();
+    }
+}
+
+//设置标题
+void XBarChart::setTitle(QString sTitle)
+{
+    if(m_TitleTxt != sTitle)
+    {
+        m_TitleTxt = sTitle;
+        m_Title->setPlainText(m_TitleTxt);
+    }
+}
+
+//获取标题
+QString XBarChart::getTitle() const
+{
+    return m_TitleTxt;
+}
+
+//标题是否可见
+bool XBarChart::isTitleVisible() const
+{
+    return m_Title->isVisible();
+}
+
+//设置是否显示标题
+void XBarChart::setTitleVisible(bool vis)
+{
+    m_Title->setVisible(vis);
+}
+
+//获取标题区域高度
+int XBarChart::getTitleHeight() const
+{
+    return m_TitleHeight;
+}
+
+//设置标题区域高度
+void XBarChart::setTitleHeight(int val)
+{
+    if(val < 20)
+        val = 20;
+    else if(val > 50)
+        val = 50;
+
+    if(m_TitleHeight != val)
+    {
+        m_TitleHeight = val;
+        this->update();
+    }
+}
+
+//网格线是否可见
+bool XBarChart::isGridVisible() const
+{
+    return m_GridVisible;
+}
+
+//设置是否显示网格线
+void XBarChart::setGridVisible(bool val)
+{
+    if(m_GridVisible != val)
+    {
+        m_GridVisible = val;
+        this->update();
+    }
+}
+
+//获取垂直网格数
+int XBarChart::getMaxGroupNumInPage() const
+{
+    return m_MaxGroupNumInPage;
+}
+
+//设置垂直网格数
+void XBarChart::setMaxGroupNumInPage(int val)
+{
+    if(val < 2)
+        val = 2;
+    else if(val >10)
+        val = 10;
+
+    if(m_MaxGroupNumInPage != val)
+    {
+        m_MaxGroupNumInPage = val;
+
+        if(0 == m_BarGroups.count() % m_MaxGroupNumInPage)
+            m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage;
+        else
+            m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage + 1;
+
+        if(m_HPageNo > m_HPageCount)
+            m_HPageNo = m_HPageCount;
+
+        this->update();
+    }
+}
+
+//页面上垂直网格里显示条形图的最大值
+int XBarChart::getMaxBarNumOfGroupInPage() const
+{
+    return m_MaxBarNumOfGroupInPage;
+}
+
+//页面上垂直网格里显示条形图的最大值
+void XBarChart::setMaxBarNumOfGroupInPage(int val)
+{
+    if(val < 2)
+        val = 2;
+    else if(val > 10)
+        val = 10;
+
+    if(m_MaxBarNumOfGroupInPage != val)
+    {
+        m_MaxBarNumOfGroupInPage = val;
+
+        if(0 == m_MaxBarNumOfGroup % m_MaxBarNumOfGroupInPage)
+            m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage;
+        else
+            m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage + 1;
+
+        if(m_VPageNo > m_VPageCount)
+            m_VPageNo = m_VPageCount;
+
+        this->update();
+    }
+}
+
+//获取条形图组的最大数量值
+int XBarChart::getBarGroupsCapacity() const
+{
+    return m_BarGroupsCapacity;
+}
+
+//设置条形图组的最大数量值
+void XBarChart::setBarGroupsCapacity(int val)
+{
+    if(val < m_MaxGroupNumInPage)
+        val = m_MaxGroupNumInPage;
+
+    if(m_BarGroupsCapacity != val)
+    {
+        m_BarGroupsCapacity = val;
+    }
+}
+
+//设置颜色配置文件
+void XBarChart::setColorCfgFile(QString val)
+{
+    if(m_ColorCfgFile != val)
+    {
+        m_ColorCfgFile = val;
+        loadColorCfgFile();
+    }
+}
+
+//获取检查间隔时间（单位：毫秒）
+int XBarChart::getTimeInterval() const
+{
+    return m_TimeInterval;
+}
+
+//设置检查间隔时间（单位：毫秒）
+void XBarChart::setTimeInterval(int val)
+{
+    if(val < 1)
+        val = 1;
+
+    if(m_TimeInterval != val)
+    {
+        m_TimeInterval = val;
+        m_TimerCheckFile.setInterval(m_TimeInterval);
+    }
+}
+
+
+//添加一组条形图
+void XBarChart::addBars(ListBarInfo bars)
+{
+    if(0 == bars.count())
+        return;
+
+    //按照持续时间降序排序
+    if(m_IsSortByDuriation)
+    {
+        qSort(bars.begin(),bars.end(),[=](BarInfo a,BarInfo b)->bool{
+            return a.m_Duration > b.m_Duration;
+        });
+    }
+
+    //添加一组新的条形图
+    m_BarGroups.append(bars);
+    m_Times.append(bars.at(0).m_Time);//添加时间
+
+    //如果组数超出最大值，就删除第组列条形图
+    if(m_BarGroups.count() > m_BarGroupsCapacity)
+    {
+        m_BarGroups.removeFirst();
+        m_Times.removeFirst();
+    }
+
+    //计算条形图组中条形图数目的最大值
+    m_MaxBarNumOfGroup = 0;
+    foreach(ListBarInfo lbi, m_BarGroups)
+    {
+        int cnt = lbi.count();
+        if(m_MaxBarNumOfGroup < cnt)
+            m_MaxBarNumOfGroup = cnt;
+    }
+
+    //更新垂直方向页面数目
+    if(m_MaxBarNumOfGroup > m_MaxBarNumOfGroupInPage * m_VPageCount)
+        m_VPageCount++;
+
+    //更新水平方向页面数目
+    if(m_BarGroups.count() > m_MaxGroupNumInPage * m_HPageCount)
+         m_HPageCount++;
+
+    m_HPageNo = m_HPageCount;//自动跳转到新的页面
+    m_VPageNo = 1;
+
+    repaintChart();
+
+    update();
+}
+
+//添加一个图元
+void XBarChart::addBarItem(XBar *item)
+{
+    m_Scene->addItem(item);
+    m_BarItems.append(item);
+}
+
+//清空所有的条形图
+void XBarChart::clearBarItems()
+{
+    foreach (XBar *bar, m_BarItems)
+    {
+        m_Scene->removeItem(bar);
+    }
+    m_BarItems.clear();
+}
+
 //重新绘制图标
 void XBarChart::repaintChart()
 {
@@ -277,13 +583,7 @@ void XBarChart::updateAxisX()
         }
 
         QString sTime = m_Times.at(groupID);//例如：20170801112503
-        sTime = QString("%1/%2/%3 %4:%5:%6")
-                .arg(sTime.mid(0,4))
-                .arg(sTime.mid(4,2))
-                .arg(sTime.mid(6,2))
-                .arg(sTime.mid(8,2))
-                .arg(sTime.mid(10,2))
-                .arg(sTime.mid(12,2));
+        sTime = g_formatTime(sTime);//2017/08/01 11:25:03
         QString sTxt = QString("%1(%2秒)").arg(sTime).arg(maxDuriation);
         QGraphicsTextItem *text = m_TimeItems.at(vgridNo);
         if(text)
@@ -475,55 +775,6 @@ void XBarChart::contextMenuEvent(QContextMenuEvent *event)
     }
 }
 
-//添加一组条形图
-void XBarChart::addBars(ListBarInfo bars)
-{
-    if(0 == bars.count())
-        return;
-
-    //按照持续时间降序排序
-    if(m_IsSortByDuriation)
-    {
-        qSort(bars.begin(),bars.end(),[=](BarInfo a,BarInfo b)->bool{
-            return a.m_Duration > b.m_Duration;
-        });
-    }
-
-    //添加一组新的条形图
-    m_BarGroups.append(bars);
-    m_Times.append(bars.at(0).m_Time);//添加时间        
-
-    //如果组数超出最大值，就删除第组列条形图
-    if(m_BarGroups.count() > m_BarGroupsCapacity)
-    {
-        m_BarGroups.removeFirst();
-        m_Times.removeFirst();
-    }
-
-    //计算条形图组中条形图数目的最大值
-    m_MaxBarNumOfGroup = 0;
-    foreach(ListBarInfo lbi, m_BarGroups)
-    {
-        int cnt = lbi.count();
-        if(m_MaxBarNumOfGroup < cnt)
-            m_MaxBarNumOfGroup = cnt;
-    }
-
-    //更新垂直方向页面数目
-    if(m_MaxBarNumOfGroup > m_MaxBarNumOfGroupInPage * m_VPageCount)
-        m_VPageCount++;
-
-    //更新水平方向页面数目
-    if(m_BarGroups.count() > m_MaxGroupNumInPage * m_HPageCount)
-         m_HPageCount++;
-
-    m_HPageNo = m_HPageCount;//自动跳转到新的页面
-    m_VPageNo = 1;
-
-    repaintChart();
-
-    update();
-}
 
 //加载颜色配置文件
 void XBarChart::loadColorCfgFile()

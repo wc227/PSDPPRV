@@ -10,6 +10,7 @@
 #include <QWidget>
 #include <QGridLayout>
 #include <QSpacerItem>
+#include <QMultiMap>
 
 class CWidget : public QGraphicsView
 {
@@ -34,9 +35,9 @@ private:
     int m_nTimerID;                 //定时器id
 
 	//增加事件分类触发
-    QMap<QString, int> m_mapStartEvtNum2Counter; //开始动画的事件号和事件计数值
-    QMap<QString, int> m_mapStopEvtNum2Counter; //结束动画的事件号和事件计数值
-    QMap<QString, QList<QGraphicsItem*> > m_mapEvtNum2Items; //事件号与对应的多个Items;
+    QMap<QString, int> m_mapEvtNum2Counter; //动画的事件号和事件计数值
+    QMultiMap<QString, CBarItem*> m_mapEvtNum2BarsStart; //事件号与对应的多个启动动画Items;
+    QMultiMap<QString, CBarItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 
 public slots:
@@ -44,7 +45,7 @@ public slots:
     void SLOT_EvtFileChange(int);	//事件号改变
     void btnClickTest();//单击按钮测试
 
-public:
+protected:
     void timerEvent(QTimerEvent *);  //定时器检测事件号是否发生改变
 };
 

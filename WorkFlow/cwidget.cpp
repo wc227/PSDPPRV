@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QPushButton>
 #include <QStringList>
+#include <QTimer>
 
 
 //long ShareMemoryBuild();
@@ -66,7 +67,7 @@ void CWidget::setFileCfg(const QString &path)
     QSettings *s = new QSettings(m_sFileCfg, QSettings::IniFormat);
     m_bIsEdit = s->value("editState/isEdit", 1).toBool();
 
-    m_Scene->b_IsEdit = m_bIsEdit; //用于是否产生右键菜单，编辑状态下产生
+    m_Scene->enableEdit(m_bIsEdit); //用于是否产生右键菜单，编辑状态下产生
 //    s->setIniCodec(QTextCodec::codecForLocale());
     s->setIniCodec(QTextCodec::codecForName("UTF-8"));
     m_sFileBackPic = s->value("background/pic").toString();
@@ -159,10 +160,9 @@ void CWidget::stringToItemData(QString data, QString type)
     int eventNumber;
     if(type == "In")
     {
-        CBarItem* item = new CBarItem(m_bIsEdit);
-//        item->setShowTime(m_nTimeShow);
+        CBarItem* bar = new CBarItem(m_bIsEdit);
         if(!m_bIsEdit)
-            item->hide();
+            bar->hide();
         if(data.startsWith('{') && data.endsWith('}'))
         {
             data = data.mid(1,data.size()-2);//去除{}
@@ -178,38 +178,37 @@ void CWidget::stringToItemData(QString data, QString type)
                     QStringList lstValue = value.split(',');
                     x = lstValue.at(0).toDouble();
                     y = lstValue.at(1).toDouble();
-                    item->setPos(x,y);
+                    bar->setPos(x,y);
                 }
                 else if(value.contains("size:", Qt::CaseInsensitive))
                 {
                     value.remove("size:", Qt::CaseInsensitive);
                     w = value.split(',').at(0).toDouble();
                     h = value.split(',').at(1).toDouble();
-                    item->setSize(w,h);
+                    bar->setSize(w,h);
                 }
                 else if(value.contains("rotate:", Qt::CaseInsensitive))
                 {
                     value.remove("rotate:", Qt::CaseInsensitive);
                     double angle = value.toDouble();
-                    item->setRotation(angle);
+                    bar->setRotation(angle);
                 }
                 else if(value.contains("name:", Qt::CaseInsensitive))
                 {
                     value.remove("name:", Qt::CaseInsensitive);
                     value = value.trimmed();
-                    item->setCaptainName(value);
+                    bar->setCaptainName(value);
                 }
                 else if(value.contains("eventNumber:", Qt::CaseInsensitive))
                 {
                     value.remove("eventNumber:", Qt::CaseInsensitive);
                     value = value.trimmed();
-                    item->setEventNumbers(value);
-
+                    bar->setEventNumbers(value);
                     /*
                      * value是一串事件号组成的字符串，由前后2部分组成，之间由"-"分割。
                      * 第一部分是启动事件号，第二部分是结束事件号。
                      * 每个部分都是由多个事件号组成的字符串，用:进行连接。
-                     * 例如：#1:#2;#3:#4
+                     * 例如：#1:#2-#3:#4
                     */
                     if(!value.isEmpty())
                     {
@@ -222,16 +221,10 @@ void CWidget::stringToItemData(QString data, QString type)
                             {
                                 //将当前item的事件号与计数器保存到Map中;
                                 QString sEvt = list2.at(i);
+                                sEvt = sEvt.trimmed();
                                 int nCounter = m_psdEvts.evtCounter(sEvt);
-                                m_mapStartEvtNum2Counter.insert(sEvt,nCounter);
-
-                                //判断对应事件号的是否对应多个item;
-                                QList<QGraphicsItem*> items;
-                                //如果在map中找到已有的事件号，则添加到已有事件号对应的value中;
-                                if(m_mapEvtNum2Items.contains(sEvt))
-                                    items = m_mapEvtNum2Items.value(sEvt);
-                                items.append(item);
-                                m_mapEvtNum2Items.insert(sEvt,items);
+                                m_mapEvtNum2Counter.insert(sEvt,nCounter);
+                                m_mapEvtNum2BarsStart.insert(sEvt,bar);
                             }
 
                             if(list1.count() > 1)
@@ -242,16 +235,10 @@ void CWidget::stringToItemData(QString data, QString type)
                                 {
                                     //将当前item的事件号与计数器保存到Map中;
                                     QString sEvt = list3.at(i);
+                                    sEvt = sEvt.trimmed();
                                     int nCounter = m_psdEvts.evtCounter(sEvt);
-                                    m_mapStopEvtNum2Counter.insert(sEvt,nCounter);
-
-                                    //判断对应事件号的是否对应多个item;
-                                    QList<QGraphicsItem*> items;
-                                    //如果在map中找到已有的事件号，则添加到已有事件号对应的value中;
-                                    if(m_mapEvtNum2Items.contains(sEvt))
-                                        items = m_mapEvtNum2Items.value(sEvt);
-                                    items.append(item);
-                                    m_mapEvtNum2Items.insert(sEvt,items);
+                                    m_mapEvtNum2Counter.insert(sEvt,nCounter);
+                                    m_mapEvtNum2BarsStop.insert(sEvt,bar);
                                 }
                             }
                         }
@@ -260,24 +247,37 @@ void CWidget::stringToItemData(QString data, QString type)
                 else if(value.contains("aniTime:", Qt::CaseInsensitive))
                 {
                     value.remove("aniTime:", Qt::CaseInsensitive);
-                    item->setShowTime(value.toInt());
+                    bar->setShowTime((int)(value.toDouble()*1000));
                 }
                 else if(value.contains("loop:", Qt::CaseInsensitive))
                 {
                     value.remove("loop:", Qt::CaseInsensitive);
                     if(value.toInt() == 1)
-                        item->enableLoopAnimation(true);
+                        bar->enableLoopAnimation(true);
                     else if(value.toInt() == 0)
-                        item->enableLoopAnimation(false);
+                        bar->enableLoopAnimation(false);
+                }
+                else if(value.contains("ignoreEndEvt:", Qt::CaseInsensitive))
+                {
+                    value.remove("ignoreEndEvt:", Qt::CaseInsensitive);
+                    if(value.toInt() == 1)
+                        bar->enableIgnoreEndEvt(true);
+                    else if(value.toInt() == 0)
+                        bar->enableIgnoreEndEvt(false);
+                }
+                else if(value.contains("startDelay:", Qt::CaseInsensitive))
+                {
+                    value.remove("startDelay:", Qt::CaseInsensitive);
+                    bar->setStartDelay((int)(value.toDouble()*1000));
                 }
             }
         }
-        m_Scene->addItem(item);
+        m_Scene->addItem(bar);
     }
     else
     {
-        COutItem *item= new COutItem(m_bIsEdit);
-        connect(item, SIGNAL(EvtFileChange(int)), this, SLOT(SLOT_EvtFileChange(int)));
+        COutItem *outItem= new COutItem(m_bIsEdit);
+        connect(outItem, SIGNAL(EvtFileChange(int)), this, SLOT(SLOT_EvtFileChange(int)));
 
         if(data.startsWith('{') && data.endsWith('}'))
         {
@@ -294,27 +294,27 @@ void CWidget::stringToItemData(QString data, QString type)
                     QStringList lstValue = value.split(',');
                     x = lstValue.at(0).toDouble();
                     y = lstValue.at(1).toDouble();
-                    item->setPos(x,y);
+                    outItem->setPos(x,y);
                 }
                 else if(value.contains("size:", Qt::CaseInsensitive))
                 {
                     value.remove("size:", Qt::CaseInsensitive);
                     w = value.split(',').at(0).toDouble();
                     h = value.split(',').at(1).toDouble();
-                    item->setSize(w,h);
+                    outItem->setSize(w,h);
                 }
                 else if(value.contains("name:", Qt::CaseInsensitive))
                 {
                     value.remove("name:", Qt::CaseInsensitive);
                     value = value.trimmed();
-                    item->setCaptainName(value);
+                    outItem->setCaptainName(value);
                 }
                 else if(value.contains("eventNumber:", Qt::CaseInsensitive))
                 {
                     value.remove("eventNumber:", Qt::CaseInsensitive);
                     value = value.trimmed();
 //                    eventNumber = value.toInt();
-                    item->setEventNumbers(value.trimmed()); //参数修改成QString
+                    outItem->setEventNumbers(value.trimmed()); //参数修改成QString
                 }
 //                else if(value.contains("fileNumber:", Qt::CaseInsensitive))
 //                {
@@ -324,20 +324,20 @@ void CWidget::stringToItemData(QString data, QString type)
                 else if(value.contains("shape:", Qt::CaseInsensitive))
                 {
                     value.remove("shape:", Qt::CaseInsensitive);
-                    item->setShape(value.toInt());
+                    outItem->setShape(value.toInt());
                     if(value.toInt() == 1)
-                        item->isLine = true;
+                        outItem->isLine = true;
                 }
                 else if(value.contains("cmd:", Qt::CaseInsensitive))
                 {
                     value.remove("cmd:", Qt::CaseInsensitive);
                     value = value.trimmed();
                     if(!value.isEmpty())
-                        item->setCommands(value);
+                        outItem->setCommands(value);
                 }
             }
         }
-        m_Scene->addItem(item);
+        m_Scene->addItem(outItem);
     }
 }
 
@@ -366,20 +366,22 @@ void CWidget::saveToIniFile()
         {
             group = "In";
             saveInSettings.beginGroup(group);
-            CBarItem *currentItem = dynamic_cast<CBarItem*> (item);
-            if(currentItem == NULL)
+            CBarItem *bar = dynamic_cast<CBarItem*> (item);
+            if(bar == NULL)
                 continue;
 
             key = "InItem" + QString::number(++i);
 
-            QString value = QString("{pos:%1; size:%2; rotate:%3; name:%4; eventNumber:%5; aniTime:%6; loop:%7}")
-                    .arg(QString("%1,%2").arg(currentItem->pos().x()).arg(currentItem->pos().y()))//%1
-                    .arg(QString("%1,%2").arg(currentItem->m_Width).arg(currentItem->m_Height))//%2
-                    .arg(QString::number(currentItem->rotation()))//%3
-                    .arg(currentItem->getCaptainName())//%4
-                    .arg(currentItem->getEventNumbers())
-                    .arg(currentItem->getShowTime())
-                    .arg(currentItem->isLoopAnimation());
+            QString value = QString("{pos:%1; size:%2; rotate:%3; name:%4; eventNumber:%5; aniTime:%6; loop:%7;ignoreEndEvt:%8;startDelay:%9}")
+                    .arg(QString("%1,%2").arg(bar->pos().x()).arg(bar->pos().y()))//%1
+                    .arg(QString("%1,%2").arg(bar->m_Width).arg(bar->m_Height))//%2
+                    .arg(QString::number(bar->rotation()))//%3
+                    .arg(bar->getCaptainName())//%4
+                    .arg(bar->getEventNumbers())//%5
+                    .arg(bar->getShowTime()/1000.0f)//%6
+                    .arg(bar->isLoopAnimation())//%7
+                    .arg(bar->isIgnoreEndEvt())//%8
+                    .arg(bar->getStartDelay()/1000.0f);//%9
             saveInSettings.setValue(key,value);
 
             saveInSettings.endGroup();
@@ -389,15 +391,15 @@ void CWidget::saveToIniFile()
         {
             group = "Out";
             saveInSettings.beginGroup(group);
-            COutItem *currentItem = dynamic_cast<COutItem*> (item);
+            COutItem *outItem = dynamic_cast<COutItem*> (item);
             key = "OutItem" + QString::number(++j);
             QString value = QString("{pos:%1; size:%2; eventNumber:%3; name:%4; shape:%5; cmd:%6}")
-                    .arg(QString("%1,%2").arg(currentItem->pos().x()).arg(currentItem->pos().y()))
-                    .arg(QString("%1,%2").arg(currentItem->m_Width).arg(currentItem->m_Height))
-                    .arg(currentItem->getEventNumbers())
-                    .arg(currentItem->getCaptainName())
-                    .arg(currentItem->getShape())
-                    .arg(currentItem->getCommands());
+                    .arg(QString("%1,%2").arg(outItem->pos().x()).arg(outItem->pos().y()))
+                    .arg(QString("%1,%2").arg(outItem->m_Width).arg(outItem->m_Height))
+                    .arg(outItem->getEventNumbers())
+                    .arg(outItem->getCaptainName())
+                    .arg(outItem->getShape())
+                    .arg(outItem->getCommands());
 
             saveInSettings.setValue(key,value);
             saveInSettings.endGroup();
@@ -433,59 +435,47 @@ void CWidget::timerEvent(QTimerEvent *event)
 {
     if(event->timerId() == m_nTimerID)
     {
-        QMap<QString, int>::iterator it = m_mapStartEvtNum2Counter.begin();
-        while(it != m_mapStartEvtNum2Counter.end())
+        QMap<QString, int>::iterator it = m_mapEvtNum2Counter.begin();
+        while(it != m_mapEvtNum2Counter.end())
         {
             QString sEvt = it.key();//事件号
             int nCounterOld = it.value();//旧的事件计数器
             int nCounterNew = m_psdEvts.evtCounter(sEvt);//新的事件计数器
             if(nCounterOld != nCounterNew)//事件计数器改变
             {
-                //更新事件计数器
-                it.value() =  nCounterNew;
-                //该事件对应的所有图元显示动画
-                if(m_mapEvtNum2Items.contains(sEvt))
+                //开始动画
+                if(m_mapEvtNum2BarsStart.contains(sEvt))
                 {
-                    QList<QGraphicsItem*> items = m_mapEvtNum2Items.find(sEvt).value();
+                    QList<CBarItem*> items = m_mapEvtNum2BarsStart.values(sEvt);
                     for (int i=0; i<items.count(); i++)
                     {
-                        CBarItem *item = dynamic_cast<CBarItem*>(items[i]);
-                        if(item)
-                            item->startAnimation();
-                    }
-                }
-            }
-            it++;
-        }
-
-        it = m_mapStopEvtNum2Counter.begin();
-        while(it != m_mapStopEvtNum2Counter.end())
-        {
-            QString sEvt = it.key();//事件号
-            int nCounterOld = it.value();//旧的事件计数器
-            int nCounterNew = m_psdEvts.evtCounter(sEvt);//新的事件计数器
-            if(nCounterOld != nCounterNew)//事件计数器改变
-            {
-                //更新事件计数器
-                it.value() =  nCounterNew;
-                //该事件对应的所有图元显示动画
-                if(m_mapEvtNum2Items.contains(sEvt))
-                {
-                    QList<QGraphicsItem*> items = m_mapEvtNum2Items.find(sEvt).value();
-                    for (int i=0; i<items.count(); i++)
-                    {
-                        CBarItem *item = dynamic_cast<CBarItem*>(items[i]);
-                        if(item)
+                        CBarItem *bar = items.at(i);
+                        if(bar)
                         {
-                            item->stopAnimation();
-//                            this->scene()->update(item->mapRectToScene(item->boundingRect()).toRect());
-//                            this->scene()->update();
+                            if(bar->getStartDelay() > 0)
+                                QTimer::singleShot(bar->getStartDelay(),bar,&CBarItem::startAnimation);//延时启动动画
+                            else
+                                bar->startAnimation();//立即启动动画
                         }
                     }
                 }
+
+                //结束动画
+                if(m_mapEvtNum2BarsStop.contains(sEvt))
+                {
+                    QList<CBarItem*> items = m_mapEvtNum2BarsStop.values(sEvt);
+                    for (int i=0; i<items.count(); i++)
+                    {
+                        CBarItem *bar = items.at(i);
+                        if(bar)
+                            bar->stopAnimation();
+                    }
+                }
+
+                //更新事件计数器
+                it.value() =  nCounterNew;
             }
             it++;
         }
     }
 }
-

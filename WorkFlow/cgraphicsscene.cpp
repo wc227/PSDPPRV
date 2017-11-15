@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QLineEdit>
+#include <QMessageBox>
 
 //long ShareMemoryBuild();
 typedef long(*FUN1)();
@@ -29,7 +30,7 @@ typedef int(*FUN5)(int);
 CGraphicsScene::CGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
 {
-    b_MousePressInItem = false;
+    m_bEditMode = true;//默认是处于编辑模式
     createContextMenu();
 
     QString sDllName = "Mems.dll";
@@ -51,23 +52,42 @@ CGraphicsScene::CGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObj
 	m_startAddLine = false;
 }
 
+
+//设置是否处于编辑模式
+void CGraphicsScene::enableEdit(bool val)
+{
+    m_bEditMode = val;
+}
+
+//是否处于编辑模式
+bool CGraphicsScene::isEdit() const
+{
+    return m_bEditMode;
+}
+
 void CGraphicsScene::createContextMenu()
 {
-    contextMenu = new QMenu;
-    m_ActionAddIn = new QAction("In",contextMenu);
-    m_ActionAddOut = new QAction("Out",contextMenu);
-	m_ActionPathLine = new QAction("Line",contextMenu);
-    m_ActionDel = new QAction("Del",contextMenu);
+    m_MenuEdit = new QMenu;
+    m_ActionAddIn = new QAction("In",m_MenuEdit);
+    m_ActionAddOut = new QAction("Out",m_MenuEdit);
+    m_ActionPathLine = new QAction("Line",m_MenuEdit);
+    m_ActionDel = new QAction("Del",m_MenuEdit);
 
     connect(m_ActionAddIn, SIGNAL(triggered()), this, SLOT(slotAddgraphicsitem()));
     connect(m_ActionAddOut, SIGNAL(triggered()), this, SLOT(slotAddCRedItem()));
     connect(m_ActionDel, SIGNAL(triggered()), this, SLOT(slotDelItem()));
 	connect(m_ActionPathLine, SIGNAL(triggered()), this, SLOT(slotADDPathLine()));
 
-    contextMenu->addAction(m_ActionAddIn);
-    contextMenu->addAction(m_ActionAddOut);
-	contextMenu->addAction(m_ActionPathLine);
-    contextMenu->addAction(m_ActionDel);
+    m_MenuEdit->addAction(m_ActionAddIn);
+    m_MenuEdit->addAction(m_ActionAddOut);
+    m_MenuEdit->addAction(m_ActionPathLine);
+    m_MenuEdit->addAction(m_ActionDel);
+
+
+    m_MenuOutItem = new QMenu;//outitem的右键菜单
+    m_Action_Property = new QAction("弹出信息");
+    m_MenuOutItem->addAction(m_Action_Property);
+    connect(m_Action_Property, SIGNAL(triggered()), this, SLOT(showOutitemMsg()));
 }
 
 void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
@@ -103,22 +123,40 @@ void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     qDebug() << "mouse double click";
 }
 
+void CGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent *event )
+{
+    if(event->button() == Qt::RightButton)
+    {
+        if(m_startAddLine)
+            m_startAddLine = false;
+        if(m_pCurrentLinePath)
+            m_pCurrentLinePath = NULL;
+    }
+    QGraphicsScene::mousePressEvent(event);
+}
+
+//右键菜单
+//编辑模式下，在空白处单击右键弹出“编辑”菜单
+//运行模式下，在coutitem上单击右键，弹出Outitem的右键菜单
 void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
-    if(!b_MousePressInItem)
+    QTransform transform;
+    QGraphicsItem *item = itemAt(event->scenePos(),transform);//当前位置的图元
+    if(!item)//没有图元
     {
-        if(b_IsEdit)
+        if(m_bEditMode)//编辑模式
         {
-            m_RightButtonPos = event->scenePos();
-            qDebug()<< event->scenePos();
-            qDebug() << event->screenPos();
-            contextMenu->exec(event->screenPos());
+            m_MenuEdit->exec(event->screenPos());//编辑模式下，在空白处单击右键弹出“编辑”菜单
         }
     }
     else
     {
-        QGraphicsScene::contextMenuEvent(event);
-        b_MousePressInItem = false;
+        if(!m_bEditMode && item->type() == COutItem::Type)//运行模式
+        {
+            m_MenuOutItem->exec(event->screenPos());//运行模式下，在coutitem上单击右键，弹出Outitem的右键菜单
+        }
+        else
+            QGraphicsScene::contextMenuEvent(event);
     }
 }
 
@@ -174,14 +212,8 @@ void CGraphicsScene::slotADDPathLine()
 	this->addItem(pItem);
 }
 
-void CGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent *event )
+
+void CGraphicsScene::showOutitemMsg()
 {
-	if(event->button() == Qt::RightButton)
-	{
-		if(m_startAddLine)
-			m_startAddLine = false;
-		if(m_pCurrentLinePath)
-			m_pCurrentLinePath = NULL;
-	}
-	QGraphicsScene::mousePressEvent(event);
+    QMessageBox::information(0,"信息","测试信息","确定");
 }

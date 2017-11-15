@@ -25,12 +25,29 @@ public:
 
     int type() const { return Type;}    //返回判断类型
 
+    //获取动画显示时间
     int getShowTime();
-    void setShowTime(int time);
 
+    //设置动画显示时间
+    void setShowTime(int time = 1);
+
+    //设置是否循环执行动画
     void enableLoopAnimation(bool loop = true);
 
+    //是否循环执行动画
     bool isLoopAnimation();
+
+    //设置是否忽略结束事件
+    void enableIgnoreEndEvt(bool val = true);
+
+    //是否忽略结束事件
+    bool isIgnoreEndEvt();
+
+    //设置启动延时事件
+    void setStartDelay(int val = 1);
+
+    //获取启动延时时间
+    int getStartDelay();
 
 public Q_SLOTS:
     //运行动画
@@ -47,9 +64,11 @@ private:
     QPropertyAnimation *m_pAnimation;
 
     int m_widthAni;//动画矩形的宽度
-    int m_ShowTime;//动画显示时间(单位:s)
+    int m_ShowTime;//动画显示时间(单位:ms)
     bool m_bLoopAnimation;//是否循环显示动画
-    qint64 m_timeStartAni;//动画启动的时间
+    bool m_bIgnoreEndEvt;//是否忽略结束事件
+    int m_startDelay;//启动延时(单位:ms)
+    qint64 m_timeStartAni;//动画启动的时间(单位：秒)
 };
 
 #endif // CBarItem_H

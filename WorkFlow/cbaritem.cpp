@@ -6,7 +6,10 @@ CBarItem::CBarItem(bool isEditState):
     m_pAnimation(0),
     m_ShowTime(2000),
     m_bLoopAnimation(false),
-    m_widthAni(m_Width)
+    m_bIgnoreEndEvt(false),
+    m_widthAni(m_Width),
+    m_startDelay(0),
+    m_timeStartAni(0)
 {
     if(isEditState)
         setVisible(true);//编辑态显示
@@ -43,28 +46,52 @@ void CBarItem::setSize(int width, int height)
     }
 }
 
-//获取显示时间
+//获取动画显示时间
 int CBarItem::getShowTime()
 {
-    return m_ShowTime/1000;
+    return m_ShowTime;
 }
 
-//设置显示时间
+//设置动画显示时间
 void CBarItem::setShowTime(int time)
 {
-    m_ShowTime = time*1000;
-    if(m_pAnimation)
-        m_pAnimation->setDuration(m_ShowTime);
+    m_ShowTime = time;
 }
 
+//设置是否循环执行动画
 void CBarItem::enableLoopAnimation(bool loop)
 {
     m_bLoopAnimation = loop;
 }
 
+//是否循环执行动画
 bool CBarItem::isLoopAnimation()
 {
     return m_bLoopAnimation;
+}
+
+//设置是否忽略结束事件
+void CBarItem::enableIgnoreEndEvt(bool val)
+{
+    m_bIgnoreEndEvt = val;
+}
+
+//是否忽略结束事件
+bool CBarItem::isIgnoreEndEvt()
+{
+    return m_bIgnoreEndEvt;
+}
+
+//设置启动延时事件
+void CBarItem::setStartDelay(int val)
+{
+    m_startDelay = val;
+}
+
+//获取启动延时时间
+int CBarItem::getStartDelay()
+{
+    return m_startDelay;
 }
 
 //初始化动画
@@ -77,6 +104,7 @@ void CBarItem::initAnimation()
     m_pAnimation->setStartValue(QRectF(0,0,0,m_Height));
     m_pAnimation->setEndValue(QRectF(0,0,m_Width,m_Height));
 }
+
 
 //运行动画
 void CBarItem::startAnimation()
@@ -104,6 +132,9 @@ void CBarItem::startAnimation()
 //结束动画
 void CBarItem::stopAnimation()
 {
+    if(m_bIgnoreEndEvt)
+        return;//如果忽略结束事件，就不用结束动画了
+
     if(m_pAnimation)
     {
 		//让图元按照最大化刷新一次，否则界面可能仍然留有部分残留
@@ -137,8 +168,12 @@ void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 
     painter->fillPath(shape(),QBrush(Qt::green));
 
+    //如果动画执行的时间超过3秒，就绘制出时间
+    painter->save();
+    painter->setPen(Qt::red);
     qint64 timeNow = QDateTime::currentSecsSinceEpoch();//当前时间
     qint64 timeSpan = timeNow - m_timeStartAni;
     if(timeSpan > 3)
         painter->drawText(QRectF(0,0,m_Width,m_Height),Qt::AlignCenter,QString("%1秒").arg(timeNow - m_timeStartAni));
+    painter->restore();
 }
