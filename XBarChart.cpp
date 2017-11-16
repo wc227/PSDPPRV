@@ -63,7 +63,7 @@ void XBarChart::initChart()
     m_MarginLeft = 40;
     m_MarginRight = 40;
     m_MarginTop = 20;
-    m_MarginBotton = 40;
+    m_MarginBottom = 40;
     m_BackColor = QColor(240,240,255,123);//很浅的蓝色
 
     m_TitleHeight = 30;
@@ -91,6 +91,19 @@ void XBarChart::initChart()
     m_Title->setTextWidth(this->width());//设置宽度
     m_Title->setPos(0,m_MarginTop);
     m_Scene->addItem(m_Title);
+    m_TitleRect = QRect(m_MarginLeft,
+                        m_MarginTop,
+                        this->width() - m_MarginLeft - m_MarginRight,
+                        m_TitleHeight);
+
+    m_LegendVisible = true;
+    m_LegendPosition = LP_LEFT;
+    m_LegendWidth = 100;
+    m_LegendHeight = 30;
+    m_LegendRect = QRect(m_MarginLeft,
+                         m_MarginTop + m_TitleHeight,
+                         this->width() - m_MarginLeft - m_MarginRight,
+                         m_LegendHeight);
 
     m_GridVisible = true;
     m_MaxGroupNumInPage = 5;
@@ -178,6 +191,95 @@ void XBarChart::initChart()
     connect(m_BtnPageDown,&QPushButton::clicked,this,&XBarChart::pageDown);
 }
 
+
+//更新各区域大小和位置
+void XBarChart::updatePositionAndSize()
+{
+    updateTitleRect();
+    updateLegendRect();
+    updateMainPlotRect();
+}
+
+//更新标题大小和位置
+void  XBarChart::updateTitleRect()
+{
+    //更新标题区域大小
+    if(isTitleVisible())
+        m_TitleRect.setRect(m_MarginLeft,m_MarginTop,this->width() - m_MarginLeft - m_MarginRight, m_TitleHeight);
+    else
+        m_TitleRect.setRect(0,0,0,0);
+}
+
+//更新图例大小和位置
+void  XBarChart::updateLegendRect()
+{
+    //更新图例区域大小
+    if(m_LegendVisible)
+    {
+        int x,y,w,h;
+        x = m_MarginLeft;
+        y = m_MarginTop;
+        w = this->width() - m_MarginLeft - m_MarginRight;
+        h = m_LegendHeight;
+        if(isTitleVisible())
+            y += m_TitleHeight;
+
+        if(LP_BOTTOM == m_LegendPosition)
+        {
+            y = this->height() - m_MarginBottom - m_LegendHeight;
+        }
+        else if(LP_LEFT == m_LegendPosition)
+        {
+            w = m_LegendWidth;
+            h = this->height() - m_MarginTop - m_MarginBottom;
+            if(isTitleVisible())
+                h -= m_TitleHeight;
+        }
+        else if(LP_RIGHT == m_LegendPosition)
+        {
+            x = this->width() - m_MarginRight - m_LegendWidth;
+            w = m_LegendWidth;
+            h = this->height() - m_MarginTop - m_MarginBottom;
+            if(isTitleVisible())
+                h -= m_TitleHeight;
+        }
+        m_LegendRect.setRect(x,y,w,h);
+    }
+    else
+    {
+        m_LegendRect.setRect(0,0,0,0);
+    }
+}
+
+//更新主绘图区域大小和位置
+void  XBarChart::updateMainPlotRect()
+{
+    //计算主绘图区域大小
+    int x = m_MarginLeft;
+    int y = m_MarginTop + m_TitleRect.height();
+    int wid = this->width() - m_MarginLeft - m_MarginRight;
+    int hei = this->height() - m_MarginTop - m_MarginBottom - m_TitleRect.height();
+    if(LP_TOP == m_LegendPosition)
+    {
+        y += m_LegendRect.height();
+        hei -= m_LegendRect.height();
+    }
+    else if(LP_BOTTOM == m_LegendPosition)
+    {
+        hei -= m_LegendRect.height();
+    }
+    else if(LP_LEFT == m_LegendPosition)
+    {
+        x += m_LegendRect.width();
+        wid -= m_LegendRect.width();
+    }
+    else if(LP_RIGHT == m_LegendPosition)
+    {
+        wid -= m_LegendRect.width();
+    }
+    m_MainPlotRect.setRect(x,y,wid,hei);
+}
+
 //获取边距
 int XBarChart::getMarginLeft() const
 {
@@ -245,22 +347,22 @@ void XBarChart::setMarginTop(int val)
 
 
 //获取边距
-int XBarChart::getMarginBotton() const
+int XBarChart::getMarginBottom() const
 {
-    return m_MarginBotton;
+    return m_MarginBottom;
 }
 
 //设置边距
-void XBarChart::setMarginBotton(int val)
+void XBarChart::setMarginBottom(int val)
 {
     if(val < 20)
         val = 20;
     else if(val > 100)
         val = 100;
 
-    if(m_MarginBotton != val)
+    if(m_MarginBottom != val)
     {
-        m_MarginBotton = val;
+        m_MarginBottom = val;
         this->update();
     }
 }
@@ -307,7 +409,11 @@ bool XBarChart::isTitleVisible() const
 //设置是否显示标题
 void XBarChart::setTitleVisible(bool vis)
 {
-    m_Title->setVisible(vis);
+    if(m_Title->isVisible() != vis)
+    {
+        m_Title->setVisible(vis);
+        this->update();
+    }
 }
 
 //获取标题区域高度
@@ -327,8 +433,41 @@ void XBarChart::setTitleHeight(int val)
     if(m_TitleHeight != val)
     {
         m_TitleHeight = val;
+        if(isTitleVisible())
+            this->update();
+    }
+}
+
+//图例是否可见
+bool XBarChart::isLegendVisible() const
+{
+    return m_LegendVisible;
+}
+
+//设置是否显示图例
+void XBarChart::setLegendVisible(bool val)
+{
+    if(m_LegendVisible != val)
+    {
+        m_LegendVisible = val;
         this->update();
     }
+}
+
+//设置图例位置
+void XBarChart::setLegendPosition(LegendPosition pos)
+{
+    if(m_LegendPosition != pos)
+    {
+        m_LegendPosition = pos;
+        this->update();
+    }
+}
+
+//获取图例位置
+XBarChart::LegendPosition XBarChart::getLegendPosition() const
+{
+    return m_LegendPosition;
 }
 
 //网格线是否可见
@@ -525,14 +664,106 @@ void XBarChart::clearBarItems()
 //重新绘制图标
 void XBarChart::repaintChart()
 {
+    updatePositionAndSize();
+
     QPainter p(viewport());
+    updateTitle();
+    drawLegend(&p);
     drawMainArea(&p);
     drawGrid(&p);
 
-    updateTitle();
     updateAxisX();
     updateBars();
     updateNavi();
+}
+
+
+//绘制图例
+void XBarChart::drawLegend(QPainter *painter)
+{
+    if(!m_LegendVisible)
+        return;
+
+    painter->save();
+
+    qreal x = 0;
+    qreal y = 0;
+    qreal w = 0;
+    qreal h = 0;
+    qreal legendLeft = m_LegendRect.left();
+    qreal legendTop = m_LegendRect.top();
+    qreal legendWid = m_LegendRect.width();
+    qreal legendHei = m_LegendRect.height();
+    qreal squareSize = 10;
+
+    if(LP_TOP == m_LegendPosition || LP_BOTTOM == m_LegendPosition)
+    {
+        int nMax = m_Type2Color.count();//配色数目
+        if(m_LegendWidth * nMax <= legendWid)
+        {
+            legendLeft += (legendWid - m_LegendWidth * nMax)/2;
+        }
+
+        int i = 0;//计数器
+        foreach (int type, m_Type2Color.keys())
+        {
+            x = legendLeft + m_LegendWidth * i;
+            y = legendTop;
+            w = m_LegendWidth;
+            h = m_LegendHeight;
+
+            //画方块
+            QColor clr = m_Type2Color.value(type);
+            painter->setPen(clr);
+            QRectF rectSquare(x,y + (h-squareSize)/2,squareSize,squareSize);
+            painter->fillRect(rectSquare,QBrush(clr));
+
+            //画类型
+            painter->setPen(Qt::black);
+            QRectF rectType(x + squareSize + 5,y,w - squareSize - 5,h);
+            painter->drawText(rectType,Qt::AlignLeft | Qt::AlignVCenter,QString("类型:%1").arg(type));
+
+            i++;
+
+            if(m_LegendWidth * (i+1) > legendWid)
+                break;//超出了宽度，就不用画了
+        }
+    }
+    else if(LP_LEFT == m_LegendPosition || LP_RIGHT == m_LegendPosition)
+    {
+        int nMax = m_Type2Color.count();//配色数目
+        if(m_LegendHeight * nMax <= legendHei)
+        {
+            legendTop += (legendHei - m_LegendHeight * nMax)/2;
+        }
+        legendLeft += 5;
+
+        int i = 0;//计数器
+        foreach (int type, m_Type2Color.keys())
+        {
+            x = legendLeft;
+            y = legendTop + m_LegendHeight * i;
+            w = m_LegendWidth;
+            h = m_LegendHeight;
+
+            //画方块
+            QColor clr = m_Type2Color.value(type);
+            painter->setPen(clr);
+            QRectF rectSquare(x,y + (h-squareSize)/2,squareSize,squareSize);
+            painter->fillRect(rectSquare,QBrush(clr));
+
+            //画类型
+            painter->setPen(Qt::black);
+            QRectF rectType(x + squareSize + 5,y,w - squareSize - 5,h);
+            painter->drawText(rectType,Qt::AlignLeft | Qt::AlignVCenter,QString("类型:%1").arg(type));
+
+            i++;
+
+            if(m_LegendHeight * (i+1) > legendHei)
+                break;//超出了高度，就不用画了
+        }
+    }
+    painter->restore();
 }
 
 //绘制主区域
@@ -542,30 +773,23 @@ void XBarChart::drawMainArea(QPainter *painter)
     QPen pen(Qt::black,1);
     painter->setPen(pen);
 
-    qreal left = m_MarginLeft;
-    qreal top = m_MarginTop;
-    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
-    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
+    int x = m_MainPlotRect.x();
+    int y = m_MainPlotRect.y();
+    int wid = m_MainPlotRect.width();
+    int hei = m_MainPlotRect.height();
 
-    if(isTitleVisible())
-    {
-        top += m_TitleHeight;
-        hei -= m_TitleHeight;
-    }
-
-    QRectF rect(left,top,wid,hei);
-    painter->fillRect(rect,m_BackColor);//浅灰色充填背景
-    painter->drawRect(rect);//画边框
+    painter->fillRect(m_MainPlotRect,m_BackColor);//浅灰色充填背景
+    painter->drawRect(m_MainPlotRect);//画边框
 
     //画箭头
-    painter->drawLine(left+wid,top+hei,left+wid+15,top+hei);
-    painter->drawLine(left+wid+5,top+hei-3,left+wid+15,top+hei);
-    painter->drawLine(left+wid+5,top+hei+3,left+wid+15,top+hei);
+    painter->drawLine(x+wid,y+hei,x+wid+15,y+hei);
+    painter->drawLine(x+wid+5,y+hei-3,x+wid+15,y+hei);
+    painter->drawLine(x+wid+5,y+hei+3,x+wid+15,y+hei);
 
     //画横轴标题
     pen.setColor(Qt::red);
     painter->setPen(pen);
-    QRectF rectTitle(left+wid,top+hei,40,20);
+    QRectF rectTitle(x+wid,y+hei,40,20);
     painter->drawText(rectTitle,Qt::AlignLeft | Qt::AlignVCenter,"时间");
 
     painter->restore();
@@ -581,29 +805,23 @@ void XBarChart::drawGrid(QPainter *painter)
 
     painter->setPen(Qt::lightGray);
 
-    qreal left = m_MarginLeft;
-    qreal top = m_MarginTop;
-    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
-    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
-
-    if(isTitleVisible())
-    {
-        top += m_TitleHeight;
-        hei -= m_TitleHeight;
-    }
+    qreal x = m_MainPlotRect.x();
+    qreal y = m_MainPlotRect.y();
+    qreal wid = m_MainPlotRect.width();
+    qreal hei = m_MainPlotRect.height();
 
     //水平网格线
     //    qreal diffY = hei/m_MaxBarNumOfGroup;
     //    for(int i = 1; i < m_MaxBarNumOfGroup; i++)
     //    {
-    //        painter->drawLine(left, top + diffY * i, left + wid, top + diffY * i);
+    //        painter->drawLine(x, y + diffY * i, x + wid, y + diffY * i);
     //    }
 
     //垂直网格线
     qreal diffX = wid/m_MaxGroupNumInPage;
     for(int i = 1; i < m_MaxGroupNumInPage; i++)
     {
-        painter->drawLine(left + diffX * i, top, left + diffX * i, top + hei);
+        painter->drawLine(x + diffX * i, y, x + diffX * i, y + hei);
     }
 
     painter->restore();
@@ -625,8 +843,8 @@ void XBarChart::updateTitle()
     cursor.clearSelection();
     m_Title->setTextCursor(cursor);
 
-    m_Title->setTextWidth(this->width());//设置宽度
-    m_Title->setPos(0,m_MarginTop);
+    m_Title->setPos(m_TitleRect.x(),m_TitleRect.y());
+    m_Title->setTextWidth(m_TitleRect.width());//设置宽度
 }
 
 //更新X轴
@@ -635,16 +853,8 @@ void XBarChart::updateAxisX()
     foreach(QGraphicsTextItem * item, m_TimeItems)
         item->setPlainText("");
 
-    qreal left = m_MarginLeft;
-    qreal top = m_MarginTop;
-    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
-    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
-
-    if(isTitleVisible())
-    {
-        top += m_TitleHeight;
-        hei -= m_TitleHeight;
-    }
+    qreal x = m_MainPlotRect.x();
+    qreal wid = m_MainPlotRect.width();
 
     qreal gridWid = wid/m_MaxGroupNumInPage;//网格宽度
     for(int vgridNo(0),groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
@@ -655,7 +865,7 @@ void XBarChart::updateAxisX()
         if(lbi.isEmpty())
             continue;
 
-        left = m_MarginLeft + gridWid * vgridNo;
+        x = m_MainPlotRect.x() + gridWid * vgridNo;
 
         QDateTime oldDT = g_getFormatDateTime(lbi.at(0).m_Time);
         foreach (BarInfo bi, lbi)
@@ -683,7 +893,7 @@ void XBarChart::updateAxisX()
         if(text)
         {
             text->setPlainText(sTxt);
-            text->setPos(left, top);
+            text->setPos(x, m_MainPlotRect.y()+m_MainPlotRect.height());
         }
     }
 }
@@ -696,17 +906,11 @@ void XBarChart::updateBars()
     if(0 == m_BarGroups.count())
         return;
 
-    qreal left = m_MarginLeft;
-    qreal top = m_MarginTop;
-    qreal bot = this->height() - m_MarginBotton;
-    qreal wid = this->width() - m_MarginLeft - m_MarginRight;
-    qreal hei = this->height() - m_MarginTop - m_MarginBotton;
-
-    if(isTitleVisible())
-    {
-        top += m_TitleHeight;
-        hei -= m_TitleHeight;
-    }
+    qreal x = m_MainPlotRect.x();
+    qreal y = m_MainPlotRect.y();
+    qreal bot = m_MainPlotRect.bottom();
+    qreal wid = m_MainPlotRect.width();
+    qreal hei = m_MainPlotRect.height();
 
     //所有列的条形图高度一致，宽度代表持续时间
     qreal gridWid = wid / m_MaxGroupNumInPage;//网格宽度
@@ -722,8 +926,8 @@ void XBarChart::updateBars()
         ListBarInfo lbi = m_BarGroups.at(groupID);
 
         int gNo = groupID - m_MaxGroupNumInPage * (m_HPageNo - 1);
-        left = m_MarginLeft + gridWid * gNo;
-        bot = this->height() - m_MarginBotton;
+        x = m_MainPlotRect.x() + gridWid * gNo;
+        bot = m_MainPlotRect.bottom();
         if(lbi.isEmpty())
             continue;
 
@@ -765,7 +969,7 @@ void XBarChart::updateBars()
             QDateTime tempDT = g_getFormatDateTime(bi.m_Time);
             long tempTime = tempDT.toSecsSinceEpoch();
             qreal offLeft = gridWid * (tempTime - oldTime) / (maxDuriation * 1.0f);
-            bar->setPos(left + offLeft, barTop);
+            bar->setPos(x + offLeft, barTop);
             bot = barTop;
         }
     }

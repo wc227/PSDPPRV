@@ -31,6 +31,32 @@ private slots:
 
     void on_pushButton_BackColor_clicked();
 
+    void on_checkBox_TitleVisible_clicked();
+
+//    void on_lineEdit_Title_textChanged(const QString &arg1);
+
+    void on_checkBox_LegendVisible_clicked();
+
+//    void on_radioButton_Top_clicked();
+
+//    void on_radioButton_Bottom_clicked();
+
+//    void on_radioButton_Left_clicked();
+
+//    void on_radioButton_Right_clicked();
+
+//    void on_spinBox_MarginLeft_valueChanged(int arg1);
+
+//    void on_spinBox_MarginRight_valueChanged(int arg1);
+
+//    void on_spinBox_MarginTop_valueChanged(int arg1);
+
+//    void on_spinBox_MarginBottom_valueChanged(int arg1);
+
+//    void on_spinBox_MaxGroupNumInPage_valueChanged(int arg1);
+
+//    void on_spinBox_MaxBarNumOfGroupInPage_valueChanged(int arg1);
+
 private:
     Ui::DlgXBarChartProperty *ui;
 

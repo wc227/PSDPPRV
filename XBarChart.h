@@ -31,6 +31,13 @@ QDateTime g_getFormatDateTime(const QString &time);
 class XBarChart : public QGraphicsView
 {
     Q_OBJECT
+public:
+    enum LegendPosition{
+        LP_TOP = 0,
+        LP_BOTTOM,
+        LP_LEFT,
+        LP_RIGHT
+    };
 
 protected:
     QGraphicsScene *m_Scene;//场景
@@ -38,13 +45,21 @@ protected:
     int m_MarginLeft;//左边距(最小20，最大100)
     int m_MarginRight;//右边距(最小20，最大100)
     int m_MarginTop;//上边距(最小20，最大100)
-    int m_MarginBotton;//下边距(最小20，最大100)
+    int m_MarginBottom;//下边距(最小20，最大100)
     QColor m_BackColor;//背景颜色
 
     bool m_TitleVisible;//标题栏是否可见
     QGraphicsTextItem *m_Title;//标题栏
     QString m_TitleTxt;//标题内容
     int m_TitleHeight;//标题区域高度(最小20，最大50)
+    QRect m_TitleRect;//标题栏矩形区域
+
+    bool m_LegendVisible;//图例是否可见
+    LegendPosition m_LegendPosition;//图例位置
+    int m_LegendWidth;//图例高度(默认100)
+    int m_LegendHeight;//图例宽度(默认30)
+    QRect m_LegendRect;//图例矩形区域
+    QRect m_MainPlotRect;//主绘图矩形区域
 
     bool m_GridVisible;//是否显示网格线
     int m_MaxGroupNumInPage;//页面显示的条形图组数目（条形图列数）,也就是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大10，默认是5)
@@ -91,6 +106,18 @@ public:
 
     ~XBarChart();
 
+    //更新各区域大小和位置
+    void updatePositionAndSize();
+
+    //更新标题大小和位置
+    void updateTitleRect();
+
+    //更新图例大小和位置
+    void updateLegendRect();
+
+    //更新主绘图区域大小和位置
+    void updateMainPlotRect();
+
     //获取边距
     int getMarginLeft() const;
 
@@ -110,10 +137,10 @@ public:
     void setMarginTop(int val);
 
     //获取边距
-    int getMarginBotton() const;
+    int getMarginBottom() const;
 
     //设置边距
-    void setMarginBotton(int val);
+    void setMarginBottom(int val);
 
     //获取背景颜色
     QColor getBackColor() const;
@@ -138,6 +165,18 @@ public:
 
     //设置标题区域高度
     void setTitleHeight(int val);
+
+    //图例是否可见
+    bool isLegendVisible() const;
+
+    //设置是否显示图例
+    void setLegendVisible(bool val);
+
+    //设置图例位置
+    void setLegendPosition(LegendPosition pos);
+
+    //获取图例位置
+    LegendPosition getLegendPosition() const;
 
     //网格线是否可见
     bool isGridVisible() const;
@@ -172,7 +211,6 @@ public:
     //设置检查间隔时间（单位：毫秒）
     void setTimeInterval(int val);
 
-
     //添加一组条形图
     void addBars(ListBarInfo bars);
 
@@ -197,6 +235,9 @@ protected:
 
     //重新绘制图
     virtual void repaintChart();
+
+    //绘制图例
+    virtual void drawLegend(QPainter *painter);
 
     //绘制主区域，包括边框和横轴
     virtual void drawMainArea(QPainter *painter);
