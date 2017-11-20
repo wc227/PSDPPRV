@@ -51,6 +51,9 @@ private slots:
     //显示隐藏可停靠窗口
     void showDockWnds();
 
+    //收到命令
+    void receiveCmd(QString sCmd);
+
 private:    
     QAction *m_actionRefresh;//刷新动作
 

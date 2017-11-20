@@ -94,6 +94,8 @@ public:
 signals:
     void EvtFileChange(int number); //文件事件发生改变
 
+    void sendCmd(QString sCmd);//发送命令
+
 private:
 //    QList<int> m_TaskNumbers;
     int nShape;            //设置显示形状

@@ -17,6 +17,9 @@ public:
     //设置文件配置路径
     void setFileCfg(QString sFile);
 
+signals:
+    void sendCmd(QString sCmd);//发送命令
+
 private:
     QGridLayout *gridLayout;
     QSpacerItem *verticalSpacer_2;

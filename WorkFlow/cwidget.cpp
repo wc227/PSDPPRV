@@ -278,6 +278,7 @@ void CWidget::stringToItemData(QString data, QString type)
     {
         COutItem *outItem= new COutItem(m_bIsEdit);
         connect(outItem, SIGNAL(EvtFileChange(int)), this, SLOT(SLOT_EvtFileChange(int)));
+        connect(outItem, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
 
         if(data.startsWith('{') && data.endsWith('}'))
         {

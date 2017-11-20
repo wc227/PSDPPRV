@@ -28,7 +28,8 @@ void CWidgetWork::initUI()
     verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
     gridLayout->addItem(verticalSpacer_2, 2, 1, 1, 1);
 
-    View = new CWidget(this);
+    View = new CWidget(this);    
+    connect(View, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
     View->setObjectName(QStringLiteral("View"));
     gridLayout->addWidget(View, 1, 1, 1, 1);//居中显示
 

@@ -130,7 +130,7 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         SetEvtList(m_TaskNumbersList, 1);
         if(!(m_Commands.isEmpty()))
         {
-            QProcess::execute(m_Commands);//执行命令行参数
+            emit sendCmd(m_Commands);
         }
     }
 }

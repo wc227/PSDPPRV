@@ -71,17 +71,18 @@ void MainWnd::initUI()
                                             "QTabBar::tab{height:50px;}"));//tab标签页高度
 
     m_wndWorkFlow = new CWidgetWork();
+    connect(m_wndWorkFlow,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
     QString sFileLan("");
     m_cfgMgr.getValue("file_lan",sFileLan);
     m_wndWorkFlow->setFileCfg(sFileLan);
-    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行图"));
+    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态图"));
 
     m_wndWebMap1 = new FormWebBase();
-    m_tabMain->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("预想故障分布图"));
+    m_tabMain->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("事故潮流分布"));
     m_wndWebMap2 = new FormWebBase();
-    m_tabMain->addTab(m_wndWebMap2/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("正常潮流安全分析图"));
+    m_tabMain->addTab(m_wndWebMap2/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("正常潮流分布"));
     m_wndWebMap3 = new FormWebBase();
-    m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("匹配项全景感知分析关联图"));
+    m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波装置分布"));
 
     createBarChart();
     if(m_chartView)
@@ -282,5 +283,32 @@ void MainWnd::showDockWnds()
             dock3->hide();
         if(dock4)
             dock4->hide();
+    }
+}
+
+//收到命令
+void MainWnd::receiveCmd(QString sCmd)
+{
+    sCmd = sCmd.trimmed();
+    if(sCmd.isEmpty())
+        return;
+
+    QStringList lst = sCmd.split('=');
+    if(2 == lst.count())
+    {
+        QString sKey = lst.at(0);
+        sKey = sKey.trimmed().toLower();
+        QString sValue = lst.at(1);
+        if(sKey == "openfile")
+            QProcess::execute("explorer " + sValue);//使用系统默认程序打开指定文件
+        else if(sKey == "activetab")
+        {
+            //激活对应的tab页
+            int iTab = sValue.toInt();
+            if(iTab >=0 && iTab < m_tabMain->count()-1)
+            {
+                m_tabMain->setCurrentIndex(iTab);
+            }
+        }
     }
 }

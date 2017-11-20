@@ -40,6 +40,9 @@ private:
     QMultiMap<QString, CBarItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 
+signals:
+    void sendCmd(QString sCmd);//发送命令
+
 public slots:
     virtual void setFileCfg(const QString &path); //设置配置文件路径
     void SLOT_EvtFileChange(int);	//事件号改变
