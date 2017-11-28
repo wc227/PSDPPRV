@@ -4,9 +4,10 @@
 #include <QMainWindow>
 #include "WorkFlow/CWidgetWork.h"
 #include "CfgMgr.h"
-#include <QProcess>
+//#include <QProcess>
 #include "XBarChart.h"
-
+#include "FileMgrErrInfo.h"
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
@@ -54,6 +55,9 @@ private slots:
     //收到命令
     void receiveCmd(QString sCmd);
 
+    //读取和刷新错误信息
+    void updateErrInfo();
+
 private:    
     QAction *m_actionRefresh;//刷新动作
 
@@ -70,23 +74,17 @@ private:
     FormWebBase *m_wndWebMap3;
     XBarChart *m_chartView;
 
-    CXxwDockWidget *dock1;
-    QTextEdit *txt1;
-
-    CXxwDockWidget *dock2;
-    QTextEdit *txt2;
-
-    CXxwDockWidget *dock3;
-    QTextEdit *txt3;
-
-    CXxwDockWidget *dock4;
-    QTextEdit *txt4;
+    CXxwDockWidget *wndErr;
+    QTextEdit *txtErr;
 
     bool m_arrTabInit[5];//标签页面是否初始化
 
     bool m_bWndMaxmized;//窗口是否最大化
 
     CfgMgr m_cfgMgr;//配置信息
+
+    FileMgrErrInfo m_fmErr;//错误信息管理
+    QTimer m_timerErrInfo;//检测错误预警文件的定时器
 };
 
 #endif // _MAINWND_H_20170928_

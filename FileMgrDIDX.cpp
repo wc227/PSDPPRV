@@ -9,7 +9,6 @@
 FileMgrDIDX::FileMgrDIDX(QString sFile)
     :FileMgrBase(sFile)
 {
-
 }
 
 //清空所有数据
@@ -64,6 +63,8 @@ int FileMgrDIDX::openFile()
     }
 
     file.close();
+
+    FileMgrBase::openFile();
 
     return 1;
 }

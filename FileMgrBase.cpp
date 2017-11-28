@@ -15,8 +15,8 @@ void FileMgrBase::setFileName(const QString& sFile)
         return;//如果文件名没有改变，且文件没有改变，就不用重新打开文件
     }
     m_sFileName = sFile;
-    m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
     openFile();
+    m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
 }
 
 //文件是否改变
@@ -32,4 +32,10 @@ bool FileMgrBase::isDirty()
         }
     }
     return false;
+}
+
+int FileMgrBase::openFile()
+{
+    m_nTimeLastModify = CXxwQtPub::getLastModifiedTime(m_sFileName);
+    return 1;
 }

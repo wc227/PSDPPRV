@@ -45,23 +45,6 @@ void MainWnd::initActions()
 
 void MainWnd::initUI()
 {
-//    m_wgtCentral = new QWidget(this);
-//    m_wgtCentral->setObjectName(QStringLiteral("m_wgtCentral"));
-//    //主窗口已经设置了背景，此处就不用重复设置了
-////    m_wgtCentral->setStyleSheet(QStringLiteral("#m_wgtCentral{border-image: url(:/skin/newbg);}"));
-//    setCentralWidget(m_wgtCentral);
-
-//    m_lblTitle = new QLabel(m_wgtCentral);
-//    m_lblTitle->setObjectName(QStringLiteral("m_lblTitle"));
-//    m_lblTitle->setMinimumHeight(20);
-//    m_lblTitle->setMaximumHeight(25);
-
-//    m_titleBarLayout = new QHBoxLayout();
-//    m_titleBarLayout->setSpacing(1);
-//    m_titleBarLayout->setObjectName(QStringLiteral("m_titleBarLayout"));
-//    m_titleBarLayout->addWidget(m_lblTitle);
-
-//    m_tabMain = new QTabWidget(m_wgtCentral);
     m_tabMain = new QTabWidget(this);
     m_tabMain->setObjectName(QStringLiteral("m_tabMain"));
     m_tabMain->setIconSize(QSize(24,24));
@@ -75,7 +58,7 @@ void MainWnd::initUI()
     QString sFileLan("");
     m_cfgMgr.getValue("file_lan",sFileLan);
     m_wndWorkFlow->setFileCfg(sFileLan);
-    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态图"));
+    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  系统运行状态图  "));
 
     m_wndWebMap1 = new FormWebBase();
     m_tabMain->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("事故潮流分布"));
@@ -85,33 +68,11 @@ void MainWnd::initUI()
     m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波装置分布"));
 
     createBarChart();
-    if(m_chartView)
-    {
-        m_chartView->setTitle("场站数据时序状态图");
-        QString sFileColor("");
-        m_cfgMgr.getValue("file_color",sFileColor);
-        m_chartView->setColorCfgFile(sFileColor);
-
-        QString sFileDidx("");
-        m_cfgMgr.getValue("file_bar",sFileDidx);
-        m_chartView->setFileData(sFileDidx);
-
-        m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
-    }
+    m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
 
     m_tabMain->setCurrentIndex(0);
-
-//    m_mainLayout = new QGridLayout(m_wgtCentral);
-//    m_mainLayout->setSpacing(0);
-//    m_mainLayout->setObjectName(QStringLiteral("m_mainLayout"));
-//    m_mainLayout->setContentsMargins(1, 1, 1, 1);
-//    m_mainLayout->addLayout(m_titleBarLayout, 0, 0, 1, 1);
-//    m_mainLayout->addWidget(m_tabMain, 1, 0, 1, 1);
-
-//    m_wgtCentral->setLayout(m_mainLayout);
-//    m_wgtCentral->setStyleSheet(QStringLiteral("#m_wgtCentral{border-image: url(:/skin/bg);}"));
-//    setCentralWidget(m_wgtCentral);
     setCentralWidget(m_tabMain);
+    connect(m_tabMain,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
 
     m_lblTitleZone = new QLabel(this);
     m_lblTitleZone->move(10,0);//移动到界面左上角（10，10）的位置，更好看一些
@@ -128,74 +89,40 @@ void MainWnd::initUI()
 
     createDockWnd();
 
-    connect(m_tabMain,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
+    connect(&m_timerErrInfo,SIGNAL(timeout()),this,SLOT(updateErrInfo()));
+    m_timerErrInfo.start(2000);
 }
 
 
 //创建可停靠窗口
 void MainWnd::createDockWnd()
 {
-    dock1 = new CXxwDockWidget(tr("窗口1"));
-    dock1->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    dock1->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
-    txt1 = new QTextEdit(dock1);
-    txt1->setObjectName(QStringLiteral("Output1"));
-    txt1->setStyleSheet("#txt1{border:0px; }");
-    txt1->setText("111");
-    dock1->setWidget(txt1);
-
-    dock2 = new CXxwDockWidget(tr("窗口2"));
-    dock2->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    dock2->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
-    txt2 = new QTextEdit(dock2);
-    txt2->setObjectName(QStringLiteral("Output2"));
-    txt2->setStyleSheet("#txt2{border:0px; }");
-    txt2->setText("222");
-    dock2->setWidget(txt2);
-
-    dock3 = new CXxwDockWidget(tr("窗口3"));
-    dock3->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    dock3->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
-    txt3 = new QTextEdit(dock3);
-    txt3->setObjectName(QStringLiteral("Output3"));
-    txt3->setStyleSheet("#txt3{border:0px; }");
-    txt3->setText("333");
-    dock3->setWidget(txt3);
-
-    dock4 = new CXxwDockWidget(tr("窗口4"));
-    dock4->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    dock4->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方
-    txt4 = new QTextEdit(dock4);
-    txt4->setObjectName(QStringLiteral("Output4"));
-    txt4->setStyleSheet("#txt4{border:0px; }");
-    txt4->setText("444");
-    dock4->setWidget(txt4);
+    wndErr = new CXxwDockWidget(tr("异常信息"));
+    wndErr->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
+    wndErr->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
+    txtErr = new QTextEdit(wndErr);
+    txtErr->setObjectName(QStringLiteral("Output1"));
+    txtErr->setStyleSheet("#txtErr{border:0px; }");
+    txtErr->setText("111");
+    wndErr->setWidget(txtErr);
 
     //不显示标题栏
-//    dock1->showTitleBar(false);
-//    dock2->showTitleBar(false);
-//    dock3->showTitleBar(false);
-//    dock4->showTitleBar(false);
+//    wndErr->showTitleBar(false);
 
     //设置最小的宽度和高度
-    dock1->setMinimumWidth(500);
-    dock2->setMinimumWidth(500);
-    dock3->setMinimumWidth(500);
-    dock4->setMinimumWidth(500);
-    dock1->setMinimumHeight(5);
-    dock2->setMinimumHeight(5);
-    dock3->setMinimumHeight(5);
-    dock4->setMinimumHeight(5);
+    wndErr->setMinimumWidth(500);
+    wndErr->setMinimumHeight(5);
 
-    addDockWidget(Qt::BottomDockWidgetArea, dock1);//添加dock1
-//    splitDockWidget(dock1,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列
-    tabifyDockWidget(dock1,dock2);//添加dock2和dock1合并成tab
-    dock1->raise();
+    addDockWidget(Qt::BottomDockWidgetArea, wndErr);//添加dock1
+//    splitDockWidget(wndErr,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列
+//    tabifyDockWidget(wndErr,dock2);//添加dock2和dock1合并成tab
+//    wndErr->raise();
 
-    addDockWidget(Qt::BottomDockWidgetArea, dock3);//添加dock3
-//    tabifyDockWidget(dock2,dock3);//添加dock3和dock2合并成tab
-    tabifyDockWidget(dock3,dock4);//添加dock4和dock3合并成tab
-    dock3->raise();
+    QString sFileErr("");
+    m_cfgMgr.getValue("file_err",sFileErr);
+    m_fmErr.setFileName(sFileErr);
+    if(txtErr)
+        txtErr->setText(m_fmErr.getData());
 }
 
 
@@ -204,6 +131,13 @@ void MainWnd::createBarChart()
     if(m_chartView)
         delete m_chartView;
     m_chartView = new XBarChart();
+    m_chartView->setTitle("场站数据时序状态图");
+    QString sFileColor("");
+    m_cfgMgr.getValue("file_color",sFileColor);
+    m_chartView->setColorCfgFile(sFileColor);
+    QString sFileDidx("");
+    m_cfgMgr.getValue("file_bar",sFileDidx);
+    m_chartView->setFileData(sFileDidx);
 }
 
 //激活标签页窗口
@@ -264,25 +198,13 @@ void MainWnd::showDockWnds()
 {
     if(0 == m_tabMain->currentIndex() && m_wndWorkFlow)
     {
-        if(dock1)
-            dock1->showNormal();
-        if(dock2)
-            dock2->showNormal();
-        if(dock3)
-            dock3->showNormal();
-        if(dock4)
-            dock4->showNormal();
+        if(wndErr)
+            wndErr->showNormal();
     }
     else
     {
-        if(dock1)
-            dock1->hide();
-        if(dock2)
-            dock2->hide();
-        if(dock3)
-            dock3->hide();
-        if(dock4)
-            dock4->hide();
+        if(wndErr)
+            wndErr->hide();
     }
 }
 
@@ -310,5 +232,16 @@ void MainWnd::receiveCmd(QString sCmd)
                 m_tabMain->setCurrentIndex(iTab);
             }
         }
+    }
+}
+
+//读取错误信息
+void MainWnd::updateErrInfo()
+{
+    if(m_fmErr.isDirty())
+    {
+        m_fmErr.openFile();
+        if(txtErr)
+            txtErr->setText(m_fmErr.getData());
     }
 }

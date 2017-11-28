@@ -69,6 +69,9 @@ int CfgMgr::openFile()
 //        qDebug() << "Cannot read file " << m_sFileName << "\n";
         return 0;
     }
+
+    FileMgrBase::openFile();
+
     return 1;
 }
 

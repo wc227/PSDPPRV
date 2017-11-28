@@ -24,9 +24,7 @@ public:
     virtual void releaseAll(){}
 
     //打开数据文件
-    virtual int openFile(){
-        return 1;
-    }
+    virtual int openFile();
 
 protected:
     QString m_sFileName;//文件名称（含绝对路径）

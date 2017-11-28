@@ -43,7 +43,8 @@ HEADERS += \
     XBar.h \
     XBarChart.h \
     FileMgrDIDX.h \
-    DlgXBarChartProperty.h
+    DlgXBarChartProperty.h \
+    FileMgrErrInfo.h
 
 SOURCES += \
     main.cpp \
@@ -64,7 +65,8 @@ SOURCES += \
     XBar.cpp \
     XBarChart.cpp \
     FileMgrDIDX.cpp \
-    DlgXBarChartProperty.cpp
+    DlgXBarChartProperty.cpp \
+    FileMgrErrInfo.cpp
 
 
 CONFIG(debug, debug|release) {

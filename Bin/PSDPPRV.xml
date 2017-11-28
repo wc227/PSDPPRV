@@ -20,19 +20,19 @@
 	
 	<FileCfg>
 		<key>url_map1</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=1&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\ZL.CSV]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=1&file=E:\DKY\04_OtherPeople\ZhiZhi\data\ZL.CSV]]></value>
 		<comment>预想故障分布图</comment>
 	</FileCfg>
 	
 	<FileCfg>
 		<key>url_map2</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=4&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\lb.txt]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=5&file=E:\DKY\04_OtherPeople\ZhiZhi\data\lb.txt]]></value>
 		<comment>正常潮流安全分析图</comment>
 	</FileCfg>	
 	
 	<FileCfg>
 		<key>url_map3</key>
-		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=5&file=E:\DKY\04_OtherPeople\ZhiZhi\Release\test\cl.txt]]></value>
+		<value><![CDATA[http://localhost:8088/bpamap/index.html?type=4&file=E:\DKY\04_OtherPeople\ZhiZhi\data\cl.txt]]></value>
 		<comment>匹配项全景感知分析关联图</comment>
 	</FileCfg>
 	
@@ -46,5 +46,12 @@
 		<key>file_color</key>
 		<value><![CDATA[D:\DKY\20170721_PSDPPRV\Doc\colorcfg.ini]]></value>
 		<comment>颜色配置文件</comment>
+	</FileCfg>D:\System\DataFocus\View\Data\Bpa_1.err
+	
+	<FileCfg>
+		<key>file_err</key>
+		<value><![CDATA[D:\System\DataFocus\View\Data\Bpa_1.err]]></value>
+		<comment>错误预警文件</comment>
 	</FileCfg>
+
 </PSDPPRV>
