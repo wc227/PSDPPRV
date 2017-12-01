@@ -1,7 +1,8 @@
 ﻿#include "cbaritem.h"
 #include <QGraphicsScene>
+#include "citempropertydialog.h"
 
-CBarItem::CBarItem(bool isEditState):
+CXAnimateBar::CXAnimateBar(bool isEditState):
     CGraphicsObjectItem(isEditState),
     m_pAnimation(0),
     m_ShowTime(2000),
@@ -20,19 +21,19 @@ CBarItem::CBarItem(bool isEditState):
     initAnimation();
 }
 
-QRectF CBarItem::getAnmationSize()
+QRectF CXAnimateBar::getAnmationSize()
 {
     return QRectF(0,0,m_Width,m_Height);
 }
 
-void CBarItem::setAnmationSize(QRectF sz)
+void CXAnimateBar::setAnmationSize(QRectF sz)
 {
     m_Width = sz.width();
     m_Height = sz.height();
     update();
 }
 
-void CBarItem::setSize(int width, int height)
+void CXAnimateBar::setSize(int width, int height)
 {
     m_Width = width;
     m_Height = height;
@@ -47,55 +48,55 @@ void CBarItem::setSize(int width, int height)
 }
 
 //获取动画显示时间
-int CBarItem::getShowTime()
+int CXAnimateBar::getShowTime()
 {
     return m_ShowTime;
 }
 
 //设置动画显示时间
-void CBarItem::setShowTime(int time)
+void CXAnimateBar::setShowTime(int time)
 {
     m_ShowTime = time;
 }
 
 //设置是否循环执行动画
-void CBarItem::enableLoopAnimation(bool loop)
+void CXAnimateBar::enableLoopAnimation(bool loop)
 {
     m_bLoopAnimation = loop;
 }
 
 //是否循环执行动画
-bool CBarItem::isLoopAnimation()
+bool CXAnimateBar::isLoopAnimation()
 {
     return m_bLoopAnimation;
 }
 
 //设置是否忽略结束事件
-void CBarItem::enableIgnoreEndEvt(bool val)
+void CXAnimateBar::enableIgnoreEndEvt(bool val)
 {
     m_bIgnoreEndEvt = val;
 }
 
 //是否忽略结束事件
-bool CBarItem::isIgnoreEndEvt()
+bool CXAnimateBar::isIgnoreEndEvt()
 {
     return m_bIgnoreEndEvt;
 }
 
 //设置启动延时事件
-void CBarItem::setStartDelay(int val)
+void CXAnimateBar::setStartDelay(int val)
 {
     m_startDelay = val;
 }
 
 //获取启动延时时间
-int CBarItem::getStartDelay()
+int CXAnimateBar::getStartDelay()
 {
     return m_startDelay;
 }
 
 //初始化动画
-void CBarItem::initAnimation()
+void CXAnimateBar::initAnimation()
 {
     if(!m_pAnimation)
         m_pAnimation = new QPropertyAnimation(this, "anmationSize");
@@ -107,13 +108,13 @@ void CBarItem::initAnimation()
 
 
 //运行动画
-void CBarItem::startAnimation()
+void CXAnimateBar::startAnimation()
 {
     if(!m_pAnimation)
         initAnimation();
 
     if(m_bLoopAnimation)
-        connect(m_pAnimation, &QPropertyAnimation::finished,this,&CBarItem::startAnimation);//可循环动画
+        connect(m_pAnimation, &QPropertyAnimation::finished,this,&CXAnimateBar::startAnimation);//可循环动画
 
     if(m_pAnimation->state() == QAbstractAnimation::Stopped)//判断动画是否停止
     {
@@ -130,7 +131,7 @@ void CBarItem::startAnimation()
 }
 
 //结束动画
-void CBarItem::stopAnimation()
+void CXAnimateBar::stopAnimation()
 {
     if(m_bIgnoreEndEvt)
         return;//如果忽略结束事件，就不用结束动画了
@@ -148,18 +149,23 @@ void CBarItem::stopAnimation()
 
         //方法2 不删除动画，只断开动画的循环连接，也可实现停止动画的消化
         if(m_bLoopAnimation)
-            disconnect(m_pAnimation, &QPropertyAnimation::finished,this,&CBarItem::startAnimation);//取消循环动画
+            disconnect(m_pAnimation, &QPropertyAnimation::finished,this,&CXAnimateBar::startAnimation);//取消循环动画
         m_pAnimation->stop();
 
         this->hide();//隐藏
     }
 }
 
-//重绘
-void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+//编辑属性
+void CXAnimateBar::editProperty()
 {
-    CGraphicsObjectItem::paint(painter,option,widget);
+    CItemPropertyDialog dlg(this);
+    dlg.exec();
+}
 
+//重绘
+void CXAnimateBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
     if(!b_IsEditState && m_widthAni == m_Width)
     {
         this->hide();
@@ -171,9 +177,26 @@ void CBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     //如果动画执行的时间超过3秒，就绘制出时间
     painter->save();
     painter->setPen(Qt::red);
-    qint64 timeNow = QDateTime::currentSecsSinceEpoch();//当前时间
-    qint64 timeSpan = timeNow - m_timeStartAni;
-    if(timeSpan > 3)
-        painter->drawText(QRectF(0,0,m_Width,m_Height),Qt::AlignCenter,QString("%1秒").arg(timeNow - m_timeStartAni));
+    if(m_pAnimation && m_pAnimation->state() == QAbstractAnimation::Running)
+    {
+        qint64 timeNow = QDateTime::currentSecsSinceEpoch();//当前时间
+        qint64 timeSpan = timeNow - m_timeStartAni;
+        if(timeSpan > 3)
+            painter->drawText(QRectF(0,0,m_Width,m_Height),Qt::AlignCenter,QString("%1秒").arg(timeNow - m_timeStartAni));
+    }
     painter->restore();
+
+    CGraphicsObjectItem::paint(painter,option,widget);
+}
+
+//鼠标双击事件
+void CXAnimateBar::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    if(!b_IsEditState)
+        return;
+
+    if(event->button() == Qt::LeftButton) //双击左键
+    {
+        editProperty();
+    }
 }

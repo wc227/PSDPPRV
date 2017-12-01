@@ -2,7 +2,7 @@
 #define COUTITEM_H
 
 #include <QtGui>
-//#include "CGraphicsObjectItem.h"
+#include "CGraphicsObjectItem.h"
 #include <QGraphicsProxyWidget>
 #include <QProgressBar>
 #include "citempropertydialog.h"
@@ -25,7 +25,7 @@
 
 enum ItemShape
 {
-    Default, //矩形
+    Rect = 0, //矩形
     Line,    //线
     Circle,  //圆
     Triangle //三角形
@@ -39,47 +39,39 @@ class COutItem;
 class COutItemPropertyDialog : public QDialog
 {
     Q_OBJECT
-
 public:
-    COutItemPropertyDialog(QWidget *parent = 0, COutItem *currentItem = NULL);
-    ~COutItemPropertyDialog();
+    COutItemPropertyDialog(COutItem *item,QWidget *parent = 0);
+//    ~COutItemPropertyDialog();
 
-    void setName(const QString &name);  //设置item的名字
-    void setEvents(const QString &events);	//设置item的的事件号
-    void setShape(const int &shape);	//设置item的形状
+    //初始化界面
+    void initUI();
 
-    ItemShape shapeType;
+    //更新界面
+    void updateUI();
 
 private:
+    QLabel *m_labelName;		//name 标签
+    QLineEdit *m_lineName; //显示与输入name edit
 
-    QLabel *m_pNameLabel;		//name 标签
-    QLineEdit *m_pNameLineEdit; //显示与输入name edit
-    QString m_SaveName;
-    QString m_ModifiName;
+    QLabel *m_labelEvent;
+    QLineEdit *m_lineEvent;//事件号
 
-    QLabel *m_pEventLabel;
-    QLineEdit *m_pEventLineEdit;
-    QString m_SaveEvents;
-    QString m_ModifiEvents;
+    QLabel *m_labelCmd;
+    QLineEdit *m_lineCmd;//命令参数
 
-    QLabel *m_pShapeLabel;
-    QComboBox *m_pShapeComBox;
-    int nShape;
+    QPushButton *m_btnClose;
 
-    QPushButton *m_pBtnOK;
-
-    bool bDataIsChanged;        //用于弹出窗口是否修改；
     COutItem *m_CurrentItem;
+
 public slots:
-    void SLOT_EventLineEditChanged();	//事件lineEdit发生改变
-    void SLOT_NameLineEditChanged();	//名字LineEdit发生改变
-    void SLOT_ShapeComboxChanged(int index); //形状选择
+    void nameChanged(QString arg1);	//名字LineEdit发生改变
+    void eventChanged(QString arg1);	//事件lineEdit发生改变
+    void commandChanged(QString arg1); //命令行参数改变
 };
 
 class COutItem : public CGraphicsObjectItem
 {
     Q_OBJECT
-
 public:
     enum {Type = UserType + 2}; //根据Type判断是否是COutItem
     COutItem(bool isEditState);
@@ -88,8 +80,16 @@ public:
 
     void setEventNumbers(const QString &eventNumbers);//设置事件号
 
-    int getShape(); //获取item形状
-    void setShape(int); //设置item形状
+    ItemShape getShape(); //获取item形状
+
+    void setShape(ItemShape); //设置item形状
+
+    void setCommands(QString val);//设置命令参数
+
+    QString getCommands() const;//获取命令参数
+
+    //编辑属性
+    void editProperty();
 
 signals:
     void EvtFileChange(int number); //文件事件发生改变
@@ -97,36 +97,21 @@ signals:
     void sendCmd(QString sCmd);//发送命令
 
 private:
-//    QList<int> m_TaskNumbers;
-    int nShape;            //设置显示形状
+    ItemShape m_shape;//设置显示形状(暂时没有任何作用)
     QList<QString> m_TaskNumbersList;
+    QString m_Commands;//命令行参数
 
+private:
     void SetEvtList(QList<QString>& arList, int val);  //触发事件
     int EventType(const QString pchEvent, int *pnEventNo); //事件类型获取
 
-    QPainterPath currentPath;
-//    QRectF boundingRect() const;
-    virtual QPainterPath shape();
-
 protected:
+    virtual QPainterPath shape();
+//    QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);	//鼠标双击事件
-//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);	//右键菜单项
+//    void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);	//右键菜单项    
 
-protected:
-    QString m_Commands;//命令行参数
-
-public:
-    void setCommands(QString val)
-    {
-        if(m_Commands != val)
-            m_Commands = val;
-    }
-
-    QString getCommands() const
-    {
-        return m_Commands;
-    }
 };
 
 #endif // COUTITEM_H

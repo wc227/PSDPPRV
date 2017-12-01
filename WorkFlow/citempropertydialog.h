@@ -2,9 +2,8 @@
 #define CITEMPROPERTYDIALOG_H
 
 #include <QDialog>
-#include "cbaritem.h"
 
-class CBarItem;
+class CXAnimateBar;
 
 namespace Ui {
     class CItemPropertyDialog;
@@ -12,131 +11,37 @@ namespace Ui {
 /**
   ** @brief 设置CBarItem属性性对话框
   **/
-
 class CItemPropertyDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit CItemPropertyDialog(QWidget *parent = 0);
+    explicit CItemPropertyDialog(CXAnimateBar *item,QWidget *parent = 0);
     ~CItemPropertyDialog();
-    /**
-      ** @brief 设置ItemX坐标、返回ItemX坐标
-      **/
-    void setPosXSpinBox(double);
-    double getPosX();
 
-    /**
-      ** @brief 设置ItemY坐标、返回ItemY坐标
-      **/
-    void setPoxYSpinBox(double);
-    double getPosY();
-
-    /**
-      ** @brief 设置Item宽度、返回Item宽度
-      **/
-    void setWidthSpinBox(double);
-    double getWidth();
-
-    /**
-      ** @brief 设置Item高度、返回Item高度
-      **/
-    void setHeightSpinBox(double);
-    double getHeight();
-
-    /**
-      ** @brief 设置Item背景颜色
-      **/
-    void setBackGroundColorLabel(QColor);
-    QColor getBackgroundColor();
-
-    /**
-      ** @brief 设置Item事件编号
-      **/
-    void setEventNumberLineEdit(QString);
-    double getEventNumber();
-
-    /**
-      ** @brief 获取产生Dlg的item
-      **/
-    void getItemPointer(QGraphicsItem *item);
-
-    void setCaptatinName(QString &name);
-
-    void setVerticalCheckBox(bool);
-
-    void setLoopCheckBox(bool);
-
-    void setShowTimeLineEdit(int showTime);
+    //更新界面
+    void updateUI();
 
 private:
     Ui::CItemPropertyDialog *ui;
-    void createConnect();
 
-    double m_PosX;              //Item的X坐标
-    double m_PosY;              //Item的Y坐标
-    double m_Width;             //Item的宽
-    double m_Height;            //Item的高
-	
-    int m_EventNumber;          //Item的事件编号
-	//2015年3月2日 15:59:32 修改
-	QString m_EventNumbers;     //Items事件编号
-
-    QColor m_BackgroundColor;   //Item的背景颜色
-    QString m_CaptainName;      //Item的标识
-
-    QPalette background;
-    CBarItem *currentItem;
-
-signals:
+    CXAnimateBar *m_currentItem;
 
     //通过槽函数直接修改CBarItem中的数据
 private slots:
-    /**
-      ** @brief 当spinbox改变时，修改Item的X坐标
-      **/
-    void SLOT_PosXSpinBoxChanged(int);
-    /**
-      ** @brief 当spinbox改变时，修改Item的Y坐标
-      **/
-    void SLOT_PosYSpinBoxChanged(int);
-    /**
-      ** @brief 当spinbox改变时，修改Item的宽度
-      **/
-    void SLOT_WidthSpinBoxChanged(int);
-    /**
-      ** @brief 当spinbox改变时，修改Item的高度
-      **/
-    void SLOT_HeightSpixBoxChanged(int);
-    /**
-      ** @brief 设置Item事件编号
-      **/
-    void SLOT_EventNumberEditFinished();
-    /**
-      ** @brief 设置Item事件编号
-      **/
-    void SLOT_SetBackgroundColor();
-    /**
-      ** @brief 设置属性ui->showLabelcolor的背景颜色
-      **/
-    void SLOT_SetLabelShowColor();
-    /**
-      ** @brief 设置属性ui->Name 用于标识Item的名称
-      **/
-    void SLOT_SetCaptainName();
-    /**
-      ** @brief 设置属性ui->showTime 用于标识Item的名称
-      **/
-    void SLOT_SetShowTime();
-    /**
-      ** @brief 设置属性ui->VerticalCheckBox用于标识Item是否垂直显示
-      ** 参数： 用于获得checkState(int)中参数;
-      **/
-    void SLOT_SetVertical(int);
-
-    void SLOT_SetLoop(int);
-
     void on_btnOK_clicked();
+    void on_lineEdit_Name_textChanged(const QString &arg1);
+    void on_spinBox_X_valueChanged(int arg1);
+    void on_spinBox_Y_valueChanged(int arg1);
+    void on_spinBox_Width_valueChanged(int arg1);
+    void on_spinBox_Height_valueChanged(int arg1);
+    void on_spinBox_Rotation_valueChanged(int arg1);
+    void on_lineEdit_Event_Start_textChanged(const QString &arg1);
+    void on_lineEdit_Event_Stop_textChanged(const QString &arg1);
+    void on_lineEdit_Duration_textChanged(const QString &arg1);
+    void on_lineEdit_StartDelay_textChanged(const QString &arg1);
+    void on_checkBox_IgnoreEndEvent_toggled(bool checked);
+    void on_checkBox_Loop_toggled(bool checked);
 };
 
 #endif // CITEMPROPERTYDIALOG_H

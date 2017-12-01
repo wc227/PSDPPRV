@@ -2,12 +2,9 @@
 #define CGRAPHICSSCENE_H
 
 #include <QGraphicsScene>
-#include "cbaritem.h"
 #include <QGraphicsSceneMouseEvent>
 #include <QMenu>
 #include <QAction>
-#include "coutitem.h"
-#include "cmypathitem.h"
 
 /************************************************************************/
 /* 用于添加item，处理item的事件传递                                     */
@@ -20,7 +17,8 @@ public:
     CGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject * parent = 0);
 
 protected:
-    void createContextMenu();
+    //创建actions
+    void createActions();
 
 public:
     //设置是否处于编辑模式
@@ -30,12 +28,12 @@ public:
     bool isEdit() const;
 
 protected:
-    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
-	void mousePressEvent(QGraphicsSceneMouseEvent *event);
     void contextMenuEvent(QGraphicsSceneContextMenuEvent *event);
+//    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
 
 private:
-    QMenu *m_MenuEdit;//编辑模式下的右键弹出菜单
+//    QMenu *m_MenuEdit;//编辑模式下的右键弹出菜单
     QAction *m_ActionAddIn;
     QAction *m_ActionAddOut;
     QAction *m_ActionDel;
@@ -45,21 +43,16 @@ private:
     QAction *m_Action_Property;
 
     bool m_bEditMode;//是否处于编辑模式
-    QPointF m_RightButtonPos;
-
-	//2015年5月14日 14:07:16 添加 animation line
-	CMyPathItem *m_pCurrentLinePath;  //line
+    QPointF m_rightButtonPos;
 
 	bool m_startAddLine; //当选择action- addLine时=true,鼠标右键按下时，变成false；
 
-
-private slots:
+public slots:
     void slotAddgraphicsitem();
     void slotAddCRedItem();
     void slotDelItem();
 	void slotADDPathLine();
     void slotEVTFileChange(int);
-
     void showOutitemMsg();
 };
 

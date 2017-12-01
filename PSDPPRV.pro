@@ -20,7 +20,8 @@ RESOURCES += \
 
 FORMS += \
     WorkFlow/citempropertydialog.ui \
-    DlgXBarChartProperty.ui
+    DlgXBarChartProperty.ui \
+    WorkFlow/CXAnimatePolylinePropterty.ui
 
 
 HEADERS += \
@@ -44,7 +45,10 @@ HEADERS += \
     XBarChart.h \
     FileMgrDIDX.h \
     DlgXBarChartProperty.h \
-    FileMgrErrInfo.h
+    FileMgrErrInfo.h \
+    WorkFlow/CXPolyLine.h \
+    WorkFlow/CXAnimatePolyline.h \
+    WorkFlow/CXAnimatePolylinePropterty.h
 
 SOURCES += \
     main.cpp \
@@ -66,7 +70,10 @@ SOURCES += \
     XBarChart.cpp \
     FileMgrDIDX.cpp \
     DlgXBarChartProperty.cpp \
-    FileMgrErrInfo.cpp
+    FileMgrErrInfo.cpp \
+    WorkFlow/CXPolyLine.cpp \
+    WorkFlow/CXAnimatePolyline.cpp \
+    WorkFlow/CXAnimatePolylinePropterty.cpp
 
 
 CONFIG(debug, debug|release) {

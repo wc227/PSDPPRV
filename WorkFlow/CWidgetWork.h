@@ -3,6 +3,8 @@
 
 #include "cwidget.h"
 #include <QWidget>
+#include <QSpacerItem>
+#include <QGridLayout>
 
 //运行状况窗口，可以显示系统运行的流程和状况
 class CWidgetWork : public QWidget
@@ -26,7 +28,7 @@ private:
     QSpacerItem *horizontalSpacer;
     QSpacerItem *horizontalSpacer_2;
     QSpacerItem *verticalSpacer;
-    CWidget *View;//
+    CXGraphicsView *View;//
 };
 
 #endif // CWIDGETWORK_H

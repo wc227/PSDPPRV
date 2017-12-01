@@ -16,19 +16,19 @@ void CWidgetWork::initUI()
     gridLayout = new QGridLayout(this);
     gridLayout->setObjectName(QStringLiteral("gridLayout"));
 
-    horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    horizontalSpacer = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     gridLayout->addItem(horizontalSpacer, 1, 0, 1, 1);
 
-    horizontalSpacer_2 = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+    horizontalSpacer_2 = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
     gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
 
-    verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    verticalSpacer = new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     gridLayout->addItem(verticalSpacer, 0, 1, 1, 1);
 
-    verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+    verticalSpacer_2 = new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
     gridLayout->addItem(verticalSpacer_2, 2, 1, 1, 1);
 
-    View = new CWidget(this);    
+    View = new CXGraphicsView(this);
     connect(View, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
     View->setObjectName(QStringLiteral("View"));
     gridLayout->addWidget(View, 1, 1, 1, 1);//居中显示

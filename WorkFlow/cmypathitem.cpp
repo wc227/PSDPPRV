@@ -38,13 +38,12 @@ void CMyPathItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
         painter->restore();
     }
     painter->save();
-    QPen pen = QPen(Qt::black,2,Qt::DashDotDotLine,Qt::RoundCap,Qt::RoundJoin);
+    QPen pen = QPen(Qt::black,2,Qt::DashLine,Qt::RoundCap,Qt::RoundJoin);
     pen.setDashOffset(var);
     painter->setPen(pen);
     painter->setRenderHint(QPainter::Antialiasing);
     painter->drawPolyline(m_polygon);
     painter->restore();
-
 
     if(isEdit)
     {
@@ -122,7 +121,7 @@ void CMyPathItem::myTimerOut()
 {
     if(var > 11)
         var = 0;
-    var ++ ;
+    var += 2 ;
     update();
 }
 

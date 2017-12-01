@@ -1,30 +1,24 @@
 ﻿#ifndef CWIDGET_H
 #define CWIDGET_H
 
-#include <QtGui>
 #include "cgraphicsscene.h"
-#include "cbaritem.h"
-#include "coutitem.h"
 #include "tpsdevts.h"
 #include <QGraphicsView>
-#include <QWidget>
-#include <QGridLayout>
-#include <QSpacerItem>
-#include <QMultiMap>
+//#include <QMultiMap>
 
-class CWidget : public QGraphicsView
+class CXGraphicsView : public QGraphicsView
 {
     Q_OBJECT
 
 public:
-    CWidget(QWidget *parent = 0);
-    ~CWidget();
+    CXGraphicsView(QWidget *parent = 0);
+    ~CXGraphicsView();
 
 private:
     QSize getWindowSizie();
     void initBack();                //更新当前的背景
     void initAllItems();            //根据从配置文件中提取的数据来显式所有的图元
-    void stringToItemData(QString data,QString type);//字符串转换成图元数据
+    void stringToItemData(QString sVal,QString sGroup);//字符串转换成图元数据
     void saveToIniFile();           //保存到Ini文件中
 
 private:
@@ -36,8 +30,8 @@ private:
 
 	//增加事件分类触发
     QMap<QString, int> m_mapEvtNum2Counter; //动画的事件号和事件计数值
-    QMultiMap<QString, CBarItem*> m_mapEvtNum2BarsStart; //事件号与对应的多个启动动画Items;
-    QMultiMap<QString, CBarItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
+    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2BarsStart; //事件号与对应的多个启动动画Items;
+    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 
 signals:
@@ -49,7 +43,14 @@ public slots:
     void btnClickTest();//单击按钮测试
 
 protected:
-    void timerEvent(QTimerEvent *);  //定时器检测事件号是否发生改变
+    //定时器检测事件号是否发生改变
+    void timerEvent(QTimerEvent *);
+
+    //上/下/左/右键向各个方向移动
+    void keyPressEvent(QKeyEvent *event) ;
+
+    //移动选择的图元
+    void moveSelectedItems(int x,int y);
 };
 
 #endif // CWIDGET_H

@@ -26,7 +26,7 @@ typedef int(*FUN5)(int);
 
 COutItem::COutItem(bool isEditState) :
     CGraphicsObjectItem(isEditState),
-    nShape(0)
+    m_shape(ItemShape::Rect)
 {
     setZValue(0);
 
@@ -45,67 +45,31 @@ COutItem::COutItem(bool isEditState) :
 
 void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-//    if(b_IsEditState)
+    painter->save();
+    painter->setRenderHint(QPainter::Antialiasing,true);//反锯齿
+
+    if(b_IsEditState)
+        painter->setOpacity(1);
+    else
+    {
+        if(b_HoverEnter)
+            painter->setOpacity(1);
+        else
+            painter->setOpacity(0);
+    }
+
+//    if(!b_HoverEnter && !isSelected())
 //    {
-//        if (option->state & QStyle::State_Selected)
-//        {  //设置虚线
-//            QPen dashLinepen(Qt::black);
-//            dashLinepen.setWidth(1);
-//            dashLinepen.setStyle(Qt::DashLine);
-//            painter->setPen(dashLinepen);
-//            painter->drawRect(QRectF(0,0,m_Width,m_Height));
-//        }
+//        painter->setOpacity(0);
 //    }
 
-//    if(!b_HoverEnter && !this->isSelected())
-//    {
-//      painter->setOpacity(0);
-//    }
-
-//    if(b_HoverEnter && !this->isSelected())
+//    if(b_HoverEnter && !isSelected())
 //    {
 //        painter->setOpacity(1);
-//        painter->setPen(Qt::red);
 //    }
 
-//    painter->save();
-//    //反锯齿
-//    painter->setRenderHint(QPainter::Antialiasing,true);
-//    QPen p(Qt::red);
-//    p.setWidth(3);
-//    p.setJoinStyle(Qt::RoundJoin);
-//    painter->setPen(p);
-//    painter->drawPath(shape());////////////////
-//    painter->restore();
-
-//    if(b_IsEditState)
-//    {
-//        if (option->state & QStyle::State_Selected) {
-//            QPen borderSquarePen(Qt::gray);
-//            painter->setPen(borderSquarePen);
-//            painter->setBrush(Qt::gray);
-//            painter->setOpacity(0.7);
-//            createBorderSquare();
-//            drawBorderSquare(painter);
-//        }
-//    }
-
-    painter->save();
-
-    if(!b_HoverEnter && !isSelected())
-    {
-        painter->setOpacity(0);
-    }
-
-    if(b_HoverEnter && !isSelected())
-    {
-        painter->setOpacity(1);
-        painter->setPen(Qt::red);
-    }
-
-    painter->setRenderHint(QPainter::Antialiasing,true);//反锯齿
     QPen p(Qt::red);
-    p.setWidth(3);
+    p.setWidth(2);
     p.setJoinStyle(Qt::RoundJoin);
     painter->setPen(p);
     painter->drawRect(QRectF(0,0,m_Width,m_Height));
@@ -121,9 +85,7 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
     if(b_IsEditState)
     {
-        QGraphicsView* pView = this->scene()->views().at(0);
-        COutItemPropertyDialog dlg((QWidget*)pView, this);
-        dlg.exec();
+        editProperty();
     }
     else
     {
@@ -134,10 +96,12 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
         }
     }
 }
-
-//void COutItem::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
-//{
-//}
+//编辑属性
+void COutItem::editProperty()
+{
+    COutItemPropertyDialog dlg(this);
+         dlg.exec();
+}
 
 void COutItem::setEventNumbers(const QString &eventNumbers)
 {
@@ -146,15 +110,26 @@ void COutItem::setEventNumbers(const QString &eventNumbers)
         m_TaskNumbersList = m_EventNumbers.split(":");
 }
 
-int COutItem::getShape()
+ItemShape COutItem::getShape()
 {
-    return nShape;
+    return m_shape;
 }
 
-void COutItem::setShape(int i)
+void COutItem::setShape(ItemShape i)
 {
-    nShape = i;
-	update();
+    m_shape = i;
+    update();
+}
+
+void COutItem::setCommands(QString val)
+{
+    if(m_Commands != val)
+        m_Commands = val;
+}
+
+QString COutItem::getCommands() const
+{
+    return m_Commands;
 }
 
 void COutItem::SetEvtList(QList<QString>& arList, int val)
@@ -166,14 +141,14 @@ void COutItem::SetEvtList(QList<QString>& arList, int val)
     QLibrary lib(sDllName);
     if (lib.load())
     {
-//        FUN1 ShareMemoryBuild = (FUN1)lib.resolve("?ShareMemoryBuild@@YAJXZ");//dll中ShareMemoryBuild对应的实际是 ?ShareMemoryBuild@@YAJXZ
+        //        FUN1 ShareMemoryBuild = (FUN1)lib.resolve("?ShareMemoryBuild@@YAJXZ");//dll中ShareMemoryBuild对应的实际是 ?ShareMemoryBuild@@YAJXZ
         FUN2 EVTFileChange = (FUN2)lib.resolve("?EVTFileChange@@YAHHH@Z");//dll中 EVTFileChange 对应的实际是 ?EVTFileChange@@YAHHH@Z
         FUN2 EVTTaskChange = (FUN2)lib.resolve("?EVTTaskChange@@YAHHH@Z");//dll中 EVTTaskChange 对应的实际是 ?EVTTaskChange@@YAHHH@Z
         FUN2 PSDAPPChange = (FUN2)lib.resolve("?PSDAPPChange@@YAHHH@Z");//dll中 PSDAPPChange 对应的实际是 ?PSDAPPChange@@YAHHH@Z
         FUN3 EVTStatus = (FUN3)lib.resolve("?EVTStatus@@YA_NH@Z");//dll中 EVTStatus 对应的实际是 ?EVTStatus@@YA_NH@Z
         FUN4 EVTStatusSet = (FUN4)lib.resolve("?EVTStatusSet@@YA_NH_N@Z");//dll中 EVTStatusSet 对应的实际是 ?EVTStatusSet@@YA_NH_N@Z
-//        FUN5 EVTTaskCounter = (FUN5)lib.resolve("?EVTTaskCounter@@YAHH@Z");//dll中 EVTTaskCounter 对应的实际是 ?EVTTaskCounter@@YAHH@Z
-//        FUN5 EVTFileCounter = (FUN5)lib.resolve("?EVTFileCounter@@YAHH@Z");//dll中 EVTFileCounter 对应的实际是 ?EVTFileCounter@@YAHH@Z
+        //        FUN5 EVTTaskCounter = (FUN5)lib.resolve("?EVTTaskCounter@@YAHH@Z");//dll中 EVTTaskCounter 对应的实际是 ?EVTTaskCounter@@YAHH@Z
+        //        FUN5 EVTFileCounter = (FUN5)lib.resolve("?EVTFileCounter@@YAHH@Z");//dll中 EVTFileCounter 对应的实际是 ?EVTFileCounter@@YAHH@Z
 
         QString  szTmp;
         szTmp.clear();
@@ -200,39 +175,39 @@ void COutItem::SetEvtList(QList<QString>& arList, int val)
             switch (nTmp)
             {
             case EVT_FILE_TYPE:
-                {
-                    if(bInvert)
-                        val*=-1;
-                    EVTFileChange(nEvt, val);
-                }break;
+            {
+                if(bInvert)
+                    val*=-1;
+                EVTFileChange(nEvt, val);
+            }break;
             case EVT_TASK_TYPE:
-                {
-                    if(bInvert)
-                        val*=-1;
-                    EVTTaskChange(nEvt, val);
-    //                qDebug() << "Current Task Number:" << nEvt << "counter:"<< EVTTaskCounter(nEvt);
-                }break;
+            {
+                if(bInvert)
+                    val*=-1;
+                EVTTaskChange(nEvt, val);
+                //                qDebug() << "Current Task Number:" << nEvt << "counter:"<< EVTTaskCounter(nEvt);
+            }break;
             case EVT_STATUS_TYPE:
-                {//与val无关
-                    bool b = EVTStatus(nEvt);
-                    if(bInvert) //反逻辑标记
-                        EVTStatusSet(nEvt, !b);
-                    else
-                        EVTStatusSet(nEvt, true); //直接设置为真状态[到应用时修订];
-                    //	if (val > 0)
-                    //	else
-                    // EVTStatusSet(nEvt, false);
-                }break;
+            {//与val无关
+                bool b = EVTStatus(nEvt);
+                if(bInvert) //反逻辑标记
+                    EVTStatusSet(nEvt, !b);
+                else
+                    EVTStatusSet(nEvt, true); //直接设置为真状态[到应用时修订];
+                //	if (val > 0)
+                //	else
+                // EVTStatusSet(nEvt, false);
+            }break;
             case EVT_APP_TYPE:
-                {
-                    if(bInvert)
-                        val*=-1;
-                    PSDAPPChange(nEvt, val);
-                }break;
+            {
+                if(bInvert)
+                    val*=-1;
+                PSDAPPChange(nEvt, val);
+            }break;
             default:
-                {
-                    //cout<<"***无效事件类型:"<<nTmp<<endl;
-                }break;
+            {
+                //cout<<"***无效事件类型:"<<nTmp<<endl;
+            }break;
             }//end switch
         }//end for..
     }
@@ -311,183 +286,118 @@ int COutItem::EventType( const QString pchEvent, int* pnEventNo )
     return Rtn;
 }
 
-//QRectF COutItem::boundingRect() const
-//{
-
-//}
-
 QPainterPath COutItem::shape()
 {
-    QPainterPath path;
-    switch (nShape) {
-    case 0:
-        path = CGraphicsObjectItem::shape();
-        break;
-    case 1:
-        path.addPolygon(QPolygonF() <<QPointF(0,m_Height) << QPointF(m_Width,m_Height));
-        break;
-    case 2:
-        path.addEllipse(0,0,m_Width,m_Height);
-        break;
-    case 3:
-        path.addPolygon(QPolygonF() << QPointF(0,0) << QPointF(m_Width,m_Height/2)
-                                        << QPointF(0,m_Height) << QPointF(0,0));
-        break;
-    default:
-        break;
-    }
-    currentPath = path;
-    return path;
+    //    QPainterPath  myPath;
+    //    switch (m_shape)
+    //    {
+    //    case ItemShape::Rect:
+    //        myPath = CGraphicsObjectItem::shape();
+    //        break;
+    //    case ItemShape::Line:
+    //        myPath.addPolygon(QPolygonF() <<QPointF(0,m_Height) << QPointF(m_Width,m_Height));
+    //        break;
+    //    case ItemShape::Circle:
+    //        myPath.addEllipse(0,0,m_Width,m_Height);
+    //        break;
+    //    case ItemShape::Triangle:
+    //        myPath.addPolygon(QPolygonF() << QPointF(0,0) << QPointF(m_Width,m_Height/2)
+    //                                        << QPointF(0,m_Height) << QPointF(0,0));
+    //        break;
+    //    default:
+    //        break;
+    //    }
+    //    return myPath;
+
+    return CGraphicsObjectItem::shape();
 }
 
 //////////////////////////////////////////////////////////////
 /// \brief COutItemPropertyDialog::COutItemPropertyDialog
 /// \param parent
 //////////////////////////////////////////////////////////////
-COutItemPropertyDialog::COutItemPropertyDialog(QWidget *parent, COutItem *currentItem) :
+COutItemPropertyDialog::COutItemPropertyDialog(COutItem *item,QWidget *parent) :
     QDialog(parent),
-    m_CurrentItem(currentItem)
+    m_CurrentItem(item)
 {
-    bDataIsChanged = false;
+    initUI();
+    updateUI();
+}
 
-    QHBoxLayout *pNameLayout = new QHBoxLayout;
 
-    m_pNameLabel = new QLabel("Name:", this);
-    m_pNameLabel->setAlignment(Qt::AlignVCenter | Qt::AlignRight); //设置Label文字靠右
-    m_pNameLineEdit = new QLineEdit(this);
+//初始化界面
+void COutItemPropertyDialog::initUI()
+{
+    QHBoxLayout *layoutName = new QHBoxLayout;
+    m_labelName = new QLabel("名称:", this);
+    m_labelName->setAlignment(Qt::AlignVCenter | Qt::AlignRight); //设置Label文字靠右
+    m_lineName = new QLineEdit(this);
+    layoutName->addWidget(m_labelName);
+    layoutName->addWidget(m_lineName);
 
-    pNameLayout->addWidget(m_pNameLabel);
-    pNameLayout->addWidget(m_pNameLineEdit);
-
-    QHBoxLayout *pEventLayout = new QHBoxLayout;
-
-    m_pEventLabel = new QLabel("Events:", this);
-    m_pEventLabel->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    m_pEventLineEdit = new QLineEdit(this);
-
-    pEventLayout->addWidget(m_pEventLabel);
-    pEventLayout->addWidget(m_pEventLineEdit);
+    QHBoxLayout *layoutEvent = new QHBoxLayout;
+    m_labelEvent = new QLabel("事件号:", this);
+    m_labelEvent->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_lineEvent = new QLineEdit(this);
+    layoutEvent->addWidget(m_labelEvent);
+    layoutEvent->addWidget(m_lineEvent);
 
     //2014年5月6日10:04:11
-    QHBoxLayout *pShapeLayout = new QHBoxLayout;
+    QHBoxLayout *layoutCmd = new QHBoxLayout;
+    m_labelCmd = new QLabel(tr("命令参数:"), this);
+    m_labelCmd->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    m_lineCmd = new QLineEdit(this);
+    layoutCmd->addWidget(m_labelCmd);
+    layoutCmd->addWidget(m_lineCmd);
 
-    m_pShapeLabel = new QLabel(tr("Shape:"), this);
-    m_pShapeComBox = new QComboBox;
-    m_pShapeComBox->addItem(tr("default"));
-    m_pShapeComBox->addItem(tr("line"));
-    m_pShapeComBox->addItem(tr("circle"));
-    m_pShapeComBox->addItem(tr("triangle"));
-
-    pShapeLayout->addWidget(m_pShapeLabel);
-    pShapeLayout->addWidget(m_pShapeComBox);
-    m_pShapeLabel->setEnabled(false);
-    m_pShapeComBox->setEnabled(false);
-
-    m_pBtnOK = new QPushButton("关闭");
-    m_pBtnOK->setDefault(true);
-    m_pBtnOK->setMinimumSize(60,25);
-    m_pBtnOK->setMaximumSize(60,25);
+    m_btnClose = new QPushButton("关闭");
+    m_btnClose->setDefault(true);
+    m_btnClose->setMinimumSize(60,25);
+    m_btnClose->setMaximumSize(60,25);
 
     QVBoxLayout *pMainLayout = new QVBoxLayout(this);
-    pMainLayout->addLayout(pNameLayout);
-    pMainLayout->addLayout(pEventLayout);
-    pMainLayout->addLayout(pShapeLayout);
-    pMainLayout->addWidget(m_pBtnOK);
-    pMainLayout->setAlignment(m_pBtnOK,Qt::AlignHCenter);
+    pMainLayout->addLayout(layoutName);
+    pMainLayout->addLayout(layoutEvent);
+    pMainLayout->addLayout(layoutCmd);
+    pMainLayout->addWidget(m_btnClose);
+    pMainLayout->setAlignment(m_btnClose,Qt::AlignHCenter);
 
     this->setLayout(pMainLayout);
 
-    if(m_CurrentItem)
-    {
-        setName(m_CurrentItem->getCaptainName());
-        setEvents(m_CurrentItem->getEventNumbers());
-        setShape(m_CurrentItem->getShape());
-    }
-
-    connect(m_pEventLineEdit, SIGNAL(editingFinished()),
-            this, SLOT(SLOT_EventLineEditChanged()));
-    connect(m_pNameLineEdit, SIGNAL(editingFinished()),
-            this, SLOT(SLOT_NameLineEditChanged()));
-    connect(m_pShapeComBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(SLOT_ShapeComboxChanged(int)));
-    connect(m_pBtnOK,&QPushButton::clicked,this,&COutItemPropertyDialog::close);
+    connect(m_lineEvent, SIGNAL(textChanged(QString)),
+            this, SLOT(eventChanged(QString)));
+    connect(m_lineName, SIGNAL(textChanged(QString)),
+            this, SLOT(nameChanged(QString)));
+    connect(m_lineCmd, SIGNAL(textChanged(QString)),
+            this, SLOT(commandChanged(QString)));
+    connect(m_btnClose,&QPushButton::clicked,this,&COutItemPropertyDialog::close);
 
     this->setWindowTitle(tr("属性"));
+
 }
 
-COutItemPropertyDialog::~COutItemPropertyDialog()
+//更新界面
+void COutItemPropertyDialog::updateUI()
 {
-    m_ModifiName = m_pNameLineEdit->text().trimmed();
-    m_ModifiEvents = m_pEventLineEdit->text().trimmed();
-    shapeType = (ItemShape)m_pShapeComBox->currentIndex();
-
-    if(m_ModifiName != m_SaveName || m_ModifiEvents != m_SaveEvents
-            || nShape != m_pShapeComBox->currentIndex())
-        bDataIsChanged = true;
-
-    if(!bDataIsChanged)
+    if(!m_CurrentItem)
         return;
 
-    QMessageBox::StandardButton button;
-    button = QMessageBox::information(this, tr("Save"), tr("数据已被修改，是否要保存"),
-                             QMessageBox::Ok, QMessageBox::Cancel);
-
-    if(button == QMessageBox::Ok)
-    {
-        if( m_ModifiName != m_SaveName)
-            m_CurrentItem->setCaptainName(m_ModifiName);
-
-        if( m_ModifiEvents != m_SaveEvents)
-            m_CurrentItem->setEventNumbers(m_ModifiEvents);
-
-        if( m_CurrentItem->getShape() != (int)shapeType)
-            m_CurrentItem->setShape((int)shapeType);
-    }
+    m_lineName->setText(m_CurrentItem->getCaptainName());
+    m_lineEvent->setText(m_CurrentItem->getEventNumbers());
+    m_lineCmd->setText(m_CurrentItem->getCommands());
 }
 
-void COutItemPropertyDialog::setName(const QString &name)
+void COutItemPropertyDialog::nameChanged(QString arg1)
 {
-    m_SaveName = name;
-    m_ModifiName = name;
-    m_pNameLineEdit->setText(name);
+    m_CurrentItem->setCaptainName(arg1);
 }
 
-void COutItemPropertyDialog::setEvents(const QString &events)
+void COutItemPropertyDialog::eventChanged(QString arg1)
 {
-    m_SaveEvents = events;
-    m_pEventLineEdit->setText(events);
+    m_CurrentItem->setEventNumbers(arg1);
 }
 
-void COutItemPropertyDialog::setShape(const int &shape)
+void COutItemPropertyDialog::commandChanged(QString arg1)
 {
-    nShape = shape;
-    m_pShapeComBox->setCurrentIndex(nShape);
-}
-
-void COutItemPropertyDialog::SLOT_EventLineEditChanged()
-{
-    m_ModifiEvents = m_pEventLineEdit->text();
-    m_ModifiEvents = m_ModifiEvents.trimmed();
-}
-
-void COutItemPropertyDialog::SLOT_NameLineEditChanged()
-{
-    m_ModifiName = m_pNameLineEdit->text();
-    m_ModifiName = m_ModifiName.trimmed();
-}
-
-void COutItemPropertyDialog::SLOT_ShapeComboxChanged(int index)
-{
-    QString text = m_pShapeComBox->itemText(index);
-    if(text == "default")
-        shapeType = Default;
-
-    else if(text == "line")
-        shapeType = Line;
-
-    else if(text == "circle")
-        shapeType = Circle;
-
-    else if(text == "triangle")
-        shapeType = Triangle;
+    m_CurrentItem->setCommands(arg1);
 }

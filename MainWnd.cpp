@@ -1,5 +1,6 @@
 ﻿#include "MainWnd.h"
 #include "FormWeb.h"
+#include "XxwDockWidget.h"
 #include <QApplication>
 #include <QGridLayout>
 #include <QHBoxLayout>
@@ -7,9 +8,9 @@
 #include <QToolButton>
 #include <QTabWidget>
 #include <QAction>
-#include <QTimer>
 #include <QTextEdit>
-#include "XxwDockWidget.h"
+#include <QProcess>
+
 
 MainWnd::MainWnd(QWidget *parent)
     :QMainWindow(parent)
@@ -99,7 +100,7 @@ void MainWnd::createDockWnd()
 {
     wndErr = new CXxwDockWidget(tr("异常信息"));
     wndErr->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    wndErr->setAllowedAreas(Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
+    wndErr->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
     txtErr = new QTextEdit(wndErr);
     txtErr->setObjectName(QStringLiteral("Output1"));
     txtErr->setStyleSheet("#txtErr{border:0px; }");
@@ -110,8 +111,8 @@ void MainWnd::createDockWnd()
 //    wndErr->showTitleBar(false);
 
     //设置最小的宽度和高度
-    wndErr->setMinimumWidth(500);
-    wndErr->setMinimumHeight(5);
+    wndErr->setMinimumWidth(10);
+    wndErr->setMinimumHeight(10);
 
     addDockWidget(Qt::BottomDockWidgetArea, wndErr);//添加dock1
 //    splitDockWidget(wndErr,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列

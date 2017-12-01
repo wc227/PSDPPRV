@@ -8,7 +8,7 @@
 #include "citempropertydialog.h"
 
 CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
-    c_squareLength(6),
+    c_squareLength(8),
     b_IsEditState(IsEditState)
 {
     setAcceptHoverEvents(true);
@@ -56,29 +56,6 @@ QRectF CGraphicsObjectItem::boundingRect() const
 
 void CGraphicsObjectItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-//    //被选中时，绘制黑色虚线边框
-//    //    if (option->state & QStyle::State_Selected)
-//    if(isSelected())
-//    {
-//        QPen dashLinepen(Qt::black);
-//        dashLinepen.setWidth(1);
-//        dashLinepen.setStyle(Qt::DashLine);
-//        painter->setPen(dashLinepen);
-//    }
-//    painter->setOpacity(1);
-//    painter->drawPath(m_RectShape());
-
-//    //    if (option->state & QStyle::State_Selected)
-//    if(isSelected())
-//    {
-//        QPen borderSquarePen(Qt::green);
-//        painter->setPen(borderSquarePen);
-//        painter->setBrush(Qt::green);
-//        painter->setOpacity(1);
-//        createBorderSquare();
-//        drawBorderSquare(painter);
-//    }
-
     painter->save();
 
     painter->setPen(Qt::NoPen);
@@ -90,18 +67,12 @@ void CGraphicsObjectItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
         QPen dashLinepen(Qt::red);
         dashLinepen.setWidth(1);
         dashLinepen.setStyle(Qt::DashLine);
-        painter->setOpacity(0.5);
         painter->setPen(dashLinepen);
     }
-
     painter->drawRect(QRectF(0, 0, m_Width, m_Height));
 
     if(b_IsEditState && isSelected())
     {
-        QPen borderSquarePen(Qt::blue);
-        painter->setPen(borderSquarePen);
-        painter->setBrush(Qt::blue);
-        painter->setOpacity(1);
         createBorderSquare();
         drawBorderSquare(painter);
     }
@@ -148,14 +119,14 @@ void CGraphicsObjectItem::createBorderSquare()
 //绘画8个小正方形，进行选中拖拽时使用
 void CGraphicsObjectItem::drawBorderSquare(QPainter *painter)
 {
-//    painter->drawRect(m_BorderSquare_TopLeft);
-//    painter->drawRect(m_BorderSquare_TopMiddle);
-//    painter->drawRect(m_BorderSquare_TopRight);
-//    painter->drawRect(m_BorderSquare_MiddleLeft);
-//    painter->drawRect(m_BorderSquare_MiddleRight);
-//    painter->drawRect(m_BorderSquare_BottomLeft);
-//    painter->drawRect(m_BorderSquare_BottomMiddle);
-    painter->drawRect(m_BorderSquare_BottomRight);
+//    painter->fillRect(m_BorderSquare_TopLeft);
+//    painter->fillRect(m_BorderSquare_TopMiddle);
+//    painter->fillRect(m_BorderSquare_TopRight);
+//    painter->fillRect(m_BorderSquare_MiddleLeft);
+//    painter->fillRect(m_BorderSquare_MiddleRight);
+//    painter->fillRect(m_BorderSquare_BottomLeft);
+//    painter->fillRect(m_BorderSquare_BottomMiddle);
+    painter->fillRect(m_BorderSquare_BottomRight,Qt::blue);
 }
 
 //鼠标按下事件
@@ -237,36 +208,6 @@ void CGraphicsObjectItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
     }
 
     QGraphicsObject::mouseReleaseEvent(event);
-}
-
-//鼠标双击事件
-void CGraphicsObjectItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    if(b_IsEditState)
-    {
-        QGraphicsView* pView = this->scene()->views().at(0);
-        CItemPropertyDialog *dlg = new CItemPropertyDialog((QWidget*)pView);
-
-        dlg->getItemPointer(this);
-        dlg->setPosXSpinBox(this->scenePos().x());
-        dlg->setPoxYSpinBox(this->scenePos().y());
-        dlg->setWidthSpinBox(this->m_Width);
-        dlg->setHeightSpinBox(this->m_Height);
-        dlg->setEventNumberLineEdit(this->m_EventNumbers);
-        //    dlg->setBackGroundColorLabel(this->m_CapatinName);
-        dlg->setCaptatinName(this->m_CaptainName);
-
-        //新增、showTime、vertical;
-        if(this->rotation() == 270)
-            dlg->setVerticalCheckBox(true);
-        else
-            dlg->setVerticalCheckBox(false);
-
-        dlg->setShowTimeLineEdit(dynamic_cast<CBarItem*> (this)->getShowTime());
-//        dlg->setLoopCheckBox(this->m_bLoopAnimation);
-
-        dlg->exec();
-    }
 }
 
 //鼠标悬浮进入事件

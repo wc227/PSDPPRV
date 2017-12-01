@@ -4,7 +4,6 @@
 #include <QMainWindow>
 #include "WorkFlow/CWidgetWork.h"
 #include "CfgMgr.h"
-//#include <QProcess>
 #include "XBarChart.h"
 #include "FileMgrErrInfo.h"
 #include <QTimer>

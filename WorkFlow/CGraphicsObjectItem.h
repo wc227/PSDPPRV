@@ -61,7 +61,7 @@ protected:
 
 class CGraphicsObjectItem : public QGraphicsObject, public CItemPrivate
 {
-//    Q_OBJECT
+    Q_OBJECT
 //    Q_PROPERTY(QRectF sizeChange READ getAnmationSize WRITE setAnmationSize)
 //    enum { Type = UserType + 5 }; //UserTyped是系统定义的 65536 根据Type来判断子类的类型
 public:
@@ -162,7 +162,7 @@ protected:
     /**
       *@brief 鼠标双击事件
       */
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) = 0;
     /**
       *@brief 鼠标悬浮进入Item范围事件
       */

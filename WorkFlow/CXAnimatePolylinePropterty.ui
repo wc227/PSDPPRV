@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CXAnimatePolylinePropterty</class>
+ <widget class="QDialog" name="CXAnimatePolylinePropterty">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>188</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>400</width>
+    <height>188</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>400</width>
+    <height>188</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>编辑属性</string>
+  </property>
+  <widget class="QLabel" name="nameLabel">
+   <property name="geometry">
+    <rect>
+     <x>2</x>
+     <y>10</y>
+     <width>42</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>42</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="text">
+    <string>名称:</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_Name">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>10</y>
+     <width>341</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>181</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>动画相关</string>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>161</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="eventNumberLabel">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>开始事件号:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="lineEdit_Event_Stop"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="eventNumberLabel_2">
+       <property name="layoutDirection">
+        <enum>Qt::RightToLeft</enum>
+       </property>
+       <property name="text">
+        <string>结束事件号:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="lineEdit_Event_Start"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QPushButton" name="btnOK">
+   <property name="geometry">
+    <rect>
+     <x>160</x>
+     <y>150</y>
+     <width>81</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关闭</string>
+   </property>
+   <property name="default">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>210</x>
+     <y>40</y>
+     <width>181</width>
+     <height>101</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>位置</string>
+   </property>
+   <widget class="QWidget" name="layoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>161</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="pos_X">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>42</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>X坐标:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="spinBox_X">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="spinBox_Y">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="maximum">
+        <number>1000</number>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="pos_Y">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>42</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="layoutDirection">
+        <enum>Qt::LeftToRight</enum>
+       </property>
+       <property name="text">
+        <string>Y坐标:</string>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

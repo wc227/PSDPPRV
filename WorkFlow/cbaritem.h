@@ -1,22 +1,22 @@
-﻿#ifndef CBarItem_H
-#define CBarItem_H
+﻿#ifndef CXAnimateBar_H
+#define CXAnimateBar_H
 
-#include <QtGui>
+//#include <QtGui>
 #include "CGraphicsObjectItem.h"
 #include <QPropertyAnimation>
-#include "citempropertydialog.h"
+//#include "citempropertydialog.h"
 //#include "cgraphicsscene.h"
 
 /**
-  *@brief 用于捕获事件产生
+  *@brief 动画条形图，用于捕获事件产生
   */
-class CBarItem : public CGraphicsObjectItem
+class CXAnimateBar : public CGraphicsObjectItem
 {
     Q_OBJECT
     Q_PROPERTY(QRectF anmationSize READ getAnmationSize WRITE setAnmationSize)
 public:
     enum {Type = UserType + 1}; //根据Type判断是否是CBarItem1
-    CBarItem(bool isEditState);
+    CXAnimateBar(bool isEditState);
 
     QRectF getAnmationSize();
     void setAnmationSize(QRectF s);
@@ -56,8 +56,12 @@ public Q_SLOTS:
     //结束动画
     void stopAnimation();
 
+    //编辑属性
+    void editProperty();
+
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
     void initAnimation();//初始化动画
 
@@ -71,4 +75,4 @@ private:
     qint64 m_timeStartAni;//动画启动的时间(单位：秒)
 };
 
-#endif // CBarItem_H
+#endif // CXAnimateBar_H

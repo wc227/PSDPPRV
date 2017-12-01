@@ -1,4 +1,7 @@
 ﻿#include "cgraphicsscene.h"
+#include "cbaritem.h"
+#include "coutitem.h"
+#include "CXAnimatePolyline.h"
 #include <QDebug>
 #include <QGraphicsSceneContextMenuEvent>
 #include <QDialog>
@@ -30,9 +33,6 @@ typedef int(*FUN5)(int);
 CGraphicsScene::CGraphicsScene(QObject *parent) :
     QGraphicsScene(parent)
 {
-    m_bEditMode = true;//默认是处于编辑模式
-    createContextMenu();
-
     QString sDllName = "Mems.dll";
     //ShareMemoryBuild();
     QLibrary lib(sDllName);
@@ -42,14 +42,24 @@ CGraphicsScene::CGraphicsScene(QObject *parent) :
         if (ShareMemoryBuild)
             ShareMemoryBuild();
     }
+    m_bEditMode = true;//默认是处于编辑模式
+    createActions();
 }
 
 CGraphicsScene::CGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObject *parent) :
     QGraphicsScene( x, y, width, height, parent)
 {
-    createContextMenu();
-	m_pCurrentLinePath = NULL;
-	m_startAddLine = false;
+    QString sDllName = "Mems.dll";
+    //ShareMemoryBuild();
+    QLibrary lib(sDllName);
+    if (lib.load())
+    {
+        FUN1 ShareMemoryBuild = (FUN1)lib.resolve("?ShareMemoryBuild@@YAJXZ");//dll中ShareMemoryBuild对应的实际是?ShareMemoryBuild@@YAJXZ
+        if (ShareMemoryBuild)
+            ShareMemoryBuild();
+    }
+    m_bEditMode = true;//默认是处于编辑模式
+    createActions();
 }
 
 
@@ -65,75 +75,23 @@ bool CGraphicsScene::isEdit() const
     return m_bEditMode;
 }
 
-void CGraphicsScene::createContextMenu()
+void CGraphicsScene::createActions()
 {
-    m_MenuEdit = new QMenu;
-    m_ActionAddIn = new QAction("In",m_MenuEdit);
-    m_ActionAddOut = new QAction("Out",m_MenuEdit);
-    m_ActionPathLine = new QAction("Line",m_MenuEdit);
-    m_ActionDel = new QAction("Del",m_MenuEdit);
+    m_ActionAddIn = new QAction("输入(条形图)");
+    m_ActionPathLine = new QAction("连接线(折线)");
+    m_ActionAddOut = new QAction("输出(矩形框)");
+    m_ActionDel = new QAction("删除");
+    m_ActionDel->setShortcut(QKeySequence::Delete);
 
     connect(m_ActionAddIn, SIGNAL(triggered()), this, SLOT(slotAddgraphicsitem()));
+    connect(m_ActionPathLine, SIGNAL(triggered()), this, SLOT(slotADDPathLine()));
     connect(m_ActionAddOut, SIGNAL(triggered()), this, SLOT(slotAddCRedItem()));
     connect(m_ActionDel, SIGNAL(triggered()), this, SLOT(slotDelItem()));
-	connect(m_ActionPathLine, SIGNAL(triggered()), this, SLOT(slotADDPathLine()));
 
-    m_MenuEdit->addAction(m_ActionAddIn);
-    m_MenuEdit->addAction(m_ActionAddOut);
-    m_MenuEdit->addAction(m_ActionPathLine);
-    m_MenuEdit->addAction(m_ActionDel);
-
-
-    m_MenuOutItem = new QMenu;//outitem的右键菜单
     m_Action_Property = new QAction("弹出信息");
-    m_MenuOutItem->addAction(m_Action_Property);
     connect(m_Action_Property, SIGNAL(triggered()), this, SLOT(showOutitemMsg()));
 }
 
-void CGraphicsScene::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
-{
-    if (event->button() != Qt::RightButton)
-    {
-		if(m_startAddLine && event->button() == Qt::LeftButton)
-		{
-			if(m_pCurrentLinePath == NULL)
-				return;
-			//Q_ASSERT(currentPathItem);
-			QPolygonF polygon = m_pCurrentLinePath->getPolygon();
-
-			polygon << event->scenePos();
-			m_pCurrentLinePath->setPolygon(polygon);
-			QPainterPath path;
-			path.addPolygon(polygon);
-			m_pCurrentLinePath->setPath(path);
-			m_pCurrentLinePath->editEnd();
-			update(m_pCurrentLinePath->boundingRect().adjusted(-1, -1, 1, 1));
-		}
-		else
-		{
-			QGraphicsScene::mouseDoubleClickEvent(event);
-			return;
-		}
-    }
-	else
-	{
-		if(m_startAddLine)
-			m_startAddLine = false;
-	}
-    qDebug() << "mouse double click";
-}
-
-void CGraphicsScene::mousePressEvent( QGraphicsSceneMouseEvent *event )
-{
-    if(event->button() == Qt::RightButton)
-    {
-        if(m_startAddLine)
-            m_startAddLine = false;
-        if(m_pCurrentLinePath)
-            m_pCurrentLinePath = NULL;
-    }
-    QGraphicsScene::mousePressEvent(event);
-}
 
 //右键菜单
 //编辑模式下，在空白处单击右键弹出“编辑”菜单
@@ -142,49 +100,81 @@ void CGraphicsScene::contextMenuEvent(QGraphicsSceneContextMenuEvent *event)
 {
     QTransform transform;
     QGraphicsItem *item = itemAt(event->scenePos(),transform);//当前位置的图元
-    if(!item)//没有图元
+    if(m_bEditMode)
     {
-        if(m_bEditMode)//编辑模式
+        QMenu menuMain;
+        menuMain.addAction(m_ActionAddIn);
+        menuMain.addAction(m_ActionPathLine);
+        menuMain.addAction(m_ActionAddOut);
+        if(!item)
         {
-            m_MenuEdit->exec(event->screenPos());//编辑模式下，在空白处单击右键弹出“编辑”菜单
-        }
-    }
-    else
-    {
-        if(!m_bEditMode && item->type() == COutItem::Type)//运行模式
-        {
-            m_MenuOutItem->exec(event->screenPos());//运行模式下，在coutitem上单击右键，弹出Outitem的右键菜单
+            menuMain.exec(QCursor::pos());
         }
         else
-            QGraphicsScene::contextMenuEvent(event);
+        {
+            menuMain.addSeparator();
+            menuMain.addAction(m_ActionDel);//添加删除选项
+            menuMain.exec(QCursor::pos());
+//            QGraphicsScene::contextMenuEvent(event);
+        }
+    }
+    else if(item && item->type() == COutItem::Type)
+    {
+        QMenu menuOutItem;
+        menuOutItem.addAction(m_Action_Property);
+        menuOutItem.exec(QCursor::pos());
+    }
+}
+
+void CGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    QGraphicsScene::mousePressEvent(event);
+    if(event->button() == Qt::RightButton)
+    {
+        m_rightButtonPos = event->scenePos();
+        QGraphicsItem *item = itemAt(m_rightButtonPos,QTransform());
+        if(item)
+            item->setSelected(true);
     }
 }
 
 //--slot
 void CGraphicsScene::slotAddgraphicsitem()
 {
-    CBarItem *item = new CBarItem(true);
-    qDebug() << m_RightButtonPos;
-    item->setPos(m_RightButtonPos.x() - item->m_Width/2, m_RightButtonPos.y() - item->m_Height/2);
+    CXAnimateBar *item = new CXAnimateBar(m_bEditMode);
+    qDebug() << m_rightButtonPos;
+    item->setPos(m_rightButtonPos);
     item->setSelected(true);
-    this->addItem(item);
+    addItem(item);
+}
+
+void CGraphicsScene::slotADDPathLine()
+{
+    CXAnimatePolyline *item = new CXAnimatePolyline();
+    item->enableEditMode(m_bEditMode);
+    qDebug() << m_rightButtonPos;
+    item->setPos(m_rightButtonPos);
+    item->setSelected(true);
+    addItem(item);
 }
 
 void CGraphicsScene::slotAddCRedItem()
 {
-    COutItem *item = new COutItem(true);
-    item->setPos(m_RightButtonPos.x() - item->m_Width/2, m_RightButtonPos.y() - item->m_Height/2);
+    COutItem *item = new COutItem(m_bEditMode);
+    qDebug() << m_rightButtonPos;
+    item->setPos(m_rightButtonPos);
     item->setSelected(true);
-    this->addItem(item); 
+    addItem(item);
 }
 
 void CGraphicsScene::slotDelItem()
 {
-    qDebug() << selectedItems().count();
-    if(selectedItems().count())
+    QList<QGraphicsItem *> items = selectedItems();
+    qDebug() << items.count();
+    for(int i = items.count()-1; i >= 0; --i)
     {
-        for(int i=0; selectedItems().count(); i++)
-            delete selectedItems().at(i);
+        QGraphicsItem* item = items.at(i);
+        removeItem(item);
     }
 }
 
@@ -202,16 +192,6 @@ void CGraphicsScene::slotEVTFileChange(int n)
             EVTFileChange(n,1);
     }
 }
-
-void CGraphicsScene::slotADDPathLine()
-{
-	if(!m_startAddLine)
-		m_startAddLine = true;
-	CMyPathItem *pItem = new CMyPathItem(this,false);
-	m_pCurrentLinePath = pItem;
-	this->addItem(pItem);
-}
-
 
 void CGraphicsScene::showOutitemMsg()
 {
