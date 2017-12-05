@@ -43,12 +43,35 @@ COutItem::COutItem(bool isEditState) :
     m_Commands = "";
 }
 
+
+void COutItem::enableEditMode(bool mode)
+{
+    if(m_bEditMode != mode)
+    {
+        m_bEditMode = mode;
+        if(m_bEditMode)
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, true);
+            setFlag(QGraphicsItem::ItemIsFocusable, true);
+            setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
+        else
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, false);
+            setFlag(QGraphicsItem::ItemIsFocusable, false);
+            setFlag(QGraphicsItem::ItemIsMovable, false);
+        }
+        update();
+    }
+}
+
+
 void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     painter->save();
     painter->setRenderHint(QPainter::Antialiasing,true);//反锯齿
 
-    if(b_IsEditState)
+    if(m_bEditMode)
         painter->setOpacity(1);
     else
     {
@@ -57,16 +80,6 @@ void COutItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         else
             painter->setOpacity(0);
     }
-
-//    if(!b_HoverEnter && !isSelected())
-//    {
-//        painter->setOpacity(0);
-//    }
-
-//    if(b_HoverEnter && !isSelected())
-//    {
-//        painter->setOpacity(1);
-//    }
 
     QPen p(Qt::red);
     p.setWidth(2);
@@ -83,7 +96,7 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
     if(m_CursorPos != MouseNo)
         return;
 
-    if(b_IsEditState)
+    if(m_bEditMode)
     {
         editProperty();
     }
@@ -106,7 +119,7 @@ void COutItem::editProperty()
 void COutItem::setEventNumbers(const QString &eventNumbers)
 {
     m_EventNumbers = eventNumbers;
-    if(!b_IsEditState)
+    if(!m_bEditMode)
         m_TaskNumbersList = m_EventNumbers.split(":");
 }
 

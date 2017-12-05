@@ -34,6 +34,13 @@ private:
     QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 
+    QSize m_backSize;//背景大小，也就是场景大小
+public:
+    QSize backSize() const
+    {
+        return m_backSize;
+    }
+
 signals:
     void sendCmd(QString sCmd);//发送命令
 
@@ -41,6 +48,8 @@ public slots:
     virtual void setFileCfg(const QString &path); //设置配置文件路径
     void SLOT_EvtFileChange(int);	//事件号改变
     void btnClickTest();//单击按钮测试
+    //切换模式（编辑/运行）
+    void switchMode();
 
 protected:
     //定时器检测事件号是否发生改变

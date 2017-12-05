@@ -9,12 +9,12 @@
 
 CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
     c_squareLength(8),
-    b_IsEditState(IsEditState)
+    m_bEditMode(IsEditState)
 {
     setAcceptHoverEvents(true);
 
     //编辑态，可选，可移动
-    if(b_IsEditState)
+    if(m_bEditMode)
     {
         setFlags(QGraphicsItem::ItemIsMovable |
                  QGraphicsItem::ItemIsSelectable);
@@ -33,6 +33,26 @@ CGraphicsObjectItem::CGraphicsObjectItem(bool IsEditState) :
 
     b_LeftMouseButtonIsPressed = false;
     isLine = false;
+}
+
+void CGraphicsObjectItem::enabelEditMode(bool mode)
+{
+    if(m_bEditMode != mode)
+    {
+        m_bEditMode = mode;
+        if(m_bEditMode)
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, true);
+            setFlag(QGraphicsItem::ItemIsFocusable, true);
+            setFlag(QGraphicsItem::ItemIsMovable, true);
+        }
+        else
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, false);
+            setFlag(QGraphicsItem::ItemIsFocusable, false);
+            setFlag(QGraphicsItem::ItemIsMovable, false);
+        }
+    }
 }
 
 void CGraphicsObjectItem::setSize(int width, int height)
@@ -62,7 +82,7 @@ void CGraphicsObjectItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setBrush(Qt::NoBrush);
 
     //编辑态，绘制虚线边框
-    if(b_IsEditState && isSelected())
+    if(m_bEditMode && isSelected())
     {
         QPen dashLinepen(Qt::red);
         dashLinepen.setWidth(1);
@@ -71,7 +91,7 @@ void CGraphicsObjectItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     }
     painter->drawRect(QRectF(0, 0, m_Width, m_Height));
 
-    if(b_IsEditState && isSelected())
+    if(m_bEditMode && isSelected())
     {
         createBorderSquare();
         drawBorderSquare(painter);
@@ -132,7 +152,7 @@ void CGraphicsObjectItem::drawBorderSquare(QPainter *painter)
 //鼠标按下事件
 void CGraphicsObjectItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(b_IsEditState)
+    if(m_bEditMode)
     {
         if(event->button() == Qt::LeftButton)
         {
@@ -223,7 +243,7 @@ void CGraphicsObjectItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 //鼠标悬浮事件,判断鼠标的位置进行拖拽大小
 void CGraphicsObjectItem::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-    if(!shape().contains(event->pos()) && !b_IsEditState
+    if(!shape().contains(event->pos()) && !m_bEditMode
             && !isLine)
     {
         if(b_HoverEnter)

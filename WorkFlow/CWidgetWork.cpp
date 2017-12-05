@@ -4,7 +4,7 @@ CWidgetWork::CWidgetWork(QWidget* parent, Qt::WindowFlags f )
     :QWidget(parent,f)
 {
     setObjectName(QStringLiteral("MainWnd"));
-    resize(1200, 900);
+//    resize(1200, 900);
     setWindowState(Qt::WindowMaximized);//最大化显示
 
     initUI();
@@ -13,32 +13,57 @@ CWidgetWork::CWidgetWork(QWidget* parent, Qt::WindowFlags f )
 //初始化界面
 void CWidgetWork::initUI()
 {
-    gridLayout = new QGridLayout(this);
-    gridLayout->setObjectName(QStringLiteral("gridLayout"));
-
-    horizontalSpacer = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    gridLayout->addItem(horizontalSpacer, 1, 0, 1, 1);
-
-    horizontalSpacer_2 = new QSpacerItem(1, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Minimum);
-    gridLayout->addItem(horizontalSpacer_2, 1, 2, 1, 1);
-
-    verticalSpacer = new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-    gridLayout->addItem(verticalSpacer, 0, 1, 1, 1);
-
-    verticalSpacer_2 = new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding);
-    gridLayout->addItem(verticalSpacer_2, 2, 1, 1, 1);
-
     View = new CXGraphicsView(this);
     connect(View, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
     View->setObjectName(QStringLiteral("View"));
-    gridLayout->addWidget(View, 1, 1, 1, 1);//居中显示
+    centerView();
+}
 
-    this->setLayout(gridLayout);
+
+//视图居中处理
+void CWidgetWork::centerView()
+{
+    if(View)
+    {
+        QSize szBack = View->backSize();//背景大小
+        QSize szWnd =  this->size();//窗口大小
+        int w = szBack.width(),h = szBack.height();
+
+        int xOffset = 0;
+        int yOffset = 0;
+        if(szBack.width() <= szWnd.width())
+        {
+            xOffset = (szWnd.width() - szBack.width())/2;
+            w = szBack.width();
+        }
+        else
+        {
+            xOffset = 0;
+            w = szWnd.width();
+        }
+
+        if(szBack.height() <= szWnd.height())
+        {
+            yOffset = (szWnd.height() - szBack.height())/2;
+            h = szBack.height();
+        }
+        else
+        {
+            yOffset = 0;
+            h = szWnd.height();
+        }
+
+        View->setGeometry(xOffset,yOffset,w,h);
+    }
 }
 
 //设置文件配置路径
 void CWidgetWork::setFileCfg(QString sFile)
 {
-//        View->setFileCfg("D:/DKY/20170721_PSDPPRV/Doc/cfg.ini");
     View->setFileCfg(sFile);
+}
+
+void CWidgetWork::resizeEvent(QResizeEvent *event)
+{
+    centerView();
 }

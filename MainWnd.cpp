@@ -111,13 +111,11 @@ void MainWnd::createDockWnd()
 //    wndErr->showTitleBar(false);
 
     //设置最小的宽度和高度
-    wndErr->setMinimumWidth(10);
-    wndErr->setMinimumHeight(10);
+    txtErr->setMinimumSize(10,10);
 
     addDockWidget(Qt::BottomDockWidgetArea, wndErr);//添加dock1
 //    splitDockWidget(wndErr,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列
 //    tabifyDockWidget(wndErr,dock2);//添加dock2和dock1合并成tab
-//    wndErr->raise();
 
     QString sFileErr("");
     m_cfgMgr.getValue("file_err",sFileErr);

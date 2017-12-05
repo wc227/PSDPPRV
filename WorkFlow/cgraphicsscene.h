@@ -37,7 +37,7 @@ private:
     QAction *m_ActionAddIn;
     QAction *m_ActionAddOut;
     QAction *m_ActionDel;
-	QAction *m_ActionPathLine;
+    QAction *m_ActionPathLine;
 
     QMenu *m_MenuOutItem;//outitem的右键菜单
     QAction *m_Action_Property;

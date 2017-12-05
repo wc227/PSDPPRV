@@ -59,6 +59,8 @@ public Q_SLOTS:
     //编辑属性
     void editProperty();
 
+    void enableEditMode(bool mode = true);
+
 private:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);

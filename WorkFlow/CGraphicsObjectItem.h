@@ -88,11 +88,15 @@ public:
     bool b_HoverEnter;
     bool b_LeftMouseButtonIsPressed;
 
-    bool b_IsEditState;
-
     QPointF m_Offset; //用于拖拽放大和缩小产生的偏移量
 
     bool isLine;
+
+protected:
+    bool m_bEditMode;
+
+public:
+    virtual void enabelEditMode(bool mode = true);
 
     /**
      * @brief setSize

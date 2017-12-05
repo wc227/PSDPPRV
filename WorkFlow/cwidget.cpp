@@ -34,8 +34,8 @@ typedef int(*FUN5)(int);
 CXGraphicsView::CXGraphicsView(QWidget *parent)
     : QGraphicsView(parent)
 {
-    //this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+//    setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+//    setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
     setObjectName(QStringLiteral("CXGraphicsView"));
     setStyleSheet(QStringLiteral("CXGraphicsView{border-image:none; border:0px; background:transparent;}"));//仅仅设置CWidget类对象无边框，背景透明，其子窗口和控件不受影响
@@ -117,10 +117,14 @@ void CXGraphicsView::initBack()
 
     //设定窗体的大小
     QPixmap pixmap(m_sFileBackPic);
-//    setFixedSize(pixmap.size());//不能更改大小,导致主界面可停靠窗口无法调整带下
-    resize(pixmap.size());
+    m_backSize = pixmap.size();
 
-    m_Scene->setSceneRect(0,0, pixmap.width(), pixmap.height());
+//    setFixedSize(m_backSize);//不能更改大小,导致主界面可停靠窗口无法调整带下
+    qDebug() << "转换前大小："<< size() << "\n";
+    resize(m_backSize);
+    qDebug() << "转换后大小："<< size() << "\n";
+
+    m_Scene->setSceneRect(0,0, m_backSize.width(), m_backSize.height());
 
     QBrush background(pixmap);
     //对scene设置背景，背景大小是View的大小
@@ -607,6 +611,9 @@ void CXGraphicsView::keyPressEvent(QKeyEvent *event)
         if(m_Scene)
             m_Scene->slotDelItem();  //删除
         break;
+    case Qt::Key_F1:
+        switchMode();//按F1，切换模式
+        break;
         //    case Qt::Key_Plus:  // 放大
         //        zoomIn();
         //        break;
@@ -633,5 +640,19 @@ void CXGraphicsView::moveSelectedItems(int x,int y)
     foreach (QGraphicsItem *item, items)
     {
         item->moveBy(x,y);
+    }
+}
+
+
+//切换模式（编辑/运行）
+void CXGraphicsView::switchMode()
+{
+    if(m_Scene)
+    {
+        if(m_Scene->isEdit())
+        {
+            saveToIniFile();//切换为运行模式之前，先保存配置
+        }
+        m_Scene->enableEdit(!m_Scene->isEdit());
     }
 }

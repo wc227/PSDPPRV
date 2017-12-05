@@ -16,19 +16,21 @@ public:
     //初始化界面
     void initUI();
 
+    //视图居中处理
+    void centerView();
+
     //设置文件配置路径
     void setFileCfg(QString sFile);
+
+protected:
+    virtual void resizeEvent(QResizeEvent *event);
 
 signals:
     void sendCmd(QString sCmd);//发送命令
 
 private:
-    QGridLayout *gridLayout;
-    QSpacerItem *verticalSpacer_2;
-    QSpacerItem *horizontalSpacer;
-    QSpacerItem *horizontalSpacer_2;
-    QSpacerItem *verticalSpacer;
     CXGraphicsView *View;//
+
 };
 
 #endif // CWIDGETWORK_H

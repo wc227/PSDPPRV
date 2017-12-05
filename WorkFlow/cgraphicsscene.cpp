@@ -66,7 +66,29 @@ CGraphicsScene::CGraphicsScene(qreal x, qreal y, qreal width, qreal height, QObj
 //设置是否处于编辑模式
 void CGraphicsScene::enableEdit(bool val)
 {
-    m_bEditMode = val;
+    if(m_bEditMode != val)
+    {
+        m_bEditMode = val;
+        foreach (QGraphicsItem *item, items())
+        {
+            if(CXAnimateBar::Type == item->type())
+            {
+                CXAnimateBar *bar = qgraphicsitem_cast<CXAnimateBar *>(item);
+                bar->enableEditMode(m_bEditMode);
+            }
+            else if(CXAnimatePolyline::Type == item->type())
+            {
+                CXAnimatePolyline *polyline = qgraphicsitem_cast<CXAnimatePolyline *>(item);
+                polyline->enableEditMode(m_bEditMode);
+            }
+            else if(COutItem::Type == item->type())
+            {
+                COutItem *outitem = qgraphicsitem_cast<COutItem *>(item);
+                outitem->enableEditMode(m_bEditMode);
+            }
+        }
+        update();
+    }
 }
 
 //是否处于编辑模式

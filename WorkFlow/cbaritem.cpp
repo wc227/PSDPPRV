@@ -21,6 +21,30 @@ CXAnimateBar::CXAnimateBar(bool isEditState):
     initAnimation();
 }
 
+void CXAnimateBar::enableEditMode(bool mode)
+{
+    if(m_bEditMode != mode)
+    {
+        m_bEditMode = mode;
+        if(m_bEditMode)
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, true);
+            setFlag(QGraphicsItem::ItemIsFocusable, true);
+            setFlag(QGraphicsItem::ItemIsMovable, true);
+            setVisible(true);//编辑态显示
+        }
+        else
+        {
+            setFlag(QGraphicsItem::ItemIsSelectable, false);
+            setFlag(QGraphicsItem::ItemIsFocusable, false);
+            setFlag(QGraphicsItem::ItemIsMovable, false);
+            setVisible(false);//运行态不显示，只有执行动画时才显示
+        }
+        update();
+    }
+}
+
+
 QRectF CXAnimateBar::getAnmationSize()
 {
     return QRectF(0,0,m_Width,m_Height);
@@ -166,7 +190,7 @@ void CXAnimateBar::editProperty()
 //重绘
 void CXAnimateBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    if(!b_IsEditState && m_widthAni == m_Width)
+    if(!m_bEditMode && m_widthAni == m_Width)
     {
         this->hide();
         return;
@@ -192,7 +216,7 @@ void CXAnimateBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *opti
 //鼠标双击事件
 void CXAnimateBar::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    if(!b_IsEditState)
+    if(!m_bEditMode)
         return;
 
     if(event->button() == Qt::LeftButton) //双击左键

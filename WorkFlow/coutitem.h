@@ -91,6 +91,8 @@ public:
     //编辑属性
     void editProperty();
 
+    void enableEditMode(bool mode = true);
+
 signals:
     void EvtFileChange(int number); //文件事件发生改变
 
