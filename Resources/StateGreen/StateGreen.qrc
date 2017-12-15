@@ -1,0 +1,10 @@
+﻿<RCC>
+    <qresource prefix="/StateGreen">
+        <file>back.png</file>
+        <file>back_btn.png</file>
+        <file>back_main.png</file>
+        <file>back_nav_bar.png</file>
+        <file>logo.png</file>
+        <file>StateGreen.qss</file>
+    </qresource>
+</RCC>

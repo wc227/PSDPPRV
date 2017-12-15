@@ -25,7 +25,10 @@ int main(int argc, char *argv[])
     if(shared_memory.create(1))
     {
         //设置样式
-        QFile qss(":/qss/360safe");
+//        QFile qss(":/qss/360safe");//360绿色风格
+//        QFile qss(":/CoolBlack/CoolBlack.qss");//黑色风格
+//        QFile qss(":/BlueBlack/abc_satellite.qss");//蓝黑风格
+        QFile qss(":/StateGreen/StateGreen.qss");//国网绿
         qss.open(QFile::ReadOnly);
         qApp->setStyleSheet(qss.readAll());
         qss.close();

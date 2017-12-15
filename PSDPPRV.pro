@@ -7,16 +7,11 @@
 #QT       += core gui widgets
 QT       += axcontainer charts
 
-RC_ICONS = earth.ico
-
-#DESTDIR += $$PWD/Bin
+RC_ICONS = Resources/earth.ico
 
 TARGET = PSDPPRV
 
 TEMPLATE = app
-
-RESOURCES += \
-    Resources/360safe.qrc
 
 FORMS += \
     WorkFlow/citempropertydialog.ui \
@@ -98,3 +93,6 @@ CONFIG(debug, debug|release) {
   OBJECTS_DIR = ./release/obj   #将生成的对象文件放在专门的obj文件夹下
   MOC_DIR = ./release/moc       #将QT自动生成的对象放在moc文件夹下
 }
+
+RESOURCES += \
+    Resources/StateGreen/StateGreen.qrc

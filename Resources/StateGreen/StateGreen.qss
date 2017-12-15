@@ -1,0 +1,141 @@
+﻿/*国网绿*/
+
+/*{
+  font-size:15px;
+  color:white;
+  font-family:"雅黑";
+}*/
+
+/*QWidget{
+background:rgb(0, 87, 89);
+border:none;
+}*/
+
+CWidgetWork,FormWebBase,XBarChart{
+border:none;
+}
+
+QMainWindow{
+border-image: url(:/StateGreen/back.png);/*设置背景图片*/
+/*background:rgb(0, 87, 89)*//*设置背景颜色*/
+}
+
+/*分隔条*/
+QMainWindow::separator {
+    background: transparent;
+    width: 2px; /* when vertical */
+    height: 2px; /* when horizontal */
+}
+
+QMainWindow::separator:hover {
+    background: red;
+}
+
+QLabel#m_lblTitleZone{
+border-image: url(:/StateGreen/logo.png);/*设置背景图片*/
+}
+
+QTabWidget::pane{
+border:none;
+border-top: 0px solid white;
+border-image: url(:/StateGreen/back_main.png);/*设置背景图片*/
+}
+
+QTabWidget::tab-bar{
+left: 450px;/*距离左侧500像素*/
+/*alignment:center;*//*居中显示*/
+}
+
+QTabBar::tab{
+/*width:140px;*/
+height:50px;/*设置高度*/
+background:transparent;
+color:white;
+min-width:30px;
+min-height:10px;
+}
+
+QTabBar::tab:hover{
+        background:rgb(255, 255, 255, 100);
+}
+
+QTabBar::tab:selected{
+        border-color: white;
+        background:white;
+        color:rgb(0, 87, 89);
+        font: bold;/*字体变粗*/
+}
+
+QScrollBar:horizontal {
+    border: 0px solid grey;
+    background: #32CC99;
+    height: 15px;
+    margin: 0px 20px 0 20px;
+}
+QScrollBar::handle:horizontal {
+    background: white;
+    min-width: 20px;
+}
+QScrollBar::add-line:horizontal {
+    border: 0px solid grey;
+    background: #32CC99;
+    width: 20px;
+    subcontrol-position: right;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::sub-line:horizontal {
+    border: 0px solid grey;
+    background: #32CC99;
+    width: 20px;
+    subcontrol-position: left;
+    subcontrol-origin: margin;
+}
+
+QScrollBar:vertical {
+     border: 0px solid grey;
+     background: #32CC99;
+     width: 15px;
+     margin: 22px 0 22px 0;
+ }
+ QScrollBar::handle:vertical {
+     background: white;
+     min-height: 20px;
+ }
+ QScrollBar::add-line:vertical {
+     border: 0px solid grey;
+     background: #32CC99;
+     height: 20px;
+     subcontrol-position: bottom;
+     subcontrol-origin: margin;
+ }
+
+ QScrollBar::sub-line:vertical {
+     border: 0px solid grey;
+     background: #32CC99;
+     height: 20px;
+     subcontrol-position: top;
+     subcontrol-origin: margin;
+ }
+ QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+     border: 0px solid grey;
+     width: 3px;
+     height: 3px;
+     background: white;
+ }
+
+ QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+     background: none;
+ }
+
+QDockWidget::title {
+text-align: left; /* align the text to the left */
+background: rgb(50, 160, 150);
+padding-left: 5px;
+}
+
+QTextEdit{
+font-size:13px;
+color:rgb(0, 87, 89);
+font-family:"宋体";
+}

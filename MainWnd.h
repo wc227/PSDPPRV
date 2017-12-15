@@ -39,7 +39,9 @@ public:
 
 protected:
     //初始化所有的动作
-    void initActions();
+    void createActions();
+
+    void keyPressEvent(QKeyEvent *event) ;
 
 private slots:
     //激活标签页窗口
@@ -48,17 +50,22 @@ private slots:
     //刷新
     void refresh();
 
-    //显示隐藏可停靠窗口
-    void showDockWnds();
-
     //收到命令
     void receiveCmd(QString sCmd);
 
     //读取和刷新错误信息
     void updateErrInfo();
 
+    //显示或隐藏错误信息窗
+    void showWndError();
+
+    //启动或退出全屏显示
+    void fullScreen();
+
 private:    
     QAction *m_actionRefresh;//刷新动作
+    QAction *m_actionShowWndError;//显示或隐藏错误信息窗口
+    QAction *m_actionFullScreen;//全屏显示
 
     QWidget *m_wgtCentral;//中央主窗体
     QGridLayout *m_mainLayout;//主窗体的布局
@@ -73,12 +80,10 @@ private:
     FormWebBase *m_wndWebMap3;
     XBarChart *m_chartView;
 
-    CXxwDockWidget *wndErr;
-    QTextEdit *txtErr;
+    CXxwDockWidget *m_wndError;//错误信息停靠窗口
+    QTextEdit *m_txtError;//显示错误信息的可编辑文本框
 
     bool m_arrTabInit[5];//标签页面是否初始化
-
-    bool m_bWndMaxmized;//窗口是否最大化
 
     CfgMgr m_cfgMgr;//配置信息
 

@@ -25,7 +25,7 @@ private:
     CGraphicsScene *m_Scene;        //场景用来显示Item
     QString m_sFileCfg;             //配置文件绝对路径
     QString m_sFileBackPic;         //背景图片
-    bool m_bIsEdit;                 //是否是编辑模式，true-编辑模式，false-运行模式
+    bool m_bEditMode;                 //是否是编辑模式，true-编辑模式，false-运行模式
     int m_nTimerID;                 //定时器id
 
 	//增加事件分类触发

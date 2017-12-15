@@ -57,6 +57,8 @@ CXGraphicsView::CXGraphicsView(QWidget *parent)
         if (ShareMemoryBuild)
             ShareMemoryBuild();
     }
+
+    setToolTip(QStringLiteral("按快捷键\"Ctrl+R\"可在运行模式和编辑模式之间切换"));
 }
 
 CXGraphicsView::~CXGraphicsView()
@@ -72,14 +74,14 @@ void CXGraphicsView::setFileCfg(const QString &path)
     m_sFileCfg = path;
 
     QSettings *s = new QSettings(m_sFileCfg, QSettings::IniFormat);
-    m_bIsEdit = s->value("editState/isEdit", 1).toBool();
+    m_bEditMode = s->value("editState/isEdit", 1).toBool();
 
-    m_Scene->enableEdit(m_bIsEdit); //用于是否产生右键菜单，编辑状态下产生
+    m_Scene->enableEdit(m_bEditMode); //用于是否产生右键菜单，编辑状态下产生
     //    s->setIniCodec(QTextCodec::codecForLocale());
     s->setIniCodec(QTextCodec::codecForName("UTF-8"));
     m_sFileBackPic = s->value("background/pic").toString();
 
-    if(m_bIsEdit)
+    if(m_bEditMode)
     {
         int botton = QMessageBox::information(this, "Change", tr("是否要更新背景"),
                                               QMessageBox::Ok, QMessageBox::Cancel);
@@ -97,7 +99,7 @@ void CXGraphicsView::setFileCfg(const QString &path)
     initBack();
     initAllItems();
 
-    if(!m_bIsEdit)
+    if(!m_bEditMode)
         m_nTimerID = startTimer(1000);
 }
 
@@ -166,7 +168,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
     int eventNumber;
     if(sValsGroupName == c_GroupName_AnimateBar)
     {
-        CXAnimateBar* bar = new CXAnimateBar(m_bIsEdit);
+        CXAnimateBar* bar = new CXAnimateBar(m_bEditMode);
         QStringList splitDatas = sVal.split(";");
         for(int i=0; i<splitDatas.count(); i++)
         {
@@ -276,7 +278,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
     else if(sValsGroupName == c_GroupName_PolyLine)
     {
         CXAnimatePolyline* polyline = new CXAnimatePolyline();
-        polyline->enableEditMode(m_bIsEdit);
+        polyline->enableEditMode(m_bEditMode);
         QStringList splitDatas = sVal.split(";");
         for(int i=0; i<splitDatas.count(); i++)
         {
@@ -364,7 +366,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
     }
     else if(sValsGroupName == c_GroupName_OutItem)
     {
-        COutItem *outItem= new COutItem(m_bIsEdit);
+        COutItem *outItem= new COutItem(m_bEditMode);
         connect(outItem, SIGNAL(EvtFileChange(int)), this, SLOT(SLOT_EvtFileChange(int)));
         connect(outItem, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
         QStringList splitDatas = sVal.split(";");
@@ -414,7 +416,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
 
 void CXGraphicsView::saveToIniFile()
 {
-    if(!m_bIsEdit)
+    if(!m_bEditMode)
         return;
 
     QSettings mySettings(m_sFileCfg,QSettings::IniFormat);
@@ -423,7 +425,7 @@ void CXGraphicsView::saveToIniFile()
 
     mySettings.clear();
     mySettings.setValue("background/pic",m_sFileBackPic);
-    mySettings.setValue("editState/isEdit",m_bIsEdit);
+    mySettings.setValue("editState/isEdit",false);
 
     int i1 = 0;
     int i2 = 0;
@@ -611,8 +613,9 @@ void CXGraphicsView::keyPressEvent(QKeyEvent *event)
         if(m_Scene)
             m_Scene->slotDelItem();  //删除
         break;
-    case Qt::Key_F1:
-        switchMode();//按F1，切换模式
+    case Qt::Key_R :
+        if(event->modifiers() == Qt::ControlModifier)
+            switchMode();//按Ctrl + R，切换模式
         break;
         //    case Qt::Key_Plus:  // 放大
         //        zoomIn();
@@ -654,5 +657,6 @@ void CXGraphicsView::switchMode()
             saveToIniFile();//切换为运行模式之前，先保存配置
         }
         m_Scene->enableEdit(!m_Scene->isEdit());
+        m_bEditMode = !m_bEditMode;
     }
 }

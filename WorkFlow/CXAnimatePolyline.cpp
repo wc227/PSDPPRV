@@ -162,7 +162,7 @@ void CXAnimatePolyline::init()
     m_bShiftKeyDown = false;
 
     //正常模式的画笔
-    QPen myPen = QPen(Qt::darkGray,2,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin);
+    QPen myPen = QPen(Qt::gray,2,Qt::SolidLine,Qt::RoundCap,Qt::RoundJoin);
     setPen(myPen);
 
     //虚线画笔（绘制动态是的画笔）

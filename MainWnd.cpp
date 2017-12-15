@@ -16,11 +16,14 @@ MainWnd::MainWnd(QWidget *parent)
     :QMainWindow(parent)
 {
     setObjectName(QStringLiteral("MainWnd"));
-    setStyleSheet(QStringLiteral("#MainWnd{border-image: url(:/skin/newbg);}"));//设置背景图
+//    setStyleSheet(QStringLiteral("#MainWnd{border-image: url(:/StateGreen/back.png);}"));//设置背景图
     resize(1000, 720);
 
-    setWindowState(Qt::WindowMaximized);//最大化显示
-    m_bWndMaxmized = true;
+//    setWindowState(Qt::WindowMaximized);//最大化显示
+
+    //全屏显示
+//    showFullScreen();
+    setWindowState(Qt::WindowFullScreen);
 
     m_chartView = 0;
 
@@ -31,17 +34,27 @@ MainWnd::MainWnd(QWidget *parent)
     QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
     m_cfgMgr.setFileName(sFileCfg);
 
-    initActions();
+    createActions();
     initUI();
 }
 
 //初始化所有的动作
-void MainWnd::initActions()
+void MainWnd::createActions()
 {
     m_actionRefresh = new QAction(this);
     m_actionRefresh->setShortcut(QKeySequence::Refresh);
     connect(m_actionRefresh, &QAction::triggered, this, &MainWnd::refresh);
     addAction(m_actionRefresh);
+
+    m_actionShowWndError = new QAction(this);
+    m_actionShowWndError->setShortcut(QKeySequence(Qt::Key_F1));
+    connect(m_actionShowWndError, &QAction::triggered, this, &MainWnd::showWndError);
+    addAction(m_actionShowWndError);
+
+    m_actionFullScreen = new QAction(this);
+    m_actionFullScreen->setShortcut(QKeySequence(Qt::Key_F12));
+    connect(m_actionFullScreen, &QAction::triggered, this, &MainWnd::fullScreen);
+    addAction(m_actionFullScreen);
 }
 
 void MainWnd::initUI()
@@ -50,9 +63,11 @@ void MainWnd::initUI()
     m_tabMain->setObjectName(QStringLiteral("m_tabMain"));
     m_tabMain->setIconSize(QSize(24,24));
     //距离左侧450px,正好给m_pAfterTabLabel留有余地，并设置背景图片
-    m_tabMain->setStyleSheet(QStringLiteral("#m_tabMain::pane{border-image: url(:/skin/bg);}\n"//背景图
-                                            "#m_tabMain::tab-bar{left: 450px;}\n"//标签页左侧距离
-                                            "QTabBar::tab{height:50px;}"));//tab标签页高度
+//    m_tabMain->setStyleSheet(QStringLiteral("#m_tabMain::pane{border-image: url(:/StateGreen/back_main.png);}\n"//背景图
+//                                            "#m_tabMain::tab-bar{left: 500;}\n"//标签页左侧距离
+//                                            "QTabBar::tab{height:50px;}"));//tab标签页高度
+//    m_tabMain->setStyleSheet(QStringLiteral("#m_tabMain::tab-bar{left: 500;}\n"//标签页左侧距离
+//                                            "QTabBar::tab{height:50px;}"));//tab标签页高度
 
     m_wndWorkFlow = new CWidgetWork();
     connect(m_wndWorkFlow,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
@@ -76,17 +91,21 @@ void MainWnd::initUI()
     connect(m_tabMain,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
 
     m_lblTitleZone = new QLabel(this);
-    m_lblTitleZone->move(10,0);//移动到界面左上角（10，10）的位置，更好看一些
+//    m_lblTitleZone->move(5,5);//移动到界面左上角（10，10）的位置，更好看一些
     m_lblTitleZone->raise();//移动到界面的上层，以免被其他东西遮挡
     m_lblTitleZone->setObjectName(QStringLiteral("m_lblTitleZone"));
-    m_lblTitleZone->resize(425,50);//该大小与实际的图title保持同样的长宽比，否则会变形
-    QString sImgTitle("");
-    m_cfgMgr.getValue("img_title",sImgTitle);
-    sImgTitle = QApplication::applicationDirPath() + "/" + sImgTitle;
-    if(QFile::exists(sImgTitle))
-        m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url("+ sImgTitle + ");}");//有背景图就使用背景图代替标题
-    else
-        m_lblTitleZone->setText(QStringLiteral("<h2><font size=16 color=white >BPA-MAP</font>"));//没有背景图就使用字来表示
+
+    m_lblTitleZone->resize(450,50);//该大小与实际的图title保持同样的长宽比，否则会变形
+//    m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url(:/StateGreen/logo.png);}");
+
+//    QString sImgTitle("");
+//    m_cfgMgr.getValue("img_title",sImgTitle);
+//    sImgTitle = QApplication::applicationDirPath() + "/" + sImgTitle;
+//    if(QFile::exists(sImgTitle))
+//        m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url("+ sImgTitle + ");}");//有背景图就使用背景图代替标题
+//    else
+//        m_lblTitleZone->setText(QStringLiteral("<h2><font size=16 color=white >BPA-MAP</font>"));//没有背景图就使用字来表示
+
 
     createDockWnd();
 
@@ -98,30 +117,34 @@ void MainWnd::initUI()
 //创建可停靠窗口
 void MainWnd::createDockWnd()
 {
-    wndErr = new CXxwDockWidget(tr("异常信息"));
-    wndErr->setFeatures(QDockWidget::DockWidgetMovable);//不能移动、浮动、关闭
-    wndErr->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
-    txtErr = new QTextEdit(wndErr);
-    txtErr->setObjectName(QStringLiteral("Output1"));
-    txtErr->setStyleSheet("#txtErr{border:0px; }");
-    txtErr->setText("111");
-    wndErr->setWidget(txtErr);
+    m_wndError = new CXxwDockWidget(tr("异常信息"));
+    m_wndError->setFeatures(QDockWidget::DockWidgetMovable);//能移动
+    m_wndError->setAllowedAreas(Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea);//停靠在主窗口下方/*
+    m_wndError->setToolTip(QStringLiteral("按F1可显示或隐藏\"异常信息\"窗口"));
 
-    //不显示标题栏
-//    wndErr->showTitleBar(false);
+    m_txtError = new QTextEdit(m_wndError);
+    m_txtError->setObjectName(QStringLiteral("Output1"));
+    m_txtError->setStyleSheet("#m_txtError{border:0px; }");
+    m_txtError->setText("111");
+    m_txtError->setMinimumSize(10,10);//设置最小的宽度和高度
 
-    //设置最小的宽度和高度
-    txtErr->setMinimumSize(10,10);
+    m_wndError->setWidget(m_txtError);
+//    m_wndError->showTitleBar(false);//不显示标题栏
+    addDockWidget(Qt::BottomDockWidgetArea, m_wndError);//添加dock1
 
-    addDockWidget(Qt::BottomDockWidgetArea, wndErr);//添加dock1
-//    splitDockWidget(wndErr,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列
-//    tabifyDockWidget(wndErr,dock2);//添加dock2和dock1合并成tab
+    //此函数的功能是把两个dock进行左右或上下并排布置，做成一个类似QSplit的功能
+//    splitDockWidget(m_wndError,dock3,Qt::Horizontal);//在dock1右侧水平添加dock3,和dock1水平并列
+
+    //此函数的功能是把多个dock变成一个tab形式的窗体
+//    tabifyDockWidget(m_wndError,dock2);//添加dock2和dock1合并成tab
 
     QString sFileErr("");
     m_cfgMgr.getValue("file_err",sFileErr);
     m_fmErr.setFileName(sFileErr);
-    if(txtErr)
-        txtErr->setText(m_fmErr.getData());
+    if(m_txtError)
+        m_txtError->setText(m_fmErr.getData());
+
+    setDockNestingEnabled(true);
 }
 
 
@@ -139,14 +162,12 @@ void MainWnd::createBarChart()
     m_chartView->setFileData(sFileDidx);
 }
 
+
 //激活标签页窗口
 void MainWnd::activeTab(int nTab)
 {
     if(nTab < 0 || nTab >= m_tabMain->count())
         return;
-
-    //显示或隐藏子窗口
-    showDockWnds();
 
     //如果已经初始化，就不用再初始化
     if(m_arrTabInit[nTab])
@@ -192,21 +213,6 @@ void MainWnd::refresh()
 }
 
 
-//显示隐藏可停靠窗口
-void MainWnd::showDockWnds()
-{
-    if(0 == m_tabMain->currentIndex() && m_wndWorkFlow)
-    {
-        if(wndErr)
-            wndErr->showNormal();
-    }
-    else
-    {
-        if(wndErr)
-            wndErr->hide();
-    }
-}
-
 //收到命令
 void MainWnd::receiveCmd(QString sCmd)
 {
@@ -240,7 +246,46 @@ void MainWnd::updateErrInfo()
     if(m_fmErr.isDirty())
     {
         m_fmErr.openFile();
-        if(txtErr)
-            txtErr->setText(m_fmErr.getData());
+        if(m_txtError)
+            m_txtError->setText(m_fmErr.getData());
+    }
+}
+
+//显示或隐藏错误信息窗
+void MainWnd::showWndError()
+{
+    if(m_wndError)
+    {
+        if(m_wndError->isHidden())
+            m_wndError->show();
+        else
+            m_wndError->hide();
+    }
+}
+
+
+//启动或退出全屏显示
+void MainWnd::fullScreen()
+{
+    if(isFullScreen())
+        showMaximized();
+    else
+        showFullScreen();
+}
+
+
+void MainWnd::keyPressEvent(QKeyEvent *event)
+{
+    int keyid = event->key();
+    switch (keyid)
+    {
+    case Qt::Key_Escape:
+    {
+        if(isFullScreen())
+            showMaximized();//如果是全屏显示，按esc键退出全屏
+    }
+        break;
+    default:
+        QMainWindow::keyPressEvent(event);
     }
 }
