@@ -74,7 +74,7 @@ void MainWnd::initUI()
     QString sFileLan("");
     m_cfgMgr.getValue("file_lan",sFileLan);
     m_wndWorkFlow->setFileCfg(sFileLan);
-    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("  系统运行状态图  "));
+    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态"));
 
     m_wndWebMap1 = new FormWebBase();
     m_tabMain->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("事故潮流分布"));
@@ -84,7 +84,7 @@ void MainWnd::initUI()
     m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波装置分布"));
 
     createBarChart();
-    m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态图"));
+    m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态"));
 
     m_tabMain->setCurrentIndex(0);
     setCentralWidget(m_tabMain);
@@ -105,7 +105,6 @@ void MainWnd::initUI()
 //        m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url("+ sImgTitle + ");}");//有背景图就使用背景图代替标题
 //    else
 //        m_lblTitleZone->setText(QStringLiteral("<h2><font size=16 color=white >BPA-MAP</font>"));//没有背景图就使用字来表示
-
 
     createDockWnd();
 
@@ -288,4 +287,17 @@ void MainWnd::keyPressEvent(QKeyEvent *event)
     default:
         QMainWindow::keyPressEvent(event);
     }
+}
+
+
+void MainWnd::mouseDoubleClickEvent(QMouseEvent *event)
+{
+    QPoint pos = event->pos();
+    QRect rc = m_lblTitleZone->geometry();
+    if(rc.contains(pos))
+    {
+        m_tabMain->setCurrentIndex(0);//显示第一个标签页面
+    }
+    else
+        QMainWindow::mouseDoubleClickEvent(event);
 }

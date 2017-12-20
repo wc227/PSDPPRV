@@ -79,7 +79,7 @@ void XBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 {
 //    QGraphicsRectItem::paint(painter, option, widget);
     painter->save();
-    m_BackColor.setAlphaF(0.5 + m_BarInfo.m_Margin * 0.5);//设置透明度
+//    m_BackColor.setAlphaF(0.5 + m_BarInfo.m_Margin * 0.5);//设置透明度
     painter->fillRect(rect(),m_BackColor);
 
     painter->setPen(Qt::white);
@@ -93,11 +93,12 @@ void XBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 
 void XBar::updateInfo()
 {
-    QString sTxt = QString("时间：%1\n持续时长：%2\n名称：%3\n裕度：%4\n类型：%5\n文件路径：%6")
+    QString sTxt = QString("时间：%1\n持续时长：%2\n名称：%3\n母线电压裕度：%4\n出线电流裕度：%5\n类型：%6\n文件路径：%7")
             .arg(m_BarInfo.m_Time)
             .arg(m_BarInfo.m_Duration)
             .arg(m_BarInfo.m_Name)
-            .arg(m_BarInfo.m_Margin)
+            .arg(m_BarInfo.m_MarginV)
+            .arg(m_BarInfo.m_MarginI)
             .arg(m_BarInfo.m_Type)
             .arg(m_BarInfo.m_FilePath);
     this->setToolTip(sTxt);//设置提示内容

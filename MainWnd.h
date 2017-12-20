@@ -41,7 +41,9 @@ protected:
     //初始化所有的动作
     void createActions();
 
-    void keyPressEvent(QKeyEvent *event) ;
+    virtual void keyPressEvent(QKeyEvent *event) ;
+
+    virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
 private slots:
     //激活标签页窗口
@@ -70,7 +72,7 @@ private:
     QWidget *m_wgtCentral;//中央主窗体
     QGridLayout *m_mainLayout;//主窗体的布局
     QHBoxLayout *m_titleBarLayout;//标题栏的布局
-    QLabel *m_lblTitle;
+
     QLabel *m_lblTitleZone;//用来显示标题区域
     QTabWidget *m_tabMain;
 

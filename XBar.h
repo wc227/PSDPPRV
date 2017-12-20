@@ -13,9 +13,10 @@
 struct BarInfo
 {
     QString m_Time;//时间
-    long m_Duration;//持续时间（单位:m）
+    qreal m_Duration;//持续时间（单位:m）
     QString m_Name;//站点名称
-    qreal m_Margin;//裕度——决定颜色透明度
+    qreal m_MarginV;//母线电压裕度
+    qreal m_MarginI;//出线电流裕度
     int m_Type;//类型——决定色系
     QString m_FilePath;//文件地址
 };

@@ -8,31 +8,29 @@
 #include "DlgXBarChartProperty.h"
 
 //标准化时间
-//原时间time：20170801112503
-//格式化后的时间：2017/08/01 11:25:03
+//原时间time：22/06/2017,15:05:30.000250
+//格式化后的时间：2017/06/22 15:05:30.000250
 QString g_formatTime(const QString &sTime)
 {
-    if(sTime.count() != 14)
+    if(sTime.count() < 20)
         return "";
-    return QString("%1/%2/%3 %4:%5:%6")
-            .arg(sTime.mid(0,4))
-            .arg(sTime.mid(4,2))
-            .arg(sTime.mid(6,2))
-            .arg(sTime.mid(8,2))
-            .arg(sTime.mid(10,2))
-            .arg(sTime.mid(12,2));
+    return QString("%1/%2/%3,%4")
+            .arg(sTime.mid(6,4))
+            .arg(sTime.mid(3,2))
+            .arg(sTime.mid(0,2))
+            .arg(sTime.mid(11));
 }
 
 //标准化时间
-//原时间time：20170801112503
-//格式化后的时间：2017/08/01 11:25:03
+//原时间time：22/06/2017,15:05:30.000250
+//格式化后的时间：2017/06/22 15:05:30.000250
 QDateTime g_getFormatDateTime(const QString &sTime)
 {
-    if(sTime.count() != 14)
+    if(sTime.count() < 20)
         return QDateTime::currentDateTime();
 
-    QDate date(sTime.mid(0,4).toInt(), sTime.mid(4,4).toInt(), sTime.mid(6,4).toInt());
-    QTime time(sTime.mid(8,2).toInt(), sTime.mid(10,2).toInt(), sTime.mid(12,2).toInt());
+    QDate date(sTime.mid(6,4).toInt(), sTime.mid(3,2).toInt(), sTime.mid(0,2).toInt());
+    QTime time(sTime.mid(11,2).toInt(), sTime.mid(14,2).toInt(), sTime.mid(17,2).toInt(),sTime.mid(20).toInt());
     return QDateTime(date,time);
 }
 
@@ -629,8 +627,10 @@ void XBarChart::addBars(ListBarInfo bars)
     }
 
     //更新垂直方向页面数目
-    if(m_MaxBarNumOfGroup > m_MaxBarNumOfGroupInPage * m_VPageCount)
-        m_VPageCount++;
+    if(m_MaxBarNumOfGroup % m_MaxBarNumOfGroupInPage == 0)
+        m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage;
+    else
+        m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage + 1;
 
     //更新水平方向页面数目
     if(m_BarGroups.count() > m_MaxGroupNumInPage * m_HPageCount)
@@ -958,7 +958,15 @@ void XBarChart::updateBars()
             BarInfo bi = lbi.at(barID);
             XBar* bar = new XBar();
             bar->setBarInfo(bi);
-            QColor clr = m_Type2Color.value(bar->barInfo().m_Type,Qt::green);
+
+            //提取颜色（文件类型跟颜色一一对应）
+//            QColor clr = m_Type2Color.value(bar->barInfo().m_Type,Qt::green);
+            //但是，此处的文件类型基本都是.dat，类型一致，颜色也是一致，
+            //所以为了区分开来，此处采用分配不同颜色的方式
+            int nc = m_Type2Color.count();
+            int nt = barID % nc + 1;
+            QColor clr = m_Type2Color.value(nt,Qt::darkGreen);
+
             bar->setBackColor(clr);
             barTop = bot - barHei;
             barWid = gridWid * bi.m_Duration / (maxDuriation * 1.0f);

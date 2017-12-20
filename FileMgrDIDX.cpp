@@ -48,15 +48,16 @@ int FileMgrDIDX::openFile()
         {
             //$ 时间 时长 站点名称 裕度 类型 文件地址
             QStringList lstStr = CXxwQtPub::SplitStrByWhiteSpace(sLine);
-            if(lstStr.count() >= 7)
+            if(lstStr.count() >= 8)
             {
                 BarInfo bi;
                 bi.m_Time = lstStr.at(1);
-                bi.m_Duration = lstStr.at(2).toLong();
+                bi.m_Duration = lstStr.at(2).toDouble();
                 bi.m_Name = lstStr.at(3);
-                bi.m_Margin = lstStr.at(4).toDouble();
-                bi.m_Type = lstStr.at(5).toInt();
-                bi.m_FilePath = lstStr.at(6);
+                bi.m_MarginV = lstStr.at(4).toDouble();
+                bi.m_MarginI = lstStr.at(5).toDouble();
+                bi.m_Type = lstStr.at(6).toInt();
+                bi.m_FilePath = lstStr.at(7);
                 m_Data.append(bi);
             }
         }
