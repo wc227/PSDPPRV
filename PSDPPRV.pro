@@ -41,7 +41,6 @@ HEADERS += \
     FileMgrDIDX.h \
     DlgXBarChartProperty.h \
     FileMgrErrInfo.h \
-    WorkFlow/CXPolyLine.h \
     WorkFlow/CXAnimatePolyline.h \
     WorkFlow/CXAnimatePolylinePropterty.h
 
@@ -66,7 +65,6 @@ SOURCES += \
     FileMgrDIDX.cpp \
     DlgXBarChartProperty.cpp \
     FileMgrErrInfo.cpp \
-    WorkFlow/CXPolyLine.cpp \
     WorkFlow/CXAnimatePolyline.cpp \
     WorkFlow/CXAnimatePolylinePropterty.cpp
 

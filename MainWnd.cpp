@@ -95,7 +95,7 @@ void MainWnd::initUI()
     m_lblTitleZone->raise();//移动到界面的上层，以免被其他东西遮挡
     m_lblTitleZone->setObjectName(QStringLiteral("m_lblTitleZone"));
 
-    m_lblTitleZone->resize(450,50);//该大小与实际的图title保持同样的长宽比，否则会变形
+    m_lblTitleZone->resize(250,50);//该大小与实际的图title保持同样的长宽比，否则会变形
 //    m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url(:/StateGreen/logo.png);}");
 
 //    QString sImgTitle("");

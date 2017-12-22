@@ -6,21 +6,21 @@ color:white;
 font-family:"雅黑";
 }*/
 
-/*QWidget{
-background:#005759;
+FormWebBase,WebAxWidget,XBarChart{
+/*background:#007d64;*/
 border:none;
-}*/
+}
 
 /*主窗口*/
 QMainWindow{
-/*border-image: url(:/StateGreen/back.png);*//*设置背景图片*/
-background:#005759;/*设置背景颜色*/
+/*border-image: url(:/StateGreen/back.png);设置背景图片*/
+background:#007d64 /*#007d64*/;/*设置背景颜色*/
 }
 
 /*主窗口上的分隔条-正常状态*/
 QMainWindow::separator {
-/*background: transparent;*/
-background: white;
+background: transparent;
+/*background: white;*/
 width: 2px; /* when vertical */
 height: 2px; /* when horizontal */
 }
@@ -37,14 +37,14 @@ border-image: url(:/StateGreen/logo.png);/*设置背景图片*/
 
 /*多标签控件的页面*/
 QTabWidget::pane{
-border:none;
-border-top: 0px solid white;
-border-image: url(:/StateGreen/back_main.png);/*设置背景图片*/
+border:0px;
+border-top: 5px solid white;
+background:url(:/StateGreen/back_main.png);/*设置背景图片*/
 }
 
 /*多标签控件的标签栏*/
 QTabWidget::tab-bar{
-left: 480px;/*距离左侧500像素*/
+left: 250px;/*距离左侧的像素*/
 /*alignment:center;*//*居中显示*/
 }
 
@@ -53,7 +53,7 @@ QTabBar::tab{
 width:130px;/**/
 height:50px;/*设置高度*/
 background:transparent;
-/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #FFFFFF, stop: 0.2 #005759,stop: 0.5 #005759, stop: 0.8 #005759, stop: 1.0 #FFFFFF);*//*使用渐变色*/
+/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #FFFFFF, stop: 0.2 #007d64,stop: 0.5 #007d64, stop: 0.8 #007d64, stop: 1.0 #FFFFFF);*//*使用渐变色*/
 color:white;
 min-width:30px;
 min-height:10px;
@@ -64,11 +64,12 @@ background:rgb(255, 255, 255, 100);
 }
 
 QTabBar::tab:selected{
-border-color: white;
-/*background:white;*/
-/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #005759, stop: 0.2 #FFFFFF, stop: 1.0 #FFFFFF);*//*使用渐变色：上绿下白*/
-background:qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #005759, stop: 0.1 #FFFFFF, stop: 0.9 #FFFFFF, stop: 1.0 #005759);/*使用渐变色：左右两侧绿，中间白*/
-color:#005759;
+border:1px;
+border-color: #007d64;
+background:white;
+/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #007d64, stop: 0.2 #FFFFFF, stop: 1.0 #FFFFFF);*//*使用渐变色：上绿下白*/
+/*background:qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #007d64, stop: 0.1 #FFFFFF, stop: 0.9 #FFFFFF, stop: 1.0 #007d64);*//*使用渐变色：左右两侧绿，中间白*/
+color:#007d64;
 font: bold;/*字体变粗*/
 }
 
@@ -138,7 +139,7 @@ background: none;
 /*可停靠窗口*/
 QDockWidget::title {
 text-align: left; /* align the text to the left */
-background: #005759;
+background: #007d64;
 padding-left: 5px;
 color:white;
 }
@@ -147,7 +148,7 @@ color:white;
 QTextEdit{
 background: white;
 font-size:13px;
-color:#005759;
+color:#007d64;
 font-family:"宋体";
 }
 
@@ -156,7 +157,7 @@ border:1px solid gray;
 }
 
 QGroupBox::title{
-color:#005759;
+color:#007d64;
 }
 
 QToolTip{
@@ -186,8 +187,3 @@ height:1px;
 background:lightgray;
 margin:2px 0px 2px 0px;
 }
-
-XBarChart{
-border:none;
-}
-
