@@ -20,9 +20,6 @@ void FileMgrDIDX::releaseAll()
 //打开文件
 int FileMgrDIDX::openFile()
 {
-//    if(!isDirty())
-//        return 0;
-
     releaseAll();
 
     //开始读取文件，格式是自定义
@@ -43,8 +40,7 @@ int FileMgrDIDX::openFile()
         if(sLine.isEmpty())
             continue;
 
-        QChar ch = sLine.at(0);
-        if('#' == ch)//读取数据行
+        if('#' == sLine.at(0))//读取数据行
         {
             //$ 时间 时长 站点名称 裕度 类型 文件地址
             QStringList lstStr = CXxwQtPub::SplitStrByWhiteSpace(sLine);

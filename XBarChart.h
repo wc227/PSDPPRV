@@ -16,17 +16,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QDateTime>
-
-//标准化时间
-//原时间time：20170801112503
-//格式化后的时间：2017/08/01 11:25:03
-QString g_formatTime(const QString &time);
-
-//标准化时间
-//原时间time：20170801112503
-//格式化后的时间：2017/08/01 11:25:03
-QDateTime g_getFormatDateTime(const QString &time);
-
+#include <QSettings>
 
 class XBarChart : public QGraphicsView
 {
@@ -41,6 +31,8 @@ public:
 
 protected:
     QGraphicsScene *m_Scene;//场景
+
+    QSettings *m_mySettings;//配置文件管理
 
     int m_MarginLeft;//左边距(最小20，最大100)
     int m_MarginRight;//右边距(最小20，最大100)
@@ -67,13 +59,12 @@ protected:
     int m_MaxBarNumOfGroup;//条形图组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元
-    QList<ListBarInfo> m_BarGroups;//条形图组
+    QList<BarInfoList> m_BarGroups;//条形图组
     QList<XBar *> m_BarItems;//所有的条形图
     int m_BarGroupsCapacity;//条形图组的最大容量（也就是最多可容纳多少组条形图）
     QStringList m_Times;//条形图组对应的时间
 
-    QString m_ColorCfgFile;//颜色配置文件
-    QMap<int, QColor> m_Type2Color;//类型和颜色的映射，真实数据应该从配置文件中读取
+    QMap<int, QColor> m_Type2Color;//类型和颜色的映射
 
     FileMgrDIDX m_FileMgrDIDX;//
     QTimer m_TimerCheckFile;//定时器，定时检查标记文件是否更新
@@ -202,9 +193,6 @@ public:
     //设置条形图组的最大数量值
     void setBarGroupsCapacity(int val);
 
-    //设置颜色配置文件
-    void setColorCfgFile(QString val);
-
     //获取检查间隔时间（单位：毫秒）
     int getTimeInterval() const;
 
@@ -212,16 +200,13 @@ public:
     void setTimeInterval(int val);
 
     //添加一组条形图
-    void addBars(ListBarInfo bars);
+    void addBars(BarInfoList bars);
 
     //添加一个图元
     void addBarItem(XBar *item);
 
     //清空所有的条形图
     void clearBarItems();
-
-    //加载颜色配置文件
-    void loadColorCfgFile();
 
     //设置数据文件
     void setFileData(QString val);
@@ -254,8 +239,11 @@ protected:
     //更新条形图
     virtual void updateBars();
 
-    //更新导航功能相关的部件
-    virtual void updateNavi();
+    //更新导航功能相关的部件的位置
+    virtual void updateNaviPos();
+
+    //更新导航功能相关的部件的状态
+    virtual void updateNaviStatus();
 
     //初始化右键菜单
     virtual void initPopMenu();
@@ -288,6 +276,19 @@ public slots:
 
     //打开条形图的数据文件
     void openFileOfBar();
+
+protected:
+    //判断给定值是否等于0
+    static bool s_isEqualToZero(double val);
+
+    //标准化时间
+    //原时间time：20170801112503
+    //格式化后的时间：2017/08/01 11:25:03
+    static QString s_formatTime(const QString &time);
+
+    //获取标准化日期和时间
+    //原时间time：20170801112503
+    static QDateTime s_getFormatDateTime(const QString &time);
 };
 
 #endif // XBARCHART_H

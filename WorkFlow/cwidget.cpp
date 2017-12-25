@@ -58,7 +58,7 @@ CXGraphicsView::CXGraphicsView(QWidget *parent)
             ShareMemoryBuild();
     }
 
-    setToolTip(QStringLiteral("按快捷键\"Ctrl+R\"可在运行模式和编辑模式之间切换"));
+//    setToolTip(QStringLiteral("按快捷键\"Ctrl+R\"可在运行模式和编辑模式之间切换"));
 }
 
 CXGraphicsView::~CXGraphicsView()

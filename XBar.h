@@ -81,7 +81,7 @@ protected:
 };
 
 
-typedef QList<BarInfo> ListBarInfo;
-typedef QList<XBar *> ListBar;
+typedef QList<BarInfo> BarInfoList;
+typedef QList<XBar *> BarItemList;
 
 #endif // XBAR_H

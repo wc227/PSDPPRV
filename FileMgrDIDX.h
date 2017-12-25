@@ -18,13 +18,13 @@ public:
     //打开数据文件
     virtual int openFile();
 
-    ListBarInfo getData() const
+    BarInfoList getData() const
     {
         return m_Data;
     }
 
 protected:
-    ListBarInfo m_Data;//数据
+    BarInfoList m_Data;//数据
 };
 
 #endif // FILEMGRDIDX_H

@@ -27,15 +27,19 @@ MainWnd::MainWnd(QWidget *parent)
 
     m_chartView = 0;
 
-    for(int i = 0 ; i < 5; ++i)
-        m_arrTabInit[i] = false;
-
-    //读取配置文件
-    QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.xml";
-    m_cfgMgr.setFileName(sFileCfg);
+    //初始化配置文件
+    QString sFileCfg = QApplication::applicationDirPath() + "/PSDPPRV.ini";
+    m_mySettings = new QSettings(sFileCfg,QSettings::IniFormat,this);
+    m_mySettings->setIniCodec("UTF-8");
 
     createActions();
     initUI();
+}
+
+MainWnd::~MainWnd()
+{
+    if(m_mySettings)
+        delete m_mySettings;
 }
 
 //初始化所有的动作
@@ -71,8 +75,7 @@ void MainWnd::initUI()
 
     m_wndWorkFlow = new CWidgetWork();
     connect(m_wndWorkFlow,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
-    QString sFileLan("");
-    m_cfgMgr.getValue("file_lan",sFileLan);
+    QString sFileLan = m_mySettings->value("PSDPPRV/file_lan").toString();
     m_wndWorkFlow->setFileCfg(sFileLan);
     m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态"));
 
@@ -90,6 +93,11 @@ void MainWnd::initUI()
     setCentralWidget(m_tabMain);
     connect(m_tabMain,SIGNAL(currentChanged(int)), this, SLOT(activeTab(int)));
 
+    for(int i = 0; i < m_tabMain->count(); ++i)
+    {
+        m_mapTabInit.insert(i,false);
+    }
+
     m_lblTitleZone = new QLabel(this);
 //    m_lblTitleZone->move(5,5);//移动到界面左上角（10，10）的位置，更好看一些
     m_lblTitleZone->raise();//移动到界面的上层，以免被其他东西遮挡
@@ -97,14 +105,6 @@ void MainWnd::initUI()
 
     m_lblTitleZone->resize(250,50);//该大小与实际的图title保持同样的长宽比，否则会变形
 //    m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url(:/StateGreen/logo.png);}");
-
-//    QString sImgTitle("");
-//    m_cfgMgr.getValue("img_title",sImgTitle);
-//    sImgTitle = QApplication::applicationDirPath() + "/" + sImgTitle;
-//    if(QFile::exists(sImgTitle))
-//        m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url("+ sImgTitle + ");}");//有背景图就使用背景图代替标题
-//    else
-//        m_lblTitleZone->setText(QStringLiteral("<h2><font size=16 color=white >BPA-MAP</font>"));//没有背景图就使用字来表示
 
     createDockWnd();
 
@@ -137,8 +137,7 @@ void MainWnd::createDockWnd()
     //此函数的功能是把多个dock变成一个tab形式的窗体
 //    tabifyDockWidget(m_wndError,dock2);//添加dock2和dock1合并成tab
 
-    QString sFileErr("");
-    m_cfgMgr.getValue("file_err",sFileErr);
+    QString sFileErr = m_mySettings->value("PSDPPRV/file_err").toString();
     m_fmErr.setFileName(sFileErr);
     if(m_txtError)
         m_txtError->setText(m_fmErr.getData());
@@ -153,11 +152,7 @@ void MainWnd::createBarChart()
         delete m_chartView;
     m_chartView = new XBarChart();
     m_chartView->setTitle("场站数据时序状态图");
-    QString sFileColor("");
-    m_cfgMgr.getValue("file_color",sFileColor);
-    m_chartView->setColorCfgFile(sFileColor);
-    QString sFileDidx("");
-    m_cfgMgr.getValue("file_bar",sFileDidx);
+    QString sFileDidx = m_mySettings->value("PSDPPRV/file_bar").toString();
     m_chartView->setFileData(sFileDidx);
 }
 
@@ -169,46 +164,49 @@ void MainWnd::activeTab(int nTab)
         return;
 
     //如果已经初始化，就不用再初始化
-    if(m_arrTabInit[nTab])
-        return;
-    else //否则，就刷新
+    bool bInit = m_mapTabInit.value(nTab,false);
+    if(!bInit)
     {
         refresh();
-        m_arrTabInit[nTab] = true;
+        m_mapTabInit[nTab] = true;
     }
+
+    if(m_wndError && nTab == 0)
+        m_wndError->show();
+    else if(m_wndError && nTab > 0)
+        m_wndError->hide();
 }
 
 //刷新
 void MainWnd::refresh()
 {
-    if(0 == m_tabMain->currentIndex() && m_wndWorkFlow)
-    {
+    int nIndex = m_tabMain->currentIndex();
+//    if(0 == nIndex && m_wndWorkFlow)
+//    {
 //        QString sFile("");
-//        m_cfgMgr.getValue("file_lan",sFile);
+//        m_mySettings->value("file_lan",sFile);
 //        m_wndLanView->SetFileCom(sFile);
 //        m_wndLanView->UpdateLan();
-    }
-    else if(1 == m_tabMain->currentIndex() && m_wndWebMap1)
+//    }
+//    else
+    if(1 == nIndex && m_wndWebMap1)
     {
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map1",sUrl);
+        QString sUrl = m_mySettings->value("PSDPPRV/url_map1").toString();
         m_wndWebMap1->loadUrl(sUrl);
     }
-    else if(2 == m_tabMain->currentIndex() && m_wndWebMap2)
+    else if(2 == nIndex && m_wndWebMap2)
     {
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map2",sUrl);
+        QString sUrl = m_mySettings->value("PSDPPRV/url_map2").toString();
         m_wndWebMap2->loadUrl(sUrl);
     }
-    else if(3 == m_tabMain->currentIndex() && m_wndWebMap3)
+    else if(3 == nIndex && m_wndWebMap3)
     {
-        QString sUrl("");
-        m_cfgMgr.getValue("url_map3",sUrl);
+        QString sUrl = m_mySettings->value("PSDPPRV/url_map3").toString();
         m_wndWebMap3->loadUrl(sUrl);
     }
-    else if(4 == m_tabMain->currentIndex() && m_chartView)
-    {
-    }
+//    else if(4 == nIndex && m_chartView)
+//    {
+//    }
 }
 
 

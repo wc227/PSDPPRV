@@ -3,10 +3,10 @@
 
 #include <QMainWindow>
 #include "WorkFlow/CWidgetWork.h"
-#include "CfgMgr.h"
 #include "XBarChart.h"
 #include "FileMgrErrInfo.h"
 #include <QTimer>
+#include <QSettings>
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
@@ -28,6 +28,8 @@ class MainWnd : public QMainWindow
 
 public:
     MainWnd(QWidget *parent = 0);
+
+    ~MainWnd();
 
     //初始化界面
     void initUI();
@@ -85,9 +87,9 @@ private:
     CXxwDockWidget *m_wndError;//错误信息停靠窗口
     QTextEdit *m_txtError;//显示错误信息的可编辑文本框
 
-    bool m_arrTabInit[5];//标签页面是否初始化
+    QMap<int,bool> m_mapTabInit;//标签页面是否初始化
 
-    CfgMgr m_cfgMgr;//配置信息
+    QSettings *m_mySettings;//配置信息
 
     FileMgrErrInfo m_fmErr;//错误信息管理
     QTimer m_timerErrInfo;//检测错误预警文件的定时器
