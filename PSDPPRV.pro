@@ -15,16 +15,11 @@ TEMPLATE = app
 
 FORMS += \
     WorkFlow/citempropertydialog.ui \
-    DlgXBarChartProperty.ui \
-    WorkFlow/CXAnimatePolylinePropterty.ui
+    WorkFlow/CXAnimatePolylinePropterty.ui \
+    DlgXBarChartProperty.ui
 
 
 HEADERS += \
-    XxwQtPub.h \
-    webaxwidget.h \
-    CfgMgr.h \
-    FileMgrBase.h \
-    FormWeb.h \
     WorkFlow/cbaritem.h \
     WorkFlow/CGraphicsObjectItem.h \
     WorkFlow/cgraphicsscene.h \
@@ -33,23 +28,23 @@ HEADERS += \
     WorkFlow/coutitem.h \
     WorkFlow/cwidget.h \
     WorkFlow/tpsdevts.h \
-    MainWnd.h \
-    XxwDockWidget.h \
     WorkFlow/CWidgetWork.h \
+    WorkFlow/CXAnimatePolyline.h \
+    WorkFlow/CXAnimatePolylinePropterty.h \
+    XxwQtPub.h \
+    webaxwidget.h \
+    FileMgrBase.h \
+    FormWeb.h \
+    MainWnd.h \
     XBar.h \
     XBarChart.h \
     FileMgrDIDX.h \
     DlgXBarChartProperty.h \
     FileMgrErrInfo.h \
-    WorkFlow/CXAnimatePolyline.h \
-    WorkFlow/CXAnimatePolylinePropterty.h
+    xxwdockwidget.h
 
 SOURCES += \
     main.cpp \
-    XxwQtPub.cpp \
-    CfgMgr.cpp \
-    FileMgrBase.cpp \
-    FormWeb.cpp \
     WorkFlow/cbaritem.cpp \
     WorkFlow/cgraphicsobjectitem.cpp \
     WorkFlow/cgraphicsscene.cpp \
@@ -58,15 +53,18 @@ SOURCES += \
     WorkFlow/coutitem.cpp \
     WorkFlow/cwidget.cpp \
     WorkFlow/tpsdevts.cpp \
-    MainWnd.cpp \
+    WorkFlow/CXAnimatePolyline.cpp \
+    WorkFlow/CXAnimatePolylinePropterty.cpp \
     WorkFlow/CWidgetWork.cpp \
+    XxwQtPub.cpp \
+    FileMgrBase.cpp \
+    FormWeb.cpp \
+    MainWnd.cpp \
     XBar.cpp \
     XBarChart.cpp \
     FileMgrDIDX.cpp \
     DlgXBarChartProperty.cpp \
-    FileMgrErrInfo.cpp \
-    WorkFlow/CXAnimatePolyline.cpp \
-    WorkFlow/CXAnimatePolylinePropterty.cpp
+    FileMgrErrInfo.cpp
 
 
 CONFIG(debug, debug|release) {

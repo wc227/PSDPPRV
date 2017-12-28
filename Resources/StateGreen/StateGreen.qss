@@ -44,19 +44,20 @@ background:url(:/StateGreen/back_main.png);/*设置背景图片*/
 
 /*多标签控件的标签栏*/
 QTabWidget::tab-bar{
-left: 250px;/*距离左侧的像素*/
+left: 255px;/*距离左侧的像素*/
 /*alignment:center;*//*居中显示*/
 }
 
 /*多标签控件的标签*/
 QTabBar::tab{
-width:130px;/**/
+width:150px;/**/
 height:50px;/*设置高度*/
 background:transparent;
 /*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #FFFFFF, stop: 0.2 #007d64,stop: 0.5 #007d64, stop: 0.8 #007d64, stop: 1.0 #FFFFFF);*//*使用渐变色*/
 color:white;
 min-width:30px;
 min-height:10px;
+font:normal bold 15px/22px 雅黑;
 }
 
 QTabBar::tab:hover{
@@ -66,11 +67,11 @@ background:rgb(255, 255, 255, 100);
 QTabBar::tab:selected{
 border:1px;
 border-color: #007d64;
-background:white;
-/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #007d64, stop: 0.2 #FFFFFF, stop: 1.0 #FFFFFF);*//*使用渐变色：上绿下白*/
+background:#FFD700;/**/
+/*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #007d64, stop: 0.5 #FFFFFF, stop: 1.0 #FFFFFF);使用渐变色：上绿下白*/
 /*background:qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #007d64, stop: 0.1 #FFFFFF, stop: 0.9 #FFFFFF, stop: 1.0 #007d64);*//*使用渐变色：左右两侧绿，中间白*/
 color:#007d64;
-font: bold;/*字体变粗*/
+/*font: bold;字体变粗*/
 }
 
 /*水平滚动条*/
@@ -166,7 +167,7 @@ color:#007d64;
 QToolTip{
 border:1px solid gray;
 background:white;
-color:005759;
+color:#005759;
 }
 
 
@@ -189,4 +190,14 @@ QMenu::separator{
 height:1px;
 background:lightgray;
 margin:2px 0px 2px 0px;
+}
+
+QLCDNumber#m_lcdTime{
+border:none;
+background:transparent;
+color:white;
+}
+
+QPushButton#pushButton_BackColor{
+border:1px solid #005759;
 }

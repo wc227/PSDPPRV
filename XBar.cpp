@@ -1,6 +1,5 @@
 ﻿#include "XBar.h"
 #include <QPainter>
-#include <QGraphicsScene>
 #include <QMessageBox>
 #include <QProcess>
 
@@ -14,13 +13,20 @@ XBar::XBar(const QRectF &rect, QGraphicsItem *parent)
     :QGraphicsRectItem(rect,parent)
 {
     init();
+    setRect(rect);
 }
 
 XBar::XBar(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent)
     :QGraphicsRectItem(x,y,w,h,parent)
 {
     init();
+    setRect(x,y,w,h);
 }
+
+//XBar::~XBar()
+//{
+
+//}
 
 void XBar::init()
 {
@@ -32,26 +38,6 @@ void XBar::init()
 
     m_BackColor = Qt::red;
     m_BackColor.setAlphaF(1);
-
-    initAnimation();
-}
-
-void XBar::initAnimation()
-{
-//    animation = new QGraphicsItemAnimation();
-//    animation->setItem(this);
-//    timer = new QTimeLine();
-//    timer->setDuration(1000);
-//    timer->setFrameRange(0, 100);
-//    for (int i = 0; i < 100; ++i)
-//        animation->setScaleAt(i/100.0,i/100.0,i/100.0);
-//    animation->setTimeLine(timer);
-}
-
-void XBar::startAnimation()
-{
-//    if(timer)
-//        timer->start();
 }
 
 BarInfo XBar::barInfo() const
@@ -70,6 +56,11 @@ void XBar::setBackColor(QColor clr)
     m_BackColor = clr;
 }
 
+void XBar::setBackColor2(QColor clr)
+{
+    m_BackColor2 = clr;
+}
+
 void XBar::setAlpha(qreal a)
 {
     m_BackColor.setAlphaF(a);
@@ -81,20 +72,28 @@ void XBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
     painter->save();
 
     //设置透明度(计算出来的)
-    if(m_BarInfo.m_MarginV > 0 && m_BarInfo.m_MarginI > 0 )
-        m_BackColor.setAlphaF(0.5 + (m_BarInfo.m_MarginV + m_BarInfo.m_MarginI) * 0.5);
-    else if(m_BarInfo.m_MarginV > 0)
-        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginV);
-    else if(m_BarInfo.m_MarginI > 0 )
-        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginI);
+//    if(m_BarInfo.m_MarginV > 0 && m_BarInfo.m_MarginI > 0 )
+//        m_BackColor.setAlphaF(0.5 + (m_BarInfo.m_MarginV + m_BarInfo.m_MarginI) * 0.5);
+//    else if(m_BarInfo.m_MarginV > 0)
+//        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginV);
+//    else if(m_BarInfo.m_MarginI > 0 )
+//        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginI);
 
-    painter->fillRect(rect(),m_BackColor);
+    QLinearGradient gradient;
+    gradient.setStart(rect().topLeft().toPoint());
+    gradient.setFinalStop(rect().topRight().toPoint());
+    gradient.setColorAt(0, m_BackColor);
+    gradient.setColorAt(1, m_BackColor2);
+    QBrush brush(gradient);
+    painter->fillRect(rect(),brush);
 
     painter->setPen(Qt::white);
     painter->drawRect(rect());
 
 //    QColor clrTxt(255-m_BackColor.red(),255-m_BackColor.green(),255-m_BackColor.blue());//颜色取反
-//    painter->setPen(clrTxt);
+    QColor clrTxt = Qt::white;
+    painter->setPen(clrTxt);
+    painter->setFont(QFont(QStringLiteral("黑体"),12));
     painter->drawText(rect(),Qt::AlignCenter,m_BarInfo.m_Name);
     painter->restore();
 }

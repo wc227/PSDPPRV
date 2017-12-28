@@ -97,7 +97,7 @@
    <property name="title">
     <string>位置和大小</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -138,7 +138,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="maximum">
-        <number>1000</number>
+        <number>5000</number>
        </property>
       </widget>
      </item>
@@ -173,7 +173,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="maximum">
-        <number>1000</number>
+        <number>5000</number>
        </property>
       </widget>
      </item>
@@ -278,7 +278,7 @@
         <set>Qt::AlignCenter</set>
        </property>
        <property name="maximum">
-        <number>1000</number>
+        <number>360</number>
        </property>
       </widget>
      </item>
@@ -297,7 +297,7 @@
    <property name="title">
     <string>动画相关</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -350,20 +350,6 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
-      <widget class="QLineEdit" name="lineEdit_StartDelay">
-       <property name="toolTip">
-        <string>单位：秒</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QLineEdit" name="lineEdit_Duration">
-       <property name="toolTip">
-        <string>单位：秒</string>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="1">
       <widget class="QLineEdit" name="lineEdit_Event_Start"/>
      </item>
@@ -381,6 +367,32 @@
       <widget class="QCheckBox" name="checkBox_Loop">
        <property name="text">
         <string>循环动画</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QSpinBox" name="spinBox_Duriation">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="singleStep">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QSpinBox" name="spinBox_StartDelay">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="maximum">
+        <number>100000</number>
+       </property>
+       <property name="singleStep">
+        <number>100</number>
        </property>
       </widget>
      </item>

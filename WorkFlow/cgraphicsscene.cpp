@@ -219,3 +219,13 @@ void CGraphicsScene::showOutitemMsg()
 {
     QMessageBox::information(0,"信息","测试信息","确定");
 }
+
+//选择所有的图元
+void CGraphicsScene::selectAll()
+{
+    foreach (QGraphicsItem *item, items())
+    {
+        if(item)
+            item->setSelected(true);
+    }
+}

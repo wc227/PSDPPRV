@@ -38,10 +38,10 @@ private slots:
     void on_spinBox_Rotation_valueChanged(int arg1);
     void on_lineEdit_Event_Start_textChanged(const QString &arg1);
     void on_lineEdit_Event_Stop_textChanged(const QString &arg1);
-    void on_lineEdit_Duration_textChanged(const QString &arg1);
-    void on_lineEdit_StartDelay_textChanged(const QString &arg1);
     void on_checkBox_IgnoreEndEvent_toggled(bool checked);
     void on_checkBox_Loop_toggled(bool checked);
+    void on_spinBox_Duriation_valueChanged(int arg1);
+    void on_spinBox_StartDelay_valueChanged(int arg1);
 };
 
 #endif // CITEMPROPERTYDIALOG_H

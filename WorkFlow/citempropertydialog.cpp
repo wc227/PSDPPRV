@@ -18,7 +18,6 @@ CItemPropertyDialog::~CItemPropertyDialog()
     delete ui;
 }
 
-
 //初始化UI界面
 void CItemPropertyDialog::updateUI()
 {
@@ -40,8 +39,8 @@ void CItemPropertyDialog::updateUI()
         if(lstEvt.count()>1)
             ui->lineEdit_Event_Stop->setText(lstEvt.at(1));
     }
-    ui->lineEdit_Duration->setText(QString("%1").arg(m_currentItem->getShowTime()));
-    ui->lineEdit_StartDelay->setText(QString("%1").arg(m_currentItem->getStartDelay()));
+    ui->spinBox_Duriation->setValue(m_currentItem->getShowTime());
+    ui->spinBox_StartDelay->setValue(m_currentItem->getStartDelay());
 
     ui->checkBox_IgnoreEndEvent->setChecked(m_currentItem->isIgnoreEndEvt());
     ui->checkBox_Loop->setChecked(m_currentItem->isLoopAnimation());
@@ -125,22 +124,6 @@ void CItemPropertyDialog::on_lineEdit_Event_Stop_textChanged(const QString &arg1
     }
 }
 
-void CItemPropertyDialog::on_lineEdit_Duration_textChanged(const QString &arg1)
-{
-    if(m_currentItem)
-    {
-        m_currentItem->setShowTime(arg1.toInt());
-    }
-}
-
-void CItemPropertyDialog::on_lineEdit_StartDelay_textChanged(const QString &arg1)
-{
-    if(m_currentItem)
-    {
-        m_currentItem->setStartDelay(arg1.toInt());
-    }
-}
-
 void CItemPropertyDialog::on_checkBox_IgnoreEndEvent_toggled(bool checked)
 {
     if(m_currentItem)
@@ -154,5 +137,21 @@ void CItemPropertyDialog::on_checkBox_Loop_toggled(bool checked)
     if(m_currentItem)
     {
         m_currentItem->enableLoopAnimation(checked);
+    }
+}
+
+void CItemPropertyDialog::on_spinBox_Duriation_valueChanged(int arg1)
+{
+    if(m_currentItem)
+    {
+        m_currentItem->setShowTime(arg1);
+    }
+}
+
+void CItemPropertyDialog::on_spinBox_StartDelay_valueChanged(int arg1)
+{
+    if(m_currentItem)
+    {
+        m_currentItem->setStartDelay(arg1);
     }
 }

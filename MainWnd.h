@@ -7,6 +7,7 @@
 #include "FileMgrErrInfo.h"
 #include <QTimer>
 #include <QSettings>
+#include <QLCDNumber>
 
 QT_BEGIN_NAMESPACE
 class QGridLayout;
@@ -47,6 +48,8 @@ protected:
 
     virtual void mouseDoubleClickEvent(QMouseEvent *event);
 
+    virtual void resizeEvent(QResizeEvent *event);
+
 private slots:
     //激活标签页窗口
     void activeTab(int nTab);
@@ -65,6 +68,9 @@ private slots:
 
     //启动或退出全屏显示
     void fullScreen();
+
+    //更新时间
+    void updateTime();
 
 private:    
     QAction *m_actionRefresh;//刷新动作
@@ -93,6 +99,9 @@ private:
 
     FileMgrErrInfo m_fmErr;//错误信息管理
     QTimer m_timerErrInfo;//检测错误预警文件的定时器
+
+    QLCDNumber *m_lcdTime;//显示时间控件
+    QTimer m_timerUpdateTime;//更新时间的定时器
 };
 
 #endif // _MAINWND_H_20170928_

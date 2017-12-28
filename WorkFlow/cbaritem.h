@@ -18,6 +18,8 @@ public:
     enum {Type = UserType + 1}; //根据Type判断是否是CBarItem1
     CXAnimateBar(bool isEditState);
 
+    virtual void setEventNumbers(const QString &evts);
+
     QRectF getAnmationSize();
     void setAnmationSize(QRectF s);
 

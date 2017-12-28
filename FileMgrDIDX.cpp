@@ -61,7 +61,5 @@ int FileMgrDIDX::openFile()
 
     file.close();
 
-    FileMgrBase::openFile();
-
-    return 1;
+    return FileMgrBase::openFile();
 }

@@ -1,5 +1,6 @@
 ﻿#include "CXAnimatePolyline.h"
 #include "CXAnimatePolylinePropterty.h"
+#include "cwidget.h"
 #include <QPainter>
 #include <QGraphicsScene>
 #include <QGraphicsSceneMouseEvent>
@@ -220,7 +221,8 @@ void CXAnimatePolyline::pauseAnimation()
 
 void CXAnimatePolyline::setName(QString cap)
 {
-    m_sName = cap;
+    if(m_sName != cap)
+        m_sName = cap;
 }
 
 QString CXAnimatePolyline::getName() const
@@ -228,9 +230,26 @@ QString CXAnimatePolyline::getName() const
     return m_sName;
 }
 
-void CXAnimatePolyline::setEventNumbers(QString evts)
+void CXAnimatePolyline::setEventNumbers(const QString &evts)
 {
-    m_sEventNumbers = evts;
+    QString evtNew = evts.trimmed();
+    if(m_sEventNumbers != evtNew)
+    {
+        QString evtOld = m_sEventNumbers;
+        m_sEventNumbers = evtNew;
+        if(0 == scene())
+            return;
+
+        if(scene()->views().isEmpty())
+            return;
+
+        if(0 == scene()->views().at(0))
+            return;
+
+        CXGraphicsView *view = (CXGraphicsView *)(scene()->views().at(0));
+        if(view)
+            view->updateItemEventMap(this,evtOld);
+    }
 }
 
 QString CXAnimatePolyline::getEventNumbers() const

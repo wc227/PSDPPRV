@@ -1,4 +1,5 @@
 ﻿#include "cwidget.h"
+#include "cgraphicsscene.h"
 #include "cbaritem.h"
 #include "coutitem.h"
 #include "CXAnimatePolyline.h"
@@ -169,6 +170,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
     if(sValsGroupName == c_GroupName_AnimateBar)
     {
         CXAnimateBar* bar = new CXAnimateBar(m_bEditMode);
+        m_Scene->addItem(bar);
         QStringList splitDatas = sVal.split(";");
         for(int i=0; i<splitDatas.count(); i++)
         {
@@ -226,7 +228,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                             sEvt = sEvt.trimmed();
                             int nCounter = m_psdEvts.evtCounter(sEvt);
                             m_mapEvtNum2Counter.insert(sEvt,nCounter);
-                            m_mapEvtNum2BarsStart.insert(sEvt,bar);
+                            m_mapEvtNum2ItemsStart.insert(sEvt,bar);
                         }
 
                         if(list1.count() > 1)
@@ -240,7 +242,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                                 sEvt = sEvt.trimmed();
                                 int nCounter = m_psdEvts.evtCounter(sEvt);
                                 m_mapEvtNum2Counter.insert(sEvt,nCounter);
-                                m_mapEvtNum2BarsStop.insert(sEvt,bar);
+                                m_mapEvtNum2ItemsStop.insert(sEvt,bar);
                             }
                         }
                     }
@@ -273,11 +275,11 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                 bar->setStartDelay((int)(value.toDouble()*1000));
             }
         }
-        m_Scene->addItem(bar);
     }
     else if(sValsGroupName == c_GroupName_PolyLine)
     {
         CXAnimatePolyline* polyline = new CXAnimatePolyline();
+        m_Scene->addItem(polyline);
         polyline->enableEditMode(m_bEditMode);
         QStringList splitDatas = sVal.split(";");
         for(int i=0; i<splitDatas.count(); i++)
@@ -341,7 +343,7 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                             sEvt = sEvt.trimmed();
                             int nCounter = m_psdEvts.evtCounter(sEvt);
                             m_mapEvtNum2Counter.insert(sEvt,nCounter);
-                            m_mapEvtNum2BarsStart.insert(sEvt,polyline);
+                            m_mapEvtNum2ItemsStart.insert(sEvt,polyline);
                         }
 
                         if(list1.count() > 1)
@@ -355,18 +357,18 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                                 sEvt = sEvt.trimmed();
                                 int nCounter = m_psdEvts.evtCounter(sEvt);
                                 m_mapEvtNum2Counter.insert(sEvt,nCounter);
-                                m_mapEvtNum2BarsStop.insert(sEvt,polyline);
+                                m_mapEvtNum2ItemsStop.insert(sEvt,polyline);
                             }
                         }
                     }
                 }
             }
         }
-        m_Scene->addItem(polyline);
     }
     else if(sValsGroupName == c_GroupName_OutItem)
     {
         COutItem *outItem= new COutItem(m_bEditMode);
+        m_Scene->addItem(outItem);
         connect(outItem, SIGNAL(EvtFileChange(int)), this, SLOT(SLOT_EvtFileChange(int)));
         connect(outItem, SIGNAL(sendCmd(QString)), this, SIGNAL(sendCmd(QString)));
         QStringList splitDatas = sVal.split(";");
@@ -410,7 +412,6 @@ void CXGraphicsView::stringToItemData(QString sVal, QString sValsGroupName)
                     outItem->setCommands(value);
             }
         }
-        m_Scene->addItem(outItem);
     }
 }
 
@@ -540,9 +541,9 @@ void CXGraphicsView::timerEvent(QTimerEvent *event)
             if(nCounterOld != nCounterNew)//事件计数器改变
             {
                 //开始动画
-                if(m_mapEvtNum2BarsStart.contains(sEvt))
+                if(m_mapEvtNum2ItemsStart.contains(sEvt))
                 {
-                    QList<QGraphicsItem*> items = m_mapEvtNum2BarsStart.values(sEvt);
+                    QList<QGraphicsItem*> items = m_mapEvtNum2ItemsStart.values(sEvt);
                     for (int i=0; i<items.count(); i++)
                     {
                         QGraphicsItem *item = items.at(i);
@@ -563,9 +564,9 @@ void CXGraphicsView::timerEvent(QTimerEvent *event)
                 }
 
                 //结束动画
-                if(m_mapEvtNum2BarsStop.contains(sEvt))
+                if(m_mapEvtNum2ItemsStop.contains(sEvt))
                 {
-                    QList<QGraphicsItem*> items = m_mapEvtNum2BarsStop.values(sEvt);
+                    QList<QGraphicsItem*> items = m_mapEvtNum2ItemsStop.values(sEvt);
                     for (int i=0; i<items.count(); i++)
                     {
                         QGraphicsItem *item = items.at(i);
@@ -617,19 +618,11 @@ void CXGraphicsView::keyPressEvent(QKeyEvent *event)
         if(event->modifiers() == Qt::ControlModifier)
             switchMode();//按Ctrl + R，切换模式
         break;
-        //    case Qt::Key_Plus:  // 放大
-        //        zoomIn();
-        //        break;
-        //    case Qt::Key_Minus:  // 缩小
-        //        zoomOut();
-        //        break;
-        //    case Qt::Key_Space:  // 逆时针旋转
-        //        rotate(-5);
-        //        break;
-        //    case Qt::Key_Enter:  // 顺时针旋转
-        //    case Qt::Key_Return:
-        //        rotate(5);
-        //        break;
+    case Qt::Key_A :
+        if(event->modifiers() == Qt::ControlModifier)
+            if(m_Scene)
+                m_Scene->selectAll();//Ctrl + A 选中所有的图元
+        break;
     default:
         QGraphicsView::keyPressEvent(event);
     }
@@ -658,5 +651,218 @@ void CXGraphicsView::switchMode()
         }
         m_Scene->enableEdit(!m_Scene->isEdit());
         m_bEditMode = !m_bEditMode;
+    }
+}
+
+///
+/// \brief updateItemEventMap:更新图元的事件映射关系
+/// 说明：由于指定的图元的事件号更新了，需要删除旧的事件映射关系，添加新的事件映射关系
+/// \param item:更新的图元
+/// \param oldEvtnum：图元原有的事件号
+///
+void CXGraphicsView::updateItemEventMap(QGraphicsItem *item,const QString &oldEvtnum)
+{
+    if(!item)
+        return;
+
+    //1 删除旧的关系
+    if(!oldEvtnum.isEmpty())
+    {
+        QStringList list1 = oldEvtnum.split('-');
+        if(list1.count() > 0)
+        {
+            QStringList list2 = list1.at(0).split(':');
+            //获取当前item每个事件号与其对应的事件计数器;
+            for (int i = 0; i < list2.count(); i++)
+            {
+                //将当前item的事件号与计数器保存到Map中;
+                QString sEvt = list2.at(i);
+                sEvt = sEvt.trimmed();
+                m_mapEvtNum2ItemsStart.remove(sEvt,item);//旧的关系不复存在，删除
+            }
+
+            if(list1.count() > 1)
+            {
+                QStringList list3 = list1.at(1).split(":");
+                //获取当前item每个事件号与其对应的事件计数器;
+                for (int i = 0; i < list3.count(); i++)
+                {
+                    //将当前item的事件号与计数器保存到Map中;
+                    QString sEvt = list3.at(i);
+                    sEvt = sEvt.trimmed();
+                    m_mapEvtNum2ItemsStop.remove(sEvt,item);//旧的关系不复存在，删除
+                }
+            }
+        }
+    }
+
+    //2 添加新的关系
+    if(CXAnimateBar::Type == item->type())
+    {
+        CXAnimateBar *bar = qgraphicsitem_cast<CXAnimateBar *>(item);
+        if(!bar)
+            return;
+
+        QString sEvtnum = bar->getEventNumbers();
+        if(!sEvtnum.isEmpty())
+        {
+            QStringList list1 = sEvtnum.split('-');
+            if(list1.count() > 0)
+            {
+                QStringList list2 = list1.at(0).split(':');
+                //获取当前item每个事件号与其对应的事件计数器;
+                for (int i = 0; i < list2.count(); i++)
+                {
+                    //将当前item的事件号与计数器保存到Map中;
+                    QString sEvt = list2.at(i);
+                    sEvt = sEvt.trimmed();
+                    m_mapEvtNum2ItemsStart.insert(sEvt,bar);
+                }
+
+                if(list1.count() > 1)
+                {
+                    QStringList list3 = list1.at(1).split(":");
+                    //获取当前item每个事件号与其对应的事件计数器;
+                    for (int i = 0; i < list3.count(); i++)
+                    {
+                        //将当前item的事件号与计数器保存到Map中;
+                        QString sEvt = list3.at(i);
+                        sEvt = sEvt.trimmed();
+                        m_mapEvtNum2ItemsStop.insert(sEvt,bar);
+                    }
+                }
+            }
+        }
+    }
+    else if(CXAnimatePolyline::Type == item->type())
+    {
+        CXAnimatePolyline *poly = qgraphicsitem_cast<CXAnimatePolyline *>(item);
+        if(!poly)
+            return;
+
+        QString sEvtnum = poly->getEventNumbers();
+        if(!sEvtnum.isEmpty())
+        {
+            QStringList list1 = sEvtnum.split('-');
+            if(list1.count() > 0)
+            {
+                QStringList list2 = list1.at(0).split(':');
+                //获取当前item每个事件号与其对应的事件计数器;
+                for (int i = 0; i < list2.count(); i++)
+                {
+                    //将当前item的事件号与计数器保存到Map中;
+                    QString sEvt = list2.at(i);
+                    sEvt = sEvt.trimmed();
+                    m_mapEvtNum2ItemsStart.insert(sEvt,poly);
+                }
+
+                if(list1.count() > 1)
+                {
+                    QStringList list3 = list1.at(1).split(":");
+                    //获取当前item每个事件号与其对应的事件计数器;
+                    for (int i = 0; i < list3.count(); i++)
+                    {
+                        //将当前item的事件号与计数器保存到Map中;
+                        QString sEvt = list3.at(i);
+                        sEvt = sEvt.trimmed();
+                        m_mapEvtNum2ItemsStop.insert(sEvt,poly);
+                    }
+                }
+            }
+        }
+    }
+}
+
+///
+/// \brief updateAllItemsEventMap:更新所有的图元的事件映射关系
+///
+void CXGraphicsView::updateAllItemsEventMap()
+{
+    //先清空所有的映射关系
+    m_mapEvtNum2ItemsStart.clear();
+    m_mapEvtNum2ItemsStop.clear();
+
+    //添加新的映射关系
+    if(!m_Scene)
+        return;
+    foreach (QGraphicsItem *item, m_Scene->items())
+    {
+        if(!item)
+            continue;
+
+        if(CXAnimateBar::Type == item->type())
+        {
+            CXAnimateBar *bar = qgraphicsitem_cast<CXAnimateBar *>(item);
+            if(!bar)
+                return;
+
+            QString sEvtnum = bar->getEventNumbers();
+            if(!sEvtnum.isEmpty())
+            {
+                QStringList list1 = sEvtnum.split('-');
+                if(list1.count() > 0)
+                {
+                    QStringList list2 = list1.at(0).split(':');
+                    //获取当前item每个事件号与其对应的事件计数器;
+                    for (int i = 0; i < list2.count(); i++)
+                    {
+                        //将当前item的事件号与计数器保存到Map中;
+                        QString sEvt = list2.at(i);
+                        sEvt = sEvt.trimmed();
+                        m_mapEvtNum2ItemsStart.insert(sEvt,bar);
+                    }
+
+                    if(list1.count() > 1)
+                    {
+                        QStringList list3 = list1.at(1).split(":");
+                        //获取当前item每个事件号与其对应的事件计数器;
+                        for (int i = 0; i < list3.count(); i++)
+                        {
+                            //将当前item的事件号与计数器保存到Map中;
+                            QString sEvt = list3.at(i);
+                            sEvt = sEvt.trimmed();
+                            m_mapEvtNum2ItemsStop.insert(sEvt,bar);
+                        }
+                    }
+                }
+            }
+        }
+        else if(CXAnimatePolyline::Type == item->type())
+        {
+            CXAnimatePolyline *poly = qgraphicsitem_cast<CXAnimatePolyline *>(item);
+            if(!poly)
+                return;
+
+            QString sEvtnum = poly->getEventNumbers();
+            if(!sEvtnum.isEmpty())
+            {
+                QStringList list1 = sEvtnum.split('-');
+                if(list1.count() > 0)
+                {
+                    QStringList list2 = list1.at(0).split(':');
+                    //获取当前item每个事件号与其对应的事件计数器;
+                    for (int i = 0; i < list2.count(); i++)
+                    {
+                        //将当前item的事件号与计数器保存到Map中;
+                        QString sEvt = list2.at(i);
+                        sEvt = sEvt.trimmed();
+                        m_mapEvtNum2ItemsStart.insert(sEvt,poly);
+                    }
+
+                    if(list1.count() > 1)
+                    {
+                        QStringList list3 = list1.at(1).split(":");
+                        //获取当前item每个事件号与其对应的事件计数器;
+                        for (int i = 0; i < list3.count(); i++)
+                        {
+                            //将当前item的事件号与计数器保存到Map中;
+                            QString sEvt = list3.at(i);
+                            sEvt = sEvt.trimmed();
+                            m_mapEvtNum2ItemsStop.insert(sEvt,poly);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

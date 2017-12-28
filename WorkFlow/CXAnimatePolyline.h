@@ -40,7 +40,7 @@ public:
     QString getName() const;
 
     //设置事件编号
-    void setEventNumbers(QString evts);
+    void setEventNumbers(const QString &evts);
 
     //获取事件编号
     QString getEventNumbers() const;

@@ -113,14 +113,18 @@ void COutItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 void COutItem::editProperty()
 {
     COutItemPropertyDialog dlg(this);
-         dlg.exec();
+    dlg.exec();
 }
 
-void COutItem::setEventNumbers(const QString &eventNumbers)
+void COutItem::setEventNumbers(const QString &evts)
 {
-    m_EventNumbers = eventNumbers;
-    if(!m_bEditMode)
-        m_TaskNumbersList = m_EventNumbers.split(":");
+    QString evtNew = evts.trimmed();
+    if(m_EventNumbers != evtNew)
+    {
+        m_EventNumbers = evtNew;
+        if(!m_bEditMode)
+            m_TaskNumbersList = m_EventNumbers.split(":");
+    }
 }
 
 ItemShape COutItem::getShape()

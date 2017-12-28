@@ -1,6 +1,7 @@
 ﻿#include "cbaritem.h"
-#include <QGraphicsScene>
 #include "citempropertydialog.h"
+#include "cwidget.h"
+#include <QGraphicsScene>
 
 CXAnimateBar::CXAnimateBar(bool isEditState):
     CGraphicsObjectItem(isEditState),
@@ -44,6 +45,28 @@ void CXAnimateBar::enableEditMode(bool mode)
     }
 }
 
+void CXAnimateBar::setEventNumbers(const QString &evts)
+{
+    QString evtNew = evts.trimmed();
+    if(m_EventNumbers != evtNew)
+    {
+        QString evtOld = m_EventNumbers;
+        m_EventNumbers = evtNew;
+
+        if(0 == scene())
+            return;
+
+        if(scene()->views().isEmpty())
+            return;
+
+        if(0 == scene()->views().at(0))
+            return;
+
+        CXGraphicsView *view = (CXGraphicsView *)(scene()->views().at(0));
+        if(view)
+            view->updateItemEventMap(this,evtOld);
+    }
+}
 
 QRectF CXAnimateBar::getAnmationSize()
 {

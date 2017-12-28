@@ -30,7 +30,8 @@ public:
 
     virtual void setCaptainName(const QString &name)
     {
-        m_CaptainName = name;
+        if(m_CaptainName != name)
+            m_CaptainName = name;
     }
 
     virtual QString getCaptainName()
@@ -38,9 +39,11 @@ public:
         return m_CaptainName;
     }
 
-    virtual void setEventNumbers(QString evts)
-    {
-        m_EventNumbers = evts;
+    virtual void setEventNumbers(const QString &evts)
+    {        
+        QString evtNew = evts.trimmed();
+        if(m_EventNumbers != evtNew)
+            m_EventNumbers = evtNew;
     }
 
     virtual QString getEventNumbers()

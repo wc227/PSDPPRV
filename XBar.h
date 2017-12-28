@@ -2,12 +2,8 @@
 #define XBAR_H
 
 #include <QGraphicsRectItem>
-#include <QGraphicsTextItem>
 #include <QColor>
 #include <QList>
-#include <QMenu>
-#include <QAction>
-#include <QGraphicsSceneContextMenuEvent>
 
 //自定义的条形图的基本信息
 struct BarInfo
@@ -38,15 +34,16 @@ public:
     XBar(const QRectF &rect, QGraphicsItem *parent = Q_NULLPTR);
     XBar(qreal x, qreal y, qreal w, qreal h, QGraphicsItem *parent = Q_NULLPTR);
 
+//    ~XBar();
+
+    //初始化
     void init();
 
-    void initAnimation();
-
-    void startAnimation();
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
-
+    //更新提示信息
     void updateInfo();
+
+    //绘图
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = Q_NULLPTR) Q_DECL_OVERRIDE;
 
 protected:
 //    virtual void hoverEnterEvent(QGraphicsSceneHoverEvent *event);
@@ -56,13 +53,13 @@ protected:
 
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
-
 public:
     BarInfo barInfo() const;
 
     void setBarInfo(const BarInfo &info);
 
     void setBackColor(QColor clr);
+    void setBackColor2(QColor clr);
 
     void setAlpha(qreal a);
 
@@ -74,10 +71,7 @@ protected:
     BarInfo m_BarInfo;//基本信息
 
     QColor m_BackColor;//背景色
-
-    QMenu *m_PopMenu;//右键菜单
-
-    QAction *m_Action_OpenFile;//打开文件
+    QColor m_BackColor2;//背景色2
 };
 
 

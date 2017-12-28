@@ -16,14 +16,15 @@ MainWnd::MainWnd(QWidget *parent)
     :QMainWindow(parent)
 {
     setObjectName(QStringLiteral("MainWnd"));
-//    setStyleSheet(QStringLiteral("#MainWnd{border-image: url(:/StateGreen/back.png);}"));//设置背景图
-    resize(1000, 720);
+    setWindowTitle(QStringLiteral("全景感知录波系统"));
 
-//    setWindowState(Qt::WindowMaximized);//最大化显示
+    setMinimumSize(1200,900);
+
+    //最大化显示
+    setWindowState(Qt::WindowMaximized);
 
     //全屏显示
-//    showFullScreen();
-    setWindowState(Qt::WindowFullScreen);
+//    setWindowState(Qt::WindowFullScreen);
 
     m_chartView = 0;
 
@@ -108,8 +109,26 @@ void MainWnd::initUI()
 
     createDockWnd();
 
-    connect(&m_timerErrInfo,SIGNAL(timeout()),this,SLOT(updateErrInfo()));
+    connect(&m_timerErrInfo,&QTimer::timeout,this,&MainWnd::updateErrInfo);
     m_timerErrInfo.start(2000);
+
+    //新建一个QLCDNumber对象
+    m_lcdTime = new QLCDNumber(this);
+    m_lcdTime->setObjectName("m_lcdTime");
+//    m_lcdTime->resize(200,50);
+    //设置晶体管控件QLCDNumber能显示的位数
+    m_lcdTime->setDigitCount(10);
+    //设置显示的模式为十进制
+    m_lcdTime->setMode(QLCDNumber::Dec);
+    //设置显示方式
+    m_lcdTime->setSegmentStyle(QLCDNumber::Flat);
+
+//    m_lcdTime->display(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    m_lcdTime->display(QTime::currentTime().toString("hh:mm:ss"));
+
+    connect(&m_timerUpdateTime,&QTimer::timeout,this,&MainWnd::updateTime);
+    //启动定时器
+    m_timerUpdateTime.start(1000);
 }
 
 
@@ -271,6 +290,20 @@ void MainWnd::fullScreen()
 }
 
 
+//更新时间
+void MainWnd::updateTime()
+{
+    if(m_lcdTime)
+    {
+//        //获取系统当前时间
+//        //设置晶体管控件QLCDNumber上显示的内容
+        m_lcdTime->display(QTime::currentTime().toString("hh:mm:ss"));
+
+//        m_lcdTime->display(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+    }
+}
+
+
 void MainWnd::keyPressEvent(QKeyEvent *event)
 {
     int keyid = event->key();
@@ -298,4 +331,13 @@ void MainWnd::mouseDoubleClickEvent(QMouseEvent *event)
     }
     else
         QMainWindow::mouseDoubleClickEvent(event);
+}
+
+void MainWnd::resizeEvent(QResizeEvent *event)
+{
+    if(m_lcdTime)
+    {
+        QPoint pt = this->centralWidget()->geometry().topRight();
+        m_lcdTime->setGeometry(pt.x()-150, pt.y(),150,50);
+    }
 }

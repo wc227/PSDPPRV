@@ -54,6 +54,7 @@ public slots:
 	void slotADDPathLine();
     void slotEVTFileChange(int);
     void showOutitemMsg();
+    void selectAll();//选择所有的图元
 };
 
 #endif // CGRAPHICSSCENE_H

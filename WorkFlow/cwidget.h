@@ -1,10 +1,11 @@
 ﻿#ifndef CWIDGET_H
 #define CWIDGET_H
 
-#include "cgraphicsscene.h"
 #include "tpsdevts.h"
 #include <QGraphicsView>
-//#include <QMultiMap>
+#include <QMultiMap>
+
+class CGraphicsScene;
 
 class CXGraphicsView : public QGraphicsView
 {
@@ -30,8 +31,8 @@ private:
 
 	//增加事件分类触发
     QMap<QString, int> m_mapEvtNum2Counter; //动画的事件号和事件计数值
-    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2BarsStart; //事件号与对应的多个启动动画Items;
-    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2BarsStop; //事件号与对应的多个结束动画Items;
+    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2ItemsStart; //事件号与对应的多个启动动画Items;
+    QMultiMap<QString, QGraphicsItem*> m_mapEvtNum2ItemsStop; //事件号与对应的多个结束动画Items;
     TPsdEvts m_psdEvts;			    //事件管理类，用于获取、触发事件号与计数器;
 
     QSize m_backSize;//背景大小，也就是场景大小
@@ -46,10 +47,28 @@ signals:
 
 public slots:
     virtual void setFileCfg(const QString &path); //设置配置文件路径
-    void SLOT_EvtFileChange(int);	//事件号改变
-    void btnClickTest();//单击按钮测试
+
+    //事件号改变
+    void SLOT_EvtFileChange(int);
+
+    //单击按钮测试
+    void btnClickTest();
+
     //切换模式（编辑/运行）
     void switchMode();
+
+    ///
+    /// \brief updateItemEventMap:更新图元的事件映射关系
+    /// 说明：由于指定的图元的事件号更新了，需要删除旧的事件映射关系，添加新的事件映射关系
+    /// \param item:更新的图元
+    /// \param oldEvtnum：图元原有的事件号
+    ///
+    void updateItemEventMap(QGraphicsItem *item,const QString &oldEvtnum);
+
+    ///
+    /// \brief updateAllItemsEventMap:更新所有的图元的事件映射关系
+    ///
+    void updateAllItemsEventMap();
 
 protected:
     //定时器检测事件号是否发生改变

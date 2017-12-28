@@ -9,7 +9,6 @@
 #include <QTextCodec>
 #include <QFont>
 
-
 XBarChart::XBarChart(QWidget *parent)
     : QGraphicsView(parent)
 {    
@@ -54,28 +53,22 @@ void XBarChart::initChart()
     m_TitleHeight = m_mySettings->value("BarChart/TitleHeight",30).toInt();
     m_TitleTxt = QStringLiteral("条形图");
     m_Title = new QGraphicsTextItem();
-    m_Title->setPlainText(m_TitleTxt);//设置显示标题
-    QFont font;
-//    font.setFamily("楷体");
-    font.setPointSize(14);
-    font.setWeight(QFont::Normal);
-    font.setItalic(false);
-    font.setUnderline(false);
-    m_Title->setFont(font);//设置字体
-    m_Title->setDefaultTextColor(Qt::blue);//设置颜色
-
-    //设置居中显示
-    QTextBlockFormat format;
-    format.setAlignment(Qt::AlignCenter);
-    QTextCursor cursor = m_Title->textCursor();
-    cursor.select(QTextCursor::Document);
-    cursor.mergeBlockFormat(format);
-    cursor.clearSelection();
-    m_Title->setTextCursor(cursor);
-
+    m_Scene->addItem(m_Title);
+    QString sTitle = QString("<p style=\"color:blue;font:normal bold 20px/22px 黑体;text-align:center\">%1</p>").arg(m_TitleTxt);
+    m_Title->setHtml(sTitle);//设置显示标题
     m_Title->setTextWidth(this->width());//设置宽度
     m_Title->setPos(0,m_MarginTop);
-    m_Scene->addItem(m_Title);
+
+    //setPlainText时才有用
+//    QFont font;
+////    font.setFamily("楷体");
+//    font.setPointSize(14);
+//    font.setWeight(QFont::Normal);
+//    font.setItalic(false);
+//    font.setUnderline(false);
+//    m_Title->setFont(font);//设置字体
+//    m_Title->setDefaultTextColor(Qt::blue);//设置颜色
+
     m_TitleRect = QRect(m_MarginLeft,
                         m_MarginTop,
                         this->width() - m_MarginLeft - m_MarginRight,
@@ -83,7 +76,7 @@ void XBarChart::initChart()
 
     m_LegendVisible = true;
     m_LegendPosition = LP_TOP;
-    m_LegendWidth = m_mySettings->value("BarChart/LegendWidth",150).toInt();
+    m_LegendWidth = m_mySettings->value("BarChart/LegendWidth",180).toInt();
     m_LegendHeight = m_mySettings->value("BarChart/LegendHeight",30).toInt();
     m_LegendRect = QRect(m_MarginLeft,
                          m_MarginTop + m_TitleHeight,
@@ -159,7 +152,7 @@ void XBarChart::initChart()
     m_Scene->addWidget(m_LblPageNO2);
     x = this->width() - 30;
     y = this->height() / 2 - m_BtnPageUp->height() - m_LblPageNO2->height()/2;
-    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());    
+    m_BtnPageUp->setGeometry(x,y,m_BtnPageUp->width(),m_BtnPageUp->height());
     y = this->height() / 2 - m_LblPageNO2->height()/2;
     m_LblPageNO2->setGeometry(x,y,m_LblPageNO2->width(),m_LblPageNO2->height());
     y = this->height() / 2 + m_LblPageNO2->height()/2;
@@ -170,12 +163,13 @@ void XBarChart::initChart()
     connect(m_BtnPageUp,&QPushButton::clicked,this,&XBarChart::pageUp);
     connect(m_BtnPageDown,&QPushButton::clicked,this,&XBarChart::pageDown);
 
-    m_Type2Color.insert(1,QColor(45,187,170));
-    m_Type2Color.insert(2,QColor(111,178,230));
-    m_Type2Color.insert(3,QColor(255,144,138));
-//    m_Type2Color.insert(1,Qt::darkGreen);
-//    m_Type2Color.insert(2,Qt::blue);
-//    m_Type2Color.insert(3,Qt::red);
+//    m_Type2Color.insert(1,QColor::fromRgb(253,98,94));
+//    m_Type2Color.insert(2,QColor::fromRgb(28,126,191));
+//    m_Type2Color.insert(3,Qt::darkGreen);
+
+    m_Type2Color.insert(1,Qt::red);
+    m_Type2Color.insert(2,Qt::blue);
+    m_Type2Color.insert(3,Qt::green);
 }
 
 
@@ -185,6 +179,7 @@ void XBarChart::updatePositionAndSize()
     updateTitleRect();
     updateLegendRect();
     updateMainPlotRect();
+    updateNaviPos();
 }
 
 //更新标题大小和位置
@@ -284,7 +279,7 @@ void XBarChart::setMarginLeft(int val)
     if(m_MarginLeft != val)
     {
         m_MarginLeft = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -306,7 +301,7 @@ void XBarChart::setMarginRight(int val)
     if(m_MarginRight != val)
     {
         m_MarginRight = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -328,7 +323,7 @@ void XBarChart::setMarginTop(int val)
     if(m_MarginTop != val)
     {
         m_MarginTop = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -350,7 +345,7 @@ void XBarChart::setMarginBottom(int val)
     if(m_MarginBottom != val)
     {
         m_MarginBottom = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -367,7 +362,7 @@ void XBarChart::setBackColor(QColor val)
     if(m_BackColor != val)
     {
         m_BackColor = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -377,7 +372,8 @@ void XBarChart::setTitle(QString sTitle)
     if(m_TitleTxt != sTitle)
     {
         m_TitleTxt = sTitle;
-        m_Title->setPlainText(m_TitleTxt);
+        QString sTitle = QString("<p style=\"color:blue;font:normal bold 20px/22px 黑体;text-align:center\">%1</p>").arg(m_TitleTxt);
+        m_Title->setHtml(sTitle);//设置显示标题
     }
 }
 
@@ -399,7 +395,7 @@ void XBarChart::setTitleVisible(bool vis)
     if(m_Title->isVisible() != vis)
     {
         m_Title->setVisible(vis);
-        this->update();
+        repaintChart();
     }
 }
 
@@ -421,7 +417,7 @@ void XBarChart::setTitleHeight(int val)
     {
         m_TitleHeight = val;
         if(isTitleVisible())
-            this->update();
+            repaintChart();
     }
 }
 
@@ -437,7 +433,7 @@ void XBarChart::setLegendVisible(bool val)
     if(m_LegendVisible != val)
     {
         m_LegendVisible = val;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -447,7 +443,7 @@ void XBarChart::setLegendPosition(LegendPosition pos)
     if(m_LegendPosition != pos)
     {
         m_LegendPosition = pos;
-        this->update();
+        repaintChart();
     }
 }
 
@@ -469,7 +465,7 @@ void XBarChart::setGridVisible(bool val)
     if(m_GridVisible != val)
     {
         m_GridVisible = val;
-        this->update();
+        update();
     }
 }
 
@@ -505,18 +501,19 @@ void XBarChart::setMaxGroupNumInPage(int val)
             for(int i = m_MaxGroupNumInPage - 1; i >= val - 1; --i)
             {
                 QGraphicsTextItem *textItem = m_TimeItems.at(i);
-                m_Scene->removeItem(textItem);
+                m_Scene->removeItem(textItem);//(i.e., QGraphicsScene will no longer delete item when destroyed).
             }
         }
 
         m_MaxGroupNumInPage = val;
 
-        if(0 == m_BarGroups.count() % m_MaxGroupNumInPage)
-            m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage;
+        int nGroups = m_BarItemGroups.count();
+        if(0 == nGroups % m_MaxGroupNumInPage)
+            m_HPageCount = nGroups / m_MaxGroupNumInPage;
         else
-            m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage + 1;
+            m_HPageCount = nGroups / m_MaxGroupNumInPage + 1;
         m_HPageNo = 1;//定位到第一页
-        this->update();
+        repaintChart();
     }
 }
 
@@ -531,8 +528,8 @@ void XBarChart::setMaxBarNumOfGroupInPage(int val)
 {
     if(val < 2)
         val = 2;
-    else if(val > 10)
-        val = 10;
+    else if(val > 20)
+        val = 20;
 
     if(m_MaxBarNumOfGroupInPage != val)
     {
@@ -546,7 +543,7 @@ void XBarChart::setMaxBarNumOfGroupInPage(int val)
         if(m_VPageNo > m_VPageCount)
             m_VPageNo = m_VPageCount;
 
-        this->update();
+        repaintChart();
     }
 }
 
@@ -590,24 +587,58 @@ void XBarChart::setTimeInterval(int val)
 
 
 //添加一组条形图
-void XBarChart::addBars(BarInfoList bars)
+void XBarChart::addBars(const BarInfoList &bars)
 {
-    if(0 == bars.count())
+    if(bars.isEmpty())
         return;
 
-    m_BarGroups.append(bars);//添加一组新的条形图
+    BarItemList bil;
+    foreach (BarInfo bi, bars)
+    {
+        XBar *newBar = new XBar();
+        bil.append(newBar);
+        m_Scene->addItem(newBar);
+        newBar->setBarInfo(bi);
+
+        int type = 1;
+        if(bi.m_MarginV > 0 && bi.m_MarginI > 0)
+        {
+            type = 3;
+            newBar->setBackColor(m_Type2Color.value(1));
+            newBar->setBackColor2(m_Type2Color.value(2));
+        }
+        else if(bi.m_MarginV > 0)
+        {
+            type = 1;
+            newBar->setBackColor(m_Type2Color.value(type));
+            newBar->setBackColor2(m_Type2Color.value(type));
+        }
+        else if(bi.m_MarginI > 0)
+        {
+            type = 2;
+            newBar->setBackColor(m_Type2Color.value(type));
+            newBar->setBackColor2(m_Type2Color.value(type));
+        }
+    }
+    m_BarItemGroups.append(bil);//添加一组新的条形图
     m_Times.append(bars.at(0).m_Time);//添加时间
 
     //如果组数超出最大值，就删除第1组条形图
-    if(m_BarGroups.count() > m_BarGroupsCapacity)
+    if(m_BarItemGroups.count() > m_BarGroupsCapacity)
     {
-        m_BarGroups.removeFirst();
+        BarItemList lstItems = m_BarItemGroups.first();
+        foreach (XBar* bar, lstItems)
+        {
+            m_Scene->removeItem(bar);//(i.e., QGraphicsScene will no longer delete item when destroyed).
+        }
+        m_BarItemGroups.removeFirst();
+
         m_Times.removeFirst();
     }
 
     //重新计算条形图组中条形图数目的最大值
     m_MaxBarNumOfGroup = 0;
-    foreach(BarInfoList lbi, m_BarGroups)
+    foreach(BarItemList lbi, m_BarItemGroups)
     {
         int cnt = lbi.count();
         if(m_MaxBarNumOfGroup < cnt)
@@ -621,34 +652,30 @@ void XBarChart::addBars(BarInfoList bars)
         m_VPageCount = m_MaxBarNumOfGroup / m_MaxBarNumOfGroupInPage + 1;
 
     //更新水平方向页面数目
-    if(0 == m_BarGroups.count() % m_MaxGroupNumInPage)
-         m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage;
+    int nGroups = m_BarItemGroups.count();
+    if(0 == nGroups % m_MaxGroupNumInPage)
+         m_HPageCount = nGroups / m_MaxGroupNumInPage;
     else
-        m_HPageCount = m_BarGroups.count() / m_MaxGroupNumInPage + 1;
+        m_HPageCount = nGroups / m_MaxGroupNumInPage + 1;
 
     m_HPageNo = m_HPageCount;//自动跳转到新的页面
     m_VPageNo = 1;
 
-    repaintChart();
-
-    update();
-}
-
-//添加一个图元
-void XBarChart::addBarItem(XBar *item)
-{
-    m_Scene->addItem(item);
-    m_BarItems.append(item);
+//    repaintChart();
+    updateBars();
 }
 
 //清空所有的条形图
 void XBarChart::clearBarItems()
 {
-    foreach (XBar *bar, m_BarItems)
+    foreach (BarItemList bil, m_BarItemGroups)
     {
-        m_Scene->removeItem(bar);
+        foreach (XBar *bar, bil)
+        {
+            m_Scene->removeItem(bar);//(i.e., QGraphicsScene will no longer delete item when destroyed).
+        }
     }
-    m_BarItems.clear();
+    m_BarItemGroups.clear();
 }
 
 //重新绘制图标
@@ -656,15 +683,15 @@ void XBarChart::repaintChart()
 {
     updatePositionAndSize();
 
-    QPainter p(viewport());
     updateTitle();
-    drawLegend(&p);
-    drawMainArea(&p);
-    drawGrid(&p);
-
     updateAxisX();
     updateBars();
     updateNaviStatus();
+
+    QPainter p(viewport());
+    drawLegend(&p);
+    drawMainArea(&p);
+    drawGrid(&p);
 }
 
 
@@ -703,10 +730,22 @@ void XBarChart::drawLegend(QPainter *painter)
             h = m_LegendHeight;
 
             //画方块
-            QColor clr = m_Type2Color.value(type);
-            painter->setPen(clr);
             QRectF rectSquare(x,y + (h-squareSize)/2,squareSize,squareSize);
-            painter->fillRect(rectSquare,QBrush(clr));
+            if(type == 3)
+            {
+                QLinearGradient gradient;
+                gradient.setStart(rectSquare.topLeft().toPoint());
+                gradient.setFinalStop(rectSquare.topRight().toPoint());
+                gradient.setColorAt(0, m_Type2Color.value(1));
+                gradient.setColorAt(1, m_Type2Color.value(2));
+                QBrush brush(gradient);
+                painter->fillRect(rectSquare,QBrush(gradient));
+            }
+            else
+            {
+                QColor clr = m_Type2Color.value(type);
+                painter->fillRect(rectSquare,QBrush(clr));
+            }
 
             //画类型
             painter->setPen(Qt::black);
@@ -725,6 +764,7 @@ void XBarChart::drawLegend(QPainter *painter)
             default:
                 break;
             }
+            painter->setFont(QFont(QStringLiteral("黑体"),12));
             painter->drawText(rectType,Qt::AlignLeft | Qt::AlignVCenter,sTitle);
 
             i++;
@@ -773,6 +813,7 @@ void XBarChart::drawLegend(QPainter *painter)
             default:
                 break;
             }
+            painter->setFont(QFont(QStringLiteral("黑体"),12));
             painter->drawText(rectType,Qt::AlignLeft | Qt::AlignVCenter,sTitle);
 
             i++;
@@ -852,15 +893,6 @@ void XBarChart::updateTitle()
     if(!isTitleVisible())
         return;
 
-    //设置居中显示
-    QTextBlockFormat format;
-    format.setAlignment(Qt::AlignCenter);
-    QTextCursor cursor = m_Title->textCursor();
-    cursor.select(QTextCursor::Document);
-    cursor.mergeBlockFormat(format);
-    cursor.clearSelection();
-    m_Title->setTextCursor(cursor);
-
     m_Title->setPos(m_TitleRect.x(),m_TitleRect.y());
     m_Title->setTextWidth(m_TitleRect.width());//设置宽度
 }
@@ -876,20 +908,20 @@ void XBarChart::updateAxisX()
 
     qreal gridWid = wid/m_MaxGroupNumInPage;//网格宽度
     for(int vgridNo(0),groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
-        groupID < m_BarGroups.count() && vgridNo < m_MaxGroupNumInPage;
+        groupID < m_BarItemGroups.count() && vgridNo < m_MaxGroupNumInPage;
         ++groupID, ++vgridNo)
     {
-        BarInfoList lbi = m_BarGroups.at(groupID);
+        BarItemList lbi = m_BarItemGroups.at(groupID);
         if(lbi.isEmpty())
             continue;
 
         x = m_MainPlotRect.x() + gridWid * vgridNo;
 
         //计算每组（列）中距当前时间最远的时间
-        QDateTime oldDT = s_getFormatDateTime(lbi.at(0).m_Time);
-        foreach (BarInfo bi, lbi)
+        QDateTime oldDT = s_getFormatDateTime(lbi.at(0)->barInfo().m_Time);
+        foreach (XBar *bar, lbi)
         {
-            QDateTime tempDT = s_getFormatDateTime(bi.m_Time);
+            QDateTime tempDT = s_getFormatDateTime(bar->barInfo().m_Time);
             if(tempDT < oldDT)
                 oldDT = tempDT;
         }
@@ -897,11 +929,11 @@ void XBarChart::updateAxisX()
         //计算每组（列）中最长持续时间，用来表示宽度
         long maxDuriation = 0;//最大持续时间（单位：秒）
         long oldTime = oldDT.toSecsSinceEpoch();
-        foreach (BarInfo bi, lbi)
+        foreach (XBar *bar, lbi)
         {
-            QDateTime tempDT = s_getFormatDateTime(bi.m_Time);
+            QDateTime tempDT = s_getFormatDateTime(bar->barInfo().m_Time);
             long tempTime = tempDT.toSecsSinceEpoch();
-            long tempDuriation = tempTime - oldTime + bi.m_Duration;
+            long tempDuriation = tempTime - oldTime + bar->barInfo().m_Duration;
             if(maxDuriation < tempDuriation)
                 maxDuriation = tempDuriation;
         }
@@ -921,10 +953,17 @@ void XBarChart::updateAxisX()
 //更新条形图位置和大小
 void XBarChart::updateBars()
 {
-    clearBarItems();
-
-    if(0 == m_BarGroups.count())
+    if(0 == m_BarItemGroups.count())
         return;
+
+    foreach (BarItemList bil, m_BarItemGroups)
+    {
+        foreach (XBar *bar, bil)
+        {
+            if(bar)
+                bar->setVisible(false);//先将所有的隐藏
+        }
+    }
 
     qreal x = m_MainPlotRect.x();
     qreal y = m_MainPlotRect.y();
@@ -940,33 +979,36 @@ void XBarChart::updateBars()
 
     //当前页面 m_HPageNo,m_VPageNo
     for(int groupID = m_MaxGroupNumInPage * (m_HPageNo - 1);
-        groupID < m_BarGroups.count() && groupID < m_MaxGroupNumInPage * m_HPageNo;
+        groupID < m_BarItemGroups.count() && groupID < m_MaxGroupNumInPage * m_HPageNo;
         ++groupID)
     {
-        BarInfoList lbi = m_BarGroups.at(groupID);
+        BarItemList lbi = m_BarItemGroups.at(groupID);
+        if(lbi.isEmpty())
+            continue;
 
         int gNo = groupID - m_MaxGroupNumInPage * (m_HPageNo - 1);
         x = m_MainPlotRect.x() + gridWid * gNo;
         bot = m_MainPlotRect.bottom();
-        if(lbi.isEmpty())
-            continue;
 
         //当前组中最大持续时间
-        QDateTime oldDT = s_getFormatDateTime(lbi.at(0).m_Time);
-        foreach (BarInfo bi, lbi)
+        XBar *bar0 = lbi.at(0);
+        if(!bar0)
+            continue;
+        QDateTime oldDT = s_getFormatDateTime(bar0->barInfo().m_Time);
+        foreach (XBar* bar, lbi)
         {
-            QDateTime tempDT = s_getFormatDateTime(bi.m_Time);
+            QDateTime tempDT = s_getFormatDateTime(bar->barInfo().m_Time);
             if(tempDT < oldDT)
                 oldDT = tempDT;
         }
 
         long maxDuriation = 0;//最大持续时间（单位：秒）
         long oldTime = oldDT.toSecsSinceEpoch();
-        foreach (BarInfo bi, lbi)
+        foreach (XBar* bar, lbi)
         {
-            QDateTime tempDT = s_getFormatDateTime(bi.m_Time);
+            QDateTime tempDT = s_getFormatDateTime(bar->barInfo().m_Time);
             long tempTime = tempDT.toSecsSinceEpoch();
-            long tempDuriation = tempTime - oldTime + bi.m_Duration;
+            long tempDuriation = tempTime - oldTime + bar->barInfo().m_Duration;
             if(maxDuriation < tempDuriation)
                 maxDuriation = tempDuriation;
         }
@@ -975,28 +1017,18 @@ void XBarChart::updateBars()
             barID < lbi.count() && barID < m_MaxBarNumOfGroupInPage * m_VPageNo;
             ++barID)
         {
-            BarInfo bi = lbi.at(barID);
-            XBar* bar = new XBar();
-            bar->setBarInfo(bi);
-            addBarItem(bar);
+            XBar* bar = lbi.at(barID);
+            if(!bar)
+                continue;
 
-            //提取颜色
-            int type;
-            if(bi.m_MarginV > 0 && bi.m_MarginI > 0)
-                type = 3;
-            else if(bi.m_MarginV > 0)
-                type = 1;
-            else if(bi.m_MarginI > 0)
-                type = 2;
-            QColor clr = m_Type2Color.value(type,Qt::darkMagenta);
+            bar->setVisible(true);//显示
 
-            bar->setBackColor(clr);
             barTop = bot - barHei;
-            barWid = gridWid * bi.m_Duration / (maxDuriation * 1.0f);
+            barWid = gridWid * bar->barInfo().m_Duration / (maxDuriation * 1.0f);
             QRectF rect(0,0,barWid,barHei);
             bar->setRect(rect);
 
-            QDateTime tempDT = s_getFormatDateTime(bi.m_Time);
+            QDateTime tempDT = s_getFormatDateTime(bar->barInfo().m_Time);
             long tempTime = tempDT.toSecsSinceEpoch();
             qreal offLeft = gridWid * (tempTime - oldTime) / (maxDuriation * 1.0f);
             bar->setPos(x + offLeft, barTop);
@@ -1069,14 +1101,25 @@ void XBarChart::initPopMenu()
 
 void XBarChart::paintEvent(QPaintEvent *event)
 {
-    repaintChart();
     QGraphicsView::paintEvent(event);
+
+//    repaintChart();
+    QPainter p(viewport());
+    drawLegend(&p);
+    drawMainArea(&p);
+    drawGrid(&p);
+
+    updateNaviStatus();
 }
 
 void XBarChart::resizeEvent(QResizeEvent *event)
 {
     setSceneRect(0,0,this->width(),this->height());//随时更新场景大小，刚好布满整个view
-    updateNaviPos();
+
+    updatePositionAndSize();
+    updateTitle();
+    updateAxisX();
+    updateBars();
 }
 
 void XBarChart::mouseDoubleClickEvent(QMouseEvent *event)

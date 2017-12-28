@@ -59,8 +59,8 @@ protected:
     int m_MaxBarNumOfGroup;//条形图组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元
-    QList<BarInfoList> m_BarGroups;//条形图组
-    QList<XBar *> m_BarItems;//所有的条形图
+//    QList<BarInfoList> m_BarInfoGroups;//条形图组
+    QList<BarItemList> m_BarItemGroups;//所有的条形图
     int m_BarGroupsCapacity;//条形图组的最大容量（也就是最多可容纳多少组条形图）
     QStringList m_Times;//条形图组对应的时间
 
@@ -200,10 +200,7 @@ public:
     void setTimeInterval(int val);
 
     //添加一组条形图
-    void addBars(BarInfoList bars);
-
-    //添加一个图元
-    void addBarItem(XBar *item);
+    void addBars(const BarInfoList &bars);
 
     //清空所有的条形图
     void clearBarItems();

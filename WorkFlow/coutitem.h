@@ -78,7 +78,7 @@ public:
 
     int type() const { return Type;} //COutItem自定义type，重新type
 
-    void setEventNumbers(const QString &eventNumbers);//设置事件号
+    void setEventNumbers(const QString &evts);//设置事件号
 
     ItemShape getShape(); //获取item形状
 

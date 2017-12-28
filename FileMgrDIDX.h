@@ -18,7 +18,7 @@ public:
     //打开数据文件
     virtual int openFile();
 
-    BarInfoList getData() const
+    BarInfoList& getData()
     {
         return m_Data;
     }
