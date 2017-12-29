@@ -31,9 +31,9 @@ background: red;
 }
 
 /*主窗口上的标题*/
-QLabel#m_lblTitleZone{
-border-image: url(:/StateGreen/logo.png);/*设置背景图片*/
-}
+/*QLabel#m_lblTitleZone{
+border-image: url(:/StateGreen/logo.png);
+}*/
 
 /*多标签控件的页面*/
 QTabWidget::pane{
@@ -43,35 +43,38 @@ background:url(:/StateGreen/back_main.png);/*设置背景图片*/
 }
 
 /*多标签控件的标签栏*/
-QTabWidget::tab-bar{
-left: 255px;/*距离左侧的像素*/
+/*QTabWidget::tab-bar{*/
+/*left: 365px;*//*距离左侧的像素*/
 /*alignment:center;*//*居中显示*/
-}
+/*}*/
 
 /*多标签控件的标签*/
 QTabBar::tab{
-width:150px;/**/
-height:50px;/*设置高度*/
+/*border-left: 1px solid white;*/
+border-right: 1px solid white;
+width:140px;/**/
+/*height:60px;设置高度*/
 background:transparent;
 /*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #FFFFFF, stop: 0.2 #007d64,stop: 0.5 #007d64, stop: 0.8 #007d64, stop: 1.0 #FFFFFF);*//*使用渐变色*/
 color:white;
 min-width:30px;
 min-height:10px;
-font:normal bold 15px/22px 雅黑;
+font:normal normal 16px 黑体;
 }
 
 QTabBar::tab:hover{
-background:rgb(255, 255, 255, 100);
+background:rgb(244,238,154, 125);
 }
 
 QTabBar::tab:selected{
-border:1px;
+border:0px;
 border-color: #007d64;
-background:#FFD700;/**/
+/*background:white;*/
+background:rgb(244,238,154);
 /*background:qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,stop: 0 #007d64, stop: 0.5 #FFFFFF, stop: 1.0 #FFFFFF);使用渐变色：上绿下白*/
 /*background:qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,stop: 0 #007d64, stop: 0.1 #FFFFFF, stop: 0.9 #FFFFFF, stop: 1.0 #007d64);*//*使用渐变色：左右两侧绿，中间白*/
 color:#007d64;
-/*font: bold;字体变粗*/
+font: bold 17px;/*字体变大变粗*/
 }
 
 /*水平滚动条*/

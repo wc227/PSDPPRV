@@ -71,21 +71,49 @@ void XBar::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWid
 //    QGraphicsRectItem::paint(painter, option, widget);
     painter->save();
 
-    //设置透明度(计算出来的)
-//    if(m_BarInfo.m_MarginV > 0 && m_BarInfo.m_MarginI > 0 )
-//        m_BackColor.setAlphaF(0.5 + (m_BarInfo.m_MarginV + m_BarInfo.m_MarginI) * 0.5);
-//    else if(m_BarInfo.m_MarginV > 0)
-//        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginV);
-//    else if(m_BarInfo.m_MarginI > 0 )
-//        m_BackColor.setAlphaF(0.5 + m_BarInfo.m_MarginI);
 
-    QLinearGradient gradient;
-    gradient.setStart(rect().topLeft().toPoint());
-    gradient.setFinalStop(rect().topRight().toPoint());
-    gradient.setColorAt(0, m_BackColor);
-    gradient.setColorAt(1, m_BackColor2);
-    QBrush brush(gradient);
-    painter->fillRect(rect(),brush);
+
+
+    //设置透明度(计算出来的)    
+    //电压裕度0.5-1.5，低于0.5按0.5算，高于1.5按1.5算
+    double mv = m_BarInfo.m_MarginV;
+    if(mv < 0.5)
+        mv = 0.5;
+    else if(mv > 1.5)
+        mv = 1.5;
+    double alf1 = 0.5 + (mv - 0.5) * 0.5 / (1.5 - 0.5);
+
+    //电流裕度0-2，低于0按0算，高于2按1算
+    double mi = m_BarInfo.m_MarginI;
+    if(mi < 0)
+        mi = 0;
+    else if(mi > 2)
+        mi = 2;
+    double alf2 = 0.5 + (mi - 0) * 0.5 / (2 - 0);
+
+    if(m_BarInfo.m_MarginV > 0 && m_BarInfo.m_MarginI)
+    {
+        m_BackColor.setAlphaF(alf1);
+        m_BackColor2.setAlphaF(alf2);
+        QLinearGradient gradient;
+        gradient.setStart(rect().topLeft().toPoint());
+        gradient.setFinalStop(rect().topRight().toPoint());
+        gradient.setColorAt(0, m_BackColor);
+        gradient.setColorAt(1, m_BackColor2);
+        painter->fillRect(rect(),QBrush(gradient));
+    }
+    else if(m_BarInfo.m_MarginV > 0)
+    {
+        m_BackColor.setAlphaF(alf1);
+//        m_BackColor2.setAlphaF(alf1);
+        painter->fillRect(rect(),QBrush(m_BackColor));
+    }
+    else if(m_BarInfo.m_MarginI > 0)
+    {
+        m_BackColor.setAlphaF(alf2);
+//        m_BackColor2.setAlphaF(alf2);
+        painter->fillRect(rect(),QBrush(m_BackColor));
+    }
 
     painter->setPen(Qt::white);
     painter->drawRect(rect());

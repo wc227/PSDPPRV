@@ -661,7 +661,6 @@ void XBarChart::addBars(const BarInfoList &bars)
     m_HPageNo = m_HPageCount;//自动跳转到新的页面
     m_VPageNo = 1;
 
-//    repaintChart();
     updateBars();
 }
 
@@ -764,7 +763,7 @@ void XBarChart::drawLegend(QPainter *painter)
             default:
                 break;
             }
-            painter->setFont(QFont(QStringLiteral("黑体"),12));
+            painter->setFont(QFont(QStringLiteral("黑体"),11));
             painter->drawText(rectType,Qt::AlignLeft | Qt::AlignVCenter,sTitle);
 
             i++;
@@ -1103,23 +1102,18 @@ void XBarChart::paintEvent(QPaintEvent *event)
 {
     QGraphicsView::paintEvent(event);
 
-//    repaintChart();
-    QPainter p(viewport());
-    drawLegend(&p);
-    drawMainArea(&p);
-    drawGrid(&p);
+    repaintChart();
 
-    updateNaviStatus();
+//    QPainter p(viewport());
+//    drawLegend(&p);
+//    drawMainArea(&p);
+//    drawGrid(&p);
+//    updateNaviStatus();
 }
 
 void XBarChart::resizeEvent(QResizeEvent *event)
 {
     setSceneRect(0,0,this->width(),this->height());//随时更新场景大小，刚好布满整个view
-
-    updatePositionAndSize();
-    updateTitle();
-    updateAxisX();
-    updateBars();
 }
 
 void XBarChart::mouseDoubleClickEvent(QMouseEvent *event)
@@ -1190,7 +1184,7 @@ void XBarChart::pageLeft()
     m_HPageNo--;
     if(m_HPageNo < 1)
         m_HPageNo = 1;
-    update();
+    updateBars();
 }
 
 //右一页
@@ -1199,7 +1193,7 @@ void XBarChart::pageRight()
     m_HPageNo++;
     if(m_HPageNo > m_HPageCount)
         m_HPageNo = m_HPageCount;
-    update();
+    updateBars();
 }
 
 //上一页
@@ -1208,7 +1202,7 @@ void XBarChart::pageUp()
     m_VPageNo++;
     if(m_VPageNo > m_VPageCount)
         m_VPageNo = m_VPageCount;
-    update();
+    updateBars();
 }
 
 //下一页
@@ -1217,7 +1211,7 @@ void XBarChart::pageDown()
     m_VPageNo--;
     if(m_VPageNo < 1)
         m_VPageNo = 1;
-    update();
+    updateBars();
 }
 
 

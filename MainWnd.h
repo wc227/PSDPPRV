@@ -96,12 +96,13 @@ private:
     QMap<int,bool> m_mapTabInit;//标签页面是否初始化
 
     QSettings *m_mySettings;//配置信息
+    int m_tabBarHeight;//标签栏高度
 
     FileMgrErrInfo m_fmErr;//错误信息管理
     QTimer m_timerErrInfo;//检测错误预警文件的定时器
 
     QLCDNumber *m_lcdTime;//显示时间控件
-    QTimer m_timerUpdateTime;//更新时间的定时器
+    QTimer m_timerUpdateTime;//更新时间的定时器 
 };
 
 #endif // _MAINWND_H_20170928_

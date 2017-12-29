@@ -64,15 +64,11 @@ void MainWnd::createActions()
 
 void MainWnd::initUI()
 {
+    m_tabBarHeight = 60;
+
     m_tabMain = new QTabWidget(this);
     m_tabMain->setObjectName(QStringLiteral("m_tabMain"));
     m_tabMain->setIconSize(QSize(24,24));
-    //距离左侧450px,正好给m_pAfterTabLabel留有余地，并设置背景图片
-//    m_tabMain->setStyleSheet(QStringLiteral("#m_tabMain::pane{border-image: url(:/StateGreen/back_main.png);}\n"//背景图
-//                                            "#m_tabMain::tab-bar{left: 500;}\n"//标签页左侧距离
-//                                            "QTabBar::tab{height:50px;}"));//tab标签页高度
-//    m_tabMain->setStyleSheet(QStringLiteral("#m_tabMain::tab-bar{left: 500;}\n"//标签页左侧距离
-//                                            "QTabBar::tab{height:50px;}"));//tab标签页高度
 
     m_wndWorkFlow = new CWidgetWork();
     connect(m_wndWorkFlow,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
@@ -88,7 +84,7 @@ void MainWnd::initUI()
     m_tabMain->addTab(m_wndWebMap3/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("录波装置分布"));
 
     createBarChart();
-    m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站数据时序状态"));
+    m_tabMain->addTab(m_chartView/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("场站时序状态"));
 
     m_tabMain->setCurrentIndex(0);
     setCentralWidget(m_tabMain);
@@ -100,12 +96,21 @@ void MainWnd::initUI()
     }
 
     m_lblTitleZone = new QLabel(this);
-//    m_lblTitleZone->move(5,5);//移动到界面左上角（10，10）的位置，更好看一些
     m_lblTitleZone->raise();//移动到界面的上层，以免被其他东西遮挡
     m_lblTitleZone->setObjectName(QStringLiteral("m_lblTitleZone"));
-
-    m_lblTitleZone->resize(250,50);//该大小与实际的图title保持同样的长宽比，否则会变形
+    QString fileLogo(":/StateGreen/logo.png");
+    QPixmap pixmap(fileLogo);
+    QSize szLogo = pixmap.size();
+    int widShow = szLogo.width() * m_tabBarHeight / szLogo.height();//显示宽度
+    QString ss = QString("border-image: url(%1);width:%2;height:%3")
+            .arg(fileLogo).arg(widShow).arg(m_tabBarHeight);
+    m_lblTitleZone->setStyleSheet(ss);
+    m_lblTitleZone->resize(widShow,m_tabBarHeight);//该大小与实际的图title保持同样的长宽比，否则会变形
 //    m_lblTitleZone->setStyleSheet("#m_lblTitleZone{border-image: url(:/StateGreen/logo.png);}");
+
+    QString ss2 = QString("#m_tabMain::tab-bar{left: %1px;}\nQTabBar::tab{height:%2px;}")
+            .arg(widShow + 5).arg(m_tabBarHeight);
+    m_tabMain->setStyleSheet(ss2);
 
     createDockWnd();
 
@@ -338,6 +343,6 @@ void MainWnd::resizeEvent(QResizeEvent *event)
     if(m_lcdTime)
     {
         QPoint pt = this->centralWidget()->geometry().topRight();
-        m_lcdTime->setGeometry(pt.x()-150, pt.y(),150,50);
+        m_lcdTime->setGeometry(pt.x()-150, pt.y(),150,60);
     }
 }
