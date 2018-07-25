@@ -1,4 +1,4 @@
-﻿#include "FormWeb.h"
+#include "FormWeb.h"
 #include "webaxwidget.h"
 #include <QVBoxLayout>
 
@@ -26,4 +26,5 @@ FormWebBase::~FormWebBase()
 void FormWebBase::loadUrl(QString url)
 {
     m_webWidget->dynamicCall("Navigate(const QString&)",url);
+    m_webWidget->setFocus();
 }

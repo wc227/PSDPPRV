@@ -1,4 +1,4 @@
-﻿#include "DlgXBarChartProperty.h"
+#include "DlgXBarChartProperty.h"
 #include "ui_DlgXBarChartProperty.h"
 #include <QColorDialog>
 

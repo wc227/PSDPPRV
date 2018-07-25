@@ -1,4 +1,4 @@
-﻿#include "XBar.h"
+#include "XBar.h"
 #include <QPainter>
 #include <QMessageBox>
 #include <QProcess>

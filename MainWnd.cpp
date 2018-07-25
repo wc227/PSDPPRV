@@ -1,4 +1,4 @@
-﻿#include "MainWnd.h"
+#include "MainWnd.h"
 #include "FormWeb.h"
 #include "XxwDockWidget.h"
 #include <QApplication>
@@ -70,11 +70,11 @@ void MainWnd::initUI()
     m_tabMain->setObjectName(QStringLiteral("m_tabMain"));
     m_tabMain->setIconSize(QSize(24,24));
 
-    m_wndWorkFlow = new CWidgetWork();
-    connect(m_wndWorkFlow,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
+    m_wndWorkStatus = new CWidgetWork();
+    connect(m_wndWorkStatus,SIGNAL(sendCmd(QString)),this,SLOT(receiveCmd(QString)));
     QString sFileLan = m_mySettings->value("PSDPPRV/file_lan").toString();
-    m_wndWorkFlow->setFileCfg(sFileLan);
-    m_tabMain->addTab(m_wndWorkFlow/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态"));
+    m_wndWorkStatus->setFileCfg(sFileLan);
+    m_tabMain->addTab(m_wndWorkStatus/*,QIcon(":/toolWidget/tiJian")*/,QStringLiteral("系统运行状态"));
 
     m_wndWebMap1 = new FormWebBase();
     m_tabMain->addTab(m_wndWebMap1/*,QIcon(":/toolWidget/muMa")*/, QStringLiteral("事故潮流分布"));
@@ -195,6 +195,10 @@ void MainWnd::activeTab(int nTab)
         m_mapTabInit[nTab] = true;
     }
 
+    //激活时获得焦点
+    m_tabMain->widget(nTab)->setFocus();
+
+    //只有在“系统工作状态”中才显示“错误信息”子窗口
     if(m_wndError && nTab == 0)
         m_wndError->show();
     else if(m_wndError && nTab > 0)
@@ -205,7 +209,7 @@ void MainWnd::activeTab(int nTab)
 void MainWnd::refresh()
 {
     int nIndex = m_tabMain->currentIndex();
-//    if(0 == nIndex && m_wndWorkFlow)
+//    if(0 == nIndex && m_wndWorkStatus)
 //    {
 //        QString sFile("");
 //        m_mySettings->value("file_lan",sFile);

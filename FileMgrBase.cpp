@@ -1,4 +1,4 @@
-﻿#include "filemgrbase.h"
+#include "filemgrbase.h"
 #include <QDir>
 #include "XxwQtPub.h"
 

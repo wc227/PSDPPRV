@@ -1,4 +1,4 @@
-﻿#ifndef XBAR_H
+#ifndef XBAR_H
 #define XBAR_H
 
 #include <QGraphicsRectItem>

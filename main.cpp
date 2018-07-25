@@ -1,4 +1,4 @@
-﻿#include <QApplication>
+#include <QApplication>
 //#include <QTextCodec>
 #include <QFile>
 #include <QSharedMemory>

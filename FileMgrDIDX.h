@@ -1,4 +1,4 @@
-﻿#ifndef FILEMGRDIDX_H
+#ifndef FILEMGRDIDX_H
 #define FILEMGRDIDX_H
 
 #include "FileMgrBase.h"

@@ -1,4 +1,4 @@
-﻿#ifndef _MAINWND_H_20170928_
+#ifndef _MAINWND_H_20170928_
 #define _MAINWND_H_20170928_
 
 #include <QMainWindow>
@@ -84,7 +84,7 @@ private:
     QLabel *m_lblTitleZone;//用来显示标题区域
     QTabWidget *m_tabMain;
 
-    CWidgetWork *m_wndWorkFlow;//导航页面
+    CWidgetWork *m_wndWorkStatus;//导航页面
     FormWebBase *m_wndWebMap1;
     FormWebBase *m_wndWebMap2;
     FormWebBase *m_wndWebMap3;

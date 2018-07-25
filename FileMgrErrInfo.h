@@ -1,4 +1,4 @@
-﻿#ifndef FILEMGRERRINFO_H
+#ifndef FILEMGRERRINFO_H
 #define FILEMGRERRINFO_H
 
 #include "FileMgrBase.h"

@@ -1,4 +1,4 @@
-﻿#ifndef FILEMGRBASE_H
+#ifndef FILEMGRBASE_H
 #define FILEMGRBASE_H
 
 #include <QString>

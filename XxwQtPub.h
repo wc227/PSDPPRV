@@ -1,4 +1,4 @@
-﻿#ifndef CXXWPUBQT_H
+#ifndef CXXWPUBQT_H
 #define CXXWPUBQT_H
 
 #include <QString>

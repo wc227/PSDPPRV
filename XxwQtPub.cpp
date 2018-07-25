@@ -1,4 +1,4 @@
-﻿#include "XxwQtPub.h"
+#include "XxwQtPub.h"
 #include <QCoreApplication>
 #include <QFileInfo>
 #include <QDateTime>

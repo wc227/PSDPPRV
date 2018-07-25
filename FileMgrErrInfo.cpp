@@ -1,4 +1,4 @@
-﻿#include "FileMgrErrInfo.h"
+#include "FileMgrErrInfo.h"
 #include <QFile>
 #include <QDebug>
 #include <QTextStream>

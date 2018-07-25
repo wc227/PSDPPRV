@@ -1,4 +1,4 @@
-﻿#include "XBarChart.h"
+#include "XBarChart.h"
 #include "XxwQtPub.h"
 #include "DlgXBarChartProperty.h"
 
@@ -480,8 +480,8 @@ void XBarChart::setMaxGroupNumInPage(int val)
 {
     if(val < 2)
         val = 2;
-    else if(val >10)
-        val = 10;
+    else if(val >50)
+        val = 50;
 
     if(m_MaxGroupNumInPage != val)
     {
@@ -528,8 +528,8 @@ void XBarChart::setMaxBarNumOfGroupInPage(int val)
 {
     if(val < 2)
         val = 2;
-    else if(val > 20)
-        val = 20;
+    else if(val > 50)
+        val = 50;
 
     if(m_MaxBarNumOfGroupInPage != val)
     {

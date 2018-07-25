@@ -1,4 +1,4 @@
-﻿#ifndef XBARCHART_H
+#ifndef XBARCHART_H
 #define XBARCHART_H
 
 #include "XBar.h"
@@ -54,8 +54,8 @@ protected:
     QRect m_MainPlotRect;//主绘图矩形区域
 
     bool m_GridVisible;//是否显示网格线
-    int m_MaxGroupNumInPage;//页面显示的条形图组数目（条形图列数）,也就是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大10，默认是5)
-    int m_MaxBarNumOfGroupInPage;//页面上垂直网格里显示条形图的最大值(列中条形图数目)，最小2，最大10，默认是5
+    int m_MaxGroupNumInPage;//页面显示的条形图组数目（条形图列数）,也就是垂直网格数，每个网格里容纳一组条形图，以堆积形式显示条形图(最小2，最大50，默认是5)
+    int m_MaxBarNumOfGroupInPage;//页面上垂直网格里显示条形图的最大值(列中条形图数目)，最小2，最大50，默认是5
     int m_MaxBarNumOfGroup;//条形图组中条形图的数目的最大值
 
     QList<QGraphicsTextItem *> m_TimeItems;//用来显示条形图组时间的图元

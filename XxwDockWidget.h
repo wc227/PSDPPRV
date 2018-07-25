@@ -1,4 +1,4 @@
-﻿#ifndef XXWDOCKWIDGET_H
+#ifndef XXWDOCKWIDGET_H
 #define XXWDOCKWIDGET_H
 
 #include <QDockWidget>

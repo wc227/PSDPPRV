@@ -1,4 +1,4 @@
-﻿#include "FileMgrDIDX.h"
+#include "FileMgrDIDX.h"
 
 #include <QFile>
 #include <QDebug>

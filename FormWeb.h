@@ -1,4 +1,4 @@
-﻿#ifndef FORMWEBMAP_H
+#ifndef FORMWEBMAP_H
 #define FORMWEBMAP_H
 
 #include <QWidget>
